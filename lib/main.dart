@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './screens/overview_screen.dart';
+import './screens/detail_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,6 +14,9 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.teal,
       ),
       home: OverViewScreen(),
+      routes: {
+        DetailScreen.routeName: (ctx) => DetailScreen(),
+      },
     );
   }
 }
