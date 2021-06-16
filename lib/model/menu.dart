@@ -9,11 +9,11 @@ class MenuItem {
   final String restaurantId;
 
   MenuItem({
-    @required this.id,
-    @required this.title,
-    @required this.price,
-    @required this.image,
-    @required this.restaurantTitle,
-    @required this.restaurantId,
+    required this.id,
+    required this.title,
+    required this.price,
+    required this.image,
+    required this.restaurantTitle,
+    required this.restaurantId,
   });
 }
