@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../model/restaurants.dart';
 
 class DetailScreen extends StatelessWidget {
   static const routeName = "/detail-screen";
   @override
   Widget build(BuildContext context) {
-    final resTitle = ModalRoute.of(context)!.settings.arguments as String;
+    final resId = ModalRoute.of(context)!.settings.arguments as String;
+    final resData = Provider.of<Restaurants>(context).findById(resId);
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 45,
@@ -17,7 +20,7 @@ class DetailScreen extends StatelessWidget {
         child: ListView(
           children: [
             Text(
-              resTitle,
+              "${resData.title}",
               style: TextStyle(
                 fontSize: 25,
                 color: Colors.black87,

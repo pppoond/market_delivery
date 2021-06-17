@@ -43,7 +43,10 @@ class RestaurantList extends StatelessWidget {
                 itemBuilder: (context, i) {
                   return InkWell(
                     onTap: () {
-                      Navigator.of(context).pushNamed(DetailScreen.routeName,arguments: res[i].title,);
+                      Navigator.of(context).pushNamed(
+                        DetailScreen.routeName,
+                        arguments: res[i].id,
+                      );
                     },
                     child: Card(
                       elevation: 0.5,

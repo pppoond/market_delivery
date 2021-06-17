@@ -144,5 +144,7 @@ class Restaurants with ChangeNotifier {
     return [..._restaurants];
   }
 
-  addMenu(menu) {}
+  Restaurant findById(String id) {
+    return _restaurants.firstWhere((res) => res.id == id);
+  }
 }
