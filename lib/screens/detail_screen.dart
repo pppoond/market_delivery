@@ -84,6 +84,8 @@ class DetailScreen extends StatelessWidget {
               ),
             ),
             ListView.builder(
+              shrinkWrap: true,
+              physics: ScrollPhysics(),
               itemCount: resData.menu.length,
               itemBuilder: (ctx, i) => DetailListItem(
                 id: resData.menu[i].id,
