@@ -22,6 +22,19 @@ class Cart with ChangeNotifier {
     return {..._carts};
   }
 
+  double get totalFood {
+    double total = 0.0;
+    _carts.forEach((key, cartItem) {
+      total += cartItem.price * cartItem.quantity;
+    });
+    return total;
+  }
+
+  void removeItem(String productId) {
+    _carts.remove(productId);
+    notifyListeners();
+  }
+
   void addItemToCart({
     required String menuId,
     required String title,
@@ -30,5 +43,27 @@ class Cart with ChangeNotifier {
     required String restaurantTitle,
   }) {
     print([menuId, title, price, quantity, restaurantTitle]);
+
+    if (_carts.containsKey(menuId)) {
+      _carts.update(
+        menuId,
+        (existingCartItem) => CartItem(
+          id: existingCartItem.id,
+          title: existingCartItem.title,
+          price: existingCartItem.price,
+          quantity: existingCartItem.quantity + quantity,
+          date: DateTime.now().toString(),
+        ),
+      );
+    } else {
+      _carts.putIfAbsent(
+          menuId,
+          () => CartItem(
+              id: DateTime.now().toString(),
+              title: title,
+              price: price,
+              quantity: quantity,
+              date: DateTime.now().toString()));
+    }
   }
 }

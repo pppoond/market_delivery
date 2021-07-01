@@ -141,6 +141,7 @@ class DetailListModal {
                               quantity: _counter,
                               restaurantTitle: restaurantTitle,
                             );
+                            Navigator.of(ctx).pop();
                           },
                           child: Text(
                             "Add to Cart",
