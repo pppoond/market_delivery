@@ -1,7 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
+
+import '../screens/cart_screen.dart';
+
+import '../model/cart.dart';
 import '../model/restaurants.dart';
+
+import '../widgets/badge.dart';
 import '../widgets/detail_list_item.dart';
 
 class DetailScreen extends StatelessWidget {
@@ -18,6 +25,35 @@ class DetailScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
         // title: Text("Detail"),
+        actions: [
+          Consumer<Cart>(
+            builder: (ctx, cartData, child) {
+              if (cartData.cart.length < 1) {
+                return IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(CartScreen.routeName);
+                  },
+                  icon: Icon(
+                    Icons.shopping_cart,
+                  ),
+                );
+              }
+              return Badge(
+                color: Colors.red,
+                value: cartData.cart.length.toString(),
+                child: child,
+              );
+            },
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(CartScreen.routeName);
+              },
+              icon: Icon(
+                Icons.shopping_cart,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),

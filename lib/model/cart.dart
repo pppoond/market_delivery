@@ -65,5 +65,6 @@ class Cart with ChangeNotifier {
               quantity: quantity,
               date: DateTime.now().toString()));
     }
+    notifyListeners();
   }
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/cart_screen.dart';
 
 import '../widgets/restaurant_list.dart';
 import '../widgets/badge.dart';
+
+import '../model/cart.dart';
 
 class OverViewScreen extends StatelessWidget {
   @override
@@ -15,9 +18,24 @@ class OverViewScreen extends StatelessWidget {
         elevation: 1,
         title: Text("Delivery"),
         actions: [
-          Badge(
-            color: Colors.red,
-            value: "99",
+          Consumer<Cart>(
+            builder: (ctx, cartData, child) {
+              if (cartData.cart.length < 1) {
+                return IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(CartScreen.routeName);
+                  },
+                  icon: Icon(
+                    Icons.shopping_cart,
+                  ),
+                );
+              }
+              return Badge(
+                color: Colors.red,
+                value: cartData.cart.length.toString(),
+                child: child,
+              );
+            },
             child: IconButton(
               onPressed: () {
                 Navigator.of(context).pushNamed(CartScreen.routeName);
