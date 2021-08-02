@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import '../model/restaurants.dart';
 import '../widgets/restaurant_list_item.dart';
 
+import '../screens/restaurant_screen.dart';
+
 class RestaurantList extends StatelessWidget {
-  List<Restaurant> res = Restaurants().restaurants;
   @override
   Widget build(BuildContext context) {
+    List<Restaurant> res = Restaurants().restaurants;
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -18,7 +20,9 @@ class RestaurantList extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pushNamed(RestaurantScreen.routeName);
+                },
                 child: Padding(
                   padding: EdgeInsets.only(right: 10),
                   child: Text(

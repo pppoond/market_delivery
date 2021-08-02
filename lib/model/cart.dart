@@ -22,6 +22,10 @@ class Cart with ChangeNotifier {
     return {..._carts};
   }
 
+  int get itemCount {
+    return _carts.length;
+  }
+
   double get totalFood {
     double total = 0.0;
     _carts.forEach((key, cartItem) {

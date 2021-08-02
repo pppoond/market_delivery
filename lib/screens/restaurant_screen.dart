@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 
 import '../screens/cart_screen.dart';
 
-import '../widgets/restaurant_list.dart';
-import '../widgets/badge.dart';
-
+import '../model/restaurants.dart';
 import '../model/cart.dart';
 
-class OverViewScreen extends StatelessWidget {
+import '../widgets/restaurant_list_item.dart';
+import '../widgets/badge.dart';
+
+class RestaurantScreen extends StatelessWidget {
+  static const routeName = "/restaurant-screen";
+
   @override
   Widget build(BuildContext context) {
+    final restaurant =
+        Provider.of<Restaurants>(context, listen: false).restaurants;
     return Scaffold(
       floatingActionButton: Container(
         child: Consumer<Cart>(
@@ -45,7 +51,12 @@ class OverViewScreen extends StatelessWidget {
         centerTitle: true,
         toolbarHeight: 45,
         elevation: 1,
-        title: Text("Delivery"),
+        title: Text(
+          "ร้านอาหาร",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           Consumer<Cart>(
             builder: (ctx, cartData, child) {
@@ -76,11 +87,37 @@ class OverViewScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.only(left: 16, bottom: 0),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12),
         child: ListView(
           children: [
-            RestaurantList(),
+            Padding(
+              padding: EdgeInsets.only(left: 4, bottom: 10, top: 14),
+              child: Text(
+                "ร้านอาหารทั้งหมด",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            GridView.builder(
+              physics: ScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: restaurant.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2 / 1.7,
+              ),
+              itemBuilder: (context, i) {
+                return RestaurantListItem(
+                  resId: restaurant[i].id,
+                  resImage: restaurant[i].image,
+                  resTitle: restaurant[i].title,
+                );
+              },
+            ),
           ],
         ),
       ),
