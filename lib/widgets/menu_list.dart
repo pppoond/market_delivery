@@ -6,6 +6,8 @@ import '../model/restaurants.dart';
 
 import '../widgets/menu_list_item.dart';
 
+import '../screens/menu_screen.dart';
+
 class MenuList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class MenuList extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  // Navigator.of(context).pushNamed(RestaurantScreen.routeName);
+                  Navigator.of(context).pushNamed(MenuScreen.routeName);
                 },
                 child: Padding(
                   padding: EdgeInsets.only(right: 10),

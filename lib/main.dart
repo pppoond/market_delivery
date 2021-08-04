@@ -3,6 +3,7 @@ import './screens/overview_screen.dart';
 import './screens/detail_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/restaurant_screen.dart';
+import './screens/menu_screen.dart';
 
 import 'package:provider/provider.dart';
 
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
           DetailScreen.routeName: (ctx) => DetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
           RestaurantScreen.routeName: (ctx) => RestaurantScreen(),
+          MenuScreen.routeName: (ctx) => MenuScreen(),
         },
       ),
     );
