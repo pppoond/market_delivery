@@ -41,7 +41,7 @@ class Restaurants with ChangeNotifier {
               restaurantTitle: "ร้านอาหารญี่ปุ่น",
               restaurantId: "100",
               image:
-                  "https://cdn.pixabay.com/photo/2017/04/04/00/36/japanese-food-2199962_960_720.jpg"),
+                  "https://images.unsplash.com/photo-1557872943-16a5ac26437e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=716&q=80"),
           MenuItem(
               id: "3",
               title: "ซูชิรวมชุดเล็ก",
@@ -146,5 +146,16 @@ class Restaurants with ChangeNotifier {
 
   Restaurant findById(String id) {
     return _restaurants.firstWhere((res) => res.id == id);
+  }
+
+  List<MenuItem> get menuItem {
+    List<MenuItem> items = [];
+
+    _restaurants.forEach((restaurant) {
+      restaurant.menu.forEach((menu) {
+        items.add(menu);
+      });
+    });
+    return [...items];
   }
 }

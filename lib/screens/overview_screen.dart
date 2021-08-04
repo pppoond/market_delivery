@@ -5,6 +5,7 @@ import '../screens/cart_screen.dart';
 
 import '../widgets/restaurant_list.dart';
 import '../widgets/badge.dart';
+import '../widgets/menu_list.dart';
 
 import '../model/cart.dart';
 
@@ -80,6 +81,7 @@ class OverViewScreen extends StatelessWidget {
         padding: EdgeInsets.only(left: 16, bottom: 0),
         child: ListView(
           children: [
+            MenuList(),
             RestaurantList(),
           ],
         ),
