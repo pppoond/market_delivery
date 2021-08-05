@@ -18,6 +18,25 @@ class Restaurant {
 }
 
 class Restaurants with ChangeNotifier {
+  List<Restaurant> get restaurants {
+    return [..._restaurants];
+  }
+
+  Restaurant findById(String id) {
+    return _restaurants.firstWhere((res) => res.id == id);
+  }
+
+  List<MenuItem> get menuItem {
+    List<MenuItem> items = [];
+
+    _restaurants.forEach((restaurant) {
+      restaurant.menu.forEach((menu) {
+        items.add(menu);
+      });
+    });
+    return [...items];
+  }
+
   List<Restaurant> _restaurants = [
     Restaurant(
         id: "100",
@@ -140,22 +159,4 @@ class Restaurants with ChangeNotifier {
                   "https://cdn.pixabay.com/photo/2021/04/12/10/42/tiramisu-6172170_1280.jpg"),
         ]),
   ];
-  List<Restaurant> get restaurants {
-    return [..._restaurants];
-  }
-
-  Restaurant findById(String id) {
-    return _restaurants.firstWhere((res) => res.id == id);
-  }
-
-  List<MenuItem> get menuItem {
-    List<MenuItem> items = [];
-
-    _restaurants.forEach((restaurant) {
-      restaurant.menu.forEach((menu) {
-        items.add(menu);
-      });
-    });
-    return [...items];
-  }
 }

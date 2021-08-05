@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
-
-import '../screens/cart_screen.dart';
-import '../screens/favorite_screen.dart';
-
-import '../widgets/restaurant_list.dart';
-import '../widgets/badge.dart';
-import '../widgets/menu_list.dart';
 
 import '../model/cart.dart';
 
-class OverViewScreen extends StatelessWidget {
+import '../screens/cart_screen.dart';
+
+import '../widgets/badge.dart';
+
+class FavoriteScreen extends StatelessWidget {
+  static const routeName = "/favorite-screen";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,13 +46,13 @@ class OverViewScreen extends StatelessWidget {
         centerTitle: true,
         toolbarHeight: 45,
         elevation: 1,
-        title: Text("Delivery"),
+        title: Text(
+          "Favorite",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(FavoriteScreen.routeName);
-              },
-              icon: Icon(Icons.favorite_border)),
           Consumer<Cart>(
             builder: (ctx, cartData, child) {
               if (cartData.cart.length < 1) {
@@ -83,12 +82,37 @@ class OverViewScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.only(left: 16, bottom: 0),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12),
         child: ListView(
           children: [
-            MenuList(),
-            RestaurantList(),
+            Padding(
+              padding: EdgeInsets.only(left: 4, bottom: 10, top: 14),
+              child: Text(
+                "ร้านที่ฉันถูกใจ",
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            // GridView.builder(
+            //   physics: ScrollPhysics(),
+            //   shrinkWrap: true,
+            //   itemCount: restaurant.length,
+            //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            //     crossAxisCount: 2,
+            //     childAspectRatio: 2 / 1.7,
+            //   ),
+            //   itemBuilder: (context, i) {
+            //     return RestaurantListItem(
+            //       resId: restaurant[i].id,
+            //       resImage: restaurant[i].image,
+            //       resTitle: restaurant[i].title,
+            //     );
+            //   },
+            // ),
           ],
         ),
       ),
