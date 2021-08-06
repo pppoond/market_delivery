@@ -6,6 +6,7 @@ class Restaurant {
   final String title;
   final int mobile;
   final String image;
+  bool isFavorite;
   List<MenuItem> menu;
 
   Restaurant({
@@ -14,6 +15,7 @@ class Restaurant {
     required this.mobile,
     required this.image,
     required this.menu,
+    this.isFavorite = false,
   });
 }
 
@@ -24,6 +26,15 @@ class Restaurants with ChangeNotifier {
 
   Restaurant findById(String id) {
     return _restaurants.firstWhere((res) => res.id == id);
+  }
+
+  void toggleFavorite(String resId, bool isFavorite) {
+    final existingIndex = _restaurants.indexWhere((res) => res.id == resId);
+    // print(existingIndex);
+    if (existingIndex >= 0) {
+      _restaurants[existingIndex].isFavorite = !isFavorite;
+    }
+    notifyListeners();
   }
 
   List<MenuItem> get menuItem {
@@ -42,6 +53,7 @@ class Restaurants with ChangeNotifier {
         id: "100",
         title: "ร้านอาหารญี่ปุ่น",
         mobile: 0123456789,
+        isFavorite: false,
         image:
             "https://cdn.pixabay.com/photo/2016/04/26/03/55/salmon-1353598_1280.jpg",
         menu: [
@@ -82,6 +94,7 @@ class Restaurants with ChangeNotifier {
         id: "200",
         title: "ร้านอาหารเกาหลี",
         mobile: 0123456789,
+        isFavorite: false,
         image:
             "https://images.pexels.com/photos/2313686/pexels-photo-2313686.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
         menu: [
@@ -122,6 +135,7 @@ class Restaurants with ChangeNotifier {
         id: "300",
         title: "ร้านอาหารอิตาเลี่ยน",
         mobile: 0123456789,
+        isFavorite: false,
         image:
             "https://cdn.pixabay.com/photo/2020/05/17/04/22/pizza-5179939_1280.jpg",
         menu: [

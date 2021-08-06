@@ -99,12 +99,19 @@ class DetailScreen extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: Icon(
-                    Icons.favorite_border,
-                    color: Colors.grey.shade400,
-                  ),
+                Consumer<Restaurants>(
+                  builder: (_, res, child) {
+                    return IconButton(
+                      onPressed: () {
+                        // print(resData.isFavorite);
+                        res.toggleFavorite(resData.id, resData.isFavorite);
+                      },
+                      icon: Icon(
+                        Icons.favorite_border,
+                        color: Colors.grey.shade400,
+                      ),
+                    );
+                  },
                 )
               ],
             ),
