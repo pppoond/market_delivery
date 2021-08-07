@@ -107,8 +107,12 @@ class DetailScreen extends StatelessWidget {
                         res.toggleFavorite(resData.id, resData.isFavorite);
                       },
                       icon: Icon(
-                        Icons.favorite_border,
-                        color: Colors.grey.shade400,
+                        (resData.isFavorite)
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: (resData.isFavorite)
+                            ? Colors.red.shade400
+                            : Colors.grey.shade400,
                       ),
                     );
                   },

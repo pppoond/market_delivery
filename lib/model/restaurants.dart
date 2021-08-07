@@ -24,6 +24,11 @@ class Restaurants with ChangeNotifier {
     return [..._restaurants];
   }
 
+  List<Restaurant> get favorite {
+    final favoriteOnly = _restaurants.where((res) => res.isFavorite).toList();
+    return [...favoriteOnly];
+  }
+
   Restaurant findById(String id) {
     return _restaurants.firstWhere((res) => res.id == id);
   }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import './screens/overview_screen.dart';
 import './screens/detail_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/restaurant_screen.dart';
 import './screens/menu_screen.dart';
 import './screens/favorite_screen.dart';
-
-import 'package:provider/provider.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';

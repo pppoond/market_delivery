@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/restaurants.dart';
 
 import 'package:provider/provider.dart';
 
@@ -7,11 +8,13 @@ import '../model/cart.dart';
 import '../screens/cart_screen.dart';
 
 import '../widgets/badge.dart';
+import '../widgets/favorite_list_item.dart';
 
 class FavoriteScreen extends StatelessWidget {
   static const routeName = "/favorite-screen";
   @override
   Widget build(BuildContext context) {
+    final favorite = Provider.of<Restaurants>(context).favorite;
     return Scaffold(
       floatingActionButton: Container(
         child: Consumer<Cart>(
@@ -82,40 +85,51 @@ class FavoriteScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: ListView(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 4, bottom: 10, top: 14),
+      body: (favorite.length < 1)
+          ? Center(
               child: Text(
-                "ร้านที่ฉันถูกใจ",
+                "ไม่มีร้านที่ถูกใจ",
                 style: TextStyle(
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
                   fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+            )
+          : Container(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(left: 4, bottom: 10, top: 14),
+                    child: Text(
+                      "ร้านที่ฉันถูกใจ",
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  GridView.builder(
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: favorite.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 2 / 1.7,
+                    ),
+                    itemBuilder: (context, i) {
+                      return FavoriteListItem(
+                        resId: favorite[i].id,
+                        resImage: favorite[i].image,
+                        resTitle: favorite[i].title,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-            // GridView.builder(
-            //   physics: ScrollPhysics(),
-            //   shrinkWrap: true,
-            //   itemCount: restaurant.length,
-            //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            //     crossAxisCount: 2,
-            //     childAspectRatio: 2 / 1.7,
-            //   ),
-            //   itemBuilder: (context, i) {
-            //     return RestaurantListItem(
-            //       resId: restaurant[i].id,
-            //       resImage: restaurant[i].image,
-            //       resTitle: restaurant[i].title,
-            //     );
-            //   },
-            // ),
-          ],
-        ),
-      ),
     );
   }
 }
