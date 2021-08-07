@@ -31,10 +31,31 @@ class FavoriteListItem extends StatelessWidget {
           children: [
             Container(
               child: ClipRRect(
-                child: Image.network(
-                  resImage,
-                  fit: BoxFit.cover,
-                  alignment: Alignment.center,
+                child: GridTile(
+                  header: GridTileBar(
+                    // backgroundColor: Colors.black.withOpacity(0.35),
+                    title: Text(""),
+                    // subtitle: Text("SubTitle"),
+                    trailing: Icon(
+                      Icons.favorite,
+                      color: Colors.red.shade400,
+                    ),
+                  ),
+
+                  child: Image.network(
+                    resImage,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                  // footer: GridTileBar(
+                  //   backgroundColor: Colors.black.withOpacity(0.35),
+                  //   title: Text("Hello"),
+                  //   subtitle: Text("SubTitle"),
+                  //   trailing: Icon(
+                  //     Icons.favorite,
+                  //     color: Colors.red.shade400,
+                  //   ),
+                  // ),
                 ),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(4),
