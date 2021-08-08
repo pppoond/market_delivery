@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:provider/provider.dart';
 
 import '../screens/cart_screen.dart';
@@ -7,6 +8,7 @@ import '../screens/favorite_screen.dart';
 import '../widgets/restaurant_list.dart';
 import '../widgets/badge.dart';
 import '../widgets/menu_list.dart';
+import '../widgets/drawer/app_drawer.dart';
 
 import '../model/cart.dart';
 
@@ -14,6 +16,7 @@ class OverViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: AppDrawer(),
       floatingActionButton: Container(
         child: Consumer<Cart>(
           builder: (_, cartData, child) => (cartData.itemCount < 1)
