@@ -7,6 +7,7 @@ import './screens/cart_screen.dart';
 import './screens/restaurant_screen.dart';
 import './screens/menu_screen.dart';
 import './screens/favorite_screen.dart';
+import './screens/auth_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
           RestaurantScreen.routeName: (ctx) => RestaurantScreen(),
           MenuScreen.routeName: (ctx) => MenuScreen(),
           FavoriteScreen.routeName: (ctx) => FavoriteScreen(),
+          AuthScreen.routeName: (ctx) => AuthScreen(),
         },
       ),
     );
