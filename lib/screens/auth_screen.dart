@@ -10,6 +10,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  bool isLogin = true;
   Widget userInputField({required String hintText, var icon}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
@@ -37,8 +38,18 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AuthLogo(),
+                (isLogin)
+                    ? AuthLogo()
+                    : Text(
+                        "Create Account",
+                        style: TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                      ),
+                SizedBox(
+                  height: 50,
+                ),
                 userInputField(
                     hintText: "Email",
                     icon: Icon(Icons.person, color: Colors.grey)),
@@ -48,23 +59,31 @@ class _AuthScreenState extends State<AuthScreen> {
                 SizedBox(
                   height: 32,
                 ),
-                Column(
-                  children: [
-                    Text("Dont have an account ?"),
-                    TextButton(
-                        style: ButtonStyle(
-                            overlayColor:
-                                MaterialStateProperty.all(Colors.transparent),
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                                EdgeInsets.zero),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                        onPressed: () {},
-                        child: Text(
-                          "Sign Up",
-                          style:
-                              TextStyle(color: Theme.of(context).accentColor),
-                        ))
-                  ],
+                Center(
+                  child: Column(
+                    children: [
+                      Text((isLogin)
+                          ? "Dont have an account ?"
+                          : "Already have account?"),
+                      TextButton(
+                          style: ButtonStyle(
+                              overlayColor:
+                                  MaterialStateProperty.all(Colors.transparent),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                  EdgeInsets.zero),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                          onPressed: () {
+                            setState(() {
+                              isLogin = !isLogin;
+                            });
+                          },
+                          child: Text(
+                            (isLogin) ? "Sign Up" : "Login",
+                            style:
+                                TextStyle(color: Theme.of(context).accentColor),
+                          ))
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -88,7 +107,7 @@ class _AuthScreenState extends State<AuthScreen> {
               ),
             ),
             child: Text(
-              "Login",
+              (isLogin) ? "Login" : "Sign Up",
               style: TextStyle(
                 fontSize: 18,
               ),
