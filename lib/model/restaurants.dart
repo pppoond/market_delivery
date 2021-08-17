@@ -50,132 +50,125 @@ class Restaurants with ChangeNotifier {
         items.add(menu);
       });
     });
+    items.shuffle();
     return [...items];
   }
 
   List<Restaurant> _restaurants = [
     Restaurant(
         id: "100",
-        title: "ร้านอาหารญี่ปุ่น",
+        title: "ร้านผลไม้",
         mobile: 0123456789,
         isFavorite: false,
         image:
-            "https://cdn.pixabay.com/photo/2016/04/26/03/55/salmon-1353598_1280.jpg",
+            "https://images.unsplash.com/photo-1610832958506-aa56368176cf?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1050&q=80",
         menu: [
           MenuItem(
               id: "1",
-              title: "ข้าวหน้าปลาแซลมอน",
+              title: "สตรอว์เบอร์รี",
               price: 240.00,
-              restaurantTitle: "ร้านอาหารญี่ปุ่น",
+              restaurantTitle: "ร้านผลไม้",
               restaurantId: "100",
               image:
-                  "https://i1.wp.com/unfussyepicure.com/wp-content/uploads/2015/04/sake-don-1.jpg?fit=1200%2C900&ssl=1"),
+                  "https://images.unsplash.com/photo-1575808142341-e39853744dbd?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=542&q=80"),
           MenuItem(
               id: "2",
-              title: "ราเมงน้ำข้นหมูชาชู",
+              title: "เงาะ",
               price: 170.00,
-              restaurantTitle: "ร้านอาหารญี่ปุ่น",
+              restaurantTitle: "ร้านผลไม้",
               restaurantId: "100",
               image:
-                  "https://images.unsplash.com/photo-1557872943-16a5ac26437e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=716&q=80"),
+                  "https://images.unsplash.com/photo-1602615446784-00a9a34e3d0b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=667&q=80"),
           MenuItem(
               id: "3",
-              title: "ซูชิรวมชุดเล็ก",
+              title: "มะม่วง",
               price: 320.00,
-              restaurantTitle: "ร้านอาหารญี่ปุ่น",
+              restaurantTitle: "ร้านผลไม้",
               restaurantId: "100",
               image:
-                  "https://cdn.pixabay.com/photo/2015/10/06/19/10/sushi-975075_1280.jpg"),
+                  "https://images.unsplash.com/photo-1592309405331-360092a17a82?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=375&q=80"),
           MenuItem(
               id: "4",
-              title: "สเต๊กปลาแซลมอน",
+              title: "องุ่น",
               price: 225.00,
               restaurantTitle: "ร้านอาหารญี่ปุ่น",
               restaurantId: "100",
               image:
-                  "https://cdn.pixabay.com/photo/2015/04/08/13/13/food-712665_1280.jpg"),
+                  "https://images.unsplash.com/photo-1578829779691-99b60bd8c7be?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=661&q=80"),
         ]),
     Restaurant(
         id: "200",
-        title: "ร้านอาหารเกาหลี",
+        title: "ร้านเนื้อ",
         mobile: 0123456789,
         isFavorite: false,
         image:
-            "https://images.pexels.com/photos/2313686/pexels-photo-2313686.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+            "https://images.unsplash.com/photo-1597417321971-45e034f7a993?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1246&q=80",
         menu: [
           MenuItem(
               id: "1",
-              title: "ไก่ทอดเกาหลี",
+              title: "เนื้อหมู",
               price: 220.00,
-              restaurantTitle: "ร้านอาหารเกาหลี",
+              restaurantTitle: "ร้านเนื้อ",
               restaurantId: "200",
               image:
-                  "https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"),
+                  "https://images.unsplash.com/photo-1611059263765-f57653f3bba3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=667&q=80"),
           MenuItem(
               id: "2",
-              title: "ซุนดูบูจิเก(ซุปเต้าหู้อ่อน)",
+              title: "เนื้อไก่",
               price: 150.00,
-              restaurantTitle: "ร้านอาหารเกาหลี",
+              restaurantTitle: "ร้านเนื้อ",
               restaurantId: "200",
               image:
-                  "https://media-cdn.tripadvisor.com/media/photo-s/0e/ff/3a/0c/sundubu-jjigae-korean.jpg"),
+                  "https://images.unsplash.com/photo-1600180786608-28d06391d25c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80"),
           MenuItem(
               id: "3",
-              title: "ซอลลองทัง(ซุปกระดูกวัว)",
+              title: "เนื้อวัว",
               price: 170.00,
-              restaurantTitle: "ร้านอาหารเกาหลี",
+              restaurantTitle: "ร้านเนื้อ",
               restaurantId: "200",
               image:
-                  "https://www.koreanbapsang.com/wp-content/uploads/2013/02/DSC5973-2-e1569821046791.jpg"),
-          MenuItem(
-              id: "4",
-              title: "ต๊อกบกกี",
-              price: 230.00,
-              restaurantTitle: "ร้านอาหารเกาหลี",
-              restaurantId: "200",
-              image:
-                  "https://cdn.pixabay.com/photo/2017/11/27/12/07/toppokki-2981210_1280.jpg"),
+                  "https://images.unsplash.com/photo-1603048297172-c92544798d5a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1050&q=80"),
         ]),
     Restaurant(
         id: "300",
-        title: "ร้านอาหารอิตาเลี่ยน",
+        title: "ร้านผัก",
         mobile: 0123456789,
         isFavorite: false,
         image:
-            "https://cdn.pixabay.com/photo/2020/05/17/04/22/pizza-5179939_1280.jpg",
+            "https://www.prachachat.net/wp-content/uploads/2021/02/S__2457791.jpg",
         menu: [
           MenuItem(
               id: "1",
-              title: "ลาซานญ่า",
+              title: "ผักคะน้า",
               price: 280.00,
-              restaurantTitle: "ร้านอาหารอิตาเลี่ยน",
+              restaurantTitle: "ร้านผัก",
               restaurantId: "300",
               image:
-                  "https://cdn.pixabay.com/photo/2021/02/06/11/51/food-5987888_1280.jpg"),
+                  "https://s359.kapook.com/pagebuilder/0ccded1e-ef03-46d3-929f-4b202065c58d.jpg"),
           MenuItem(
               id: "2",
-              title: "พิซซ่าแป้งบางถาดกลาง",
+              title: "ผักบุ้ง",
               price: 260.00,
-              restaurantTitle: "ร้านอาหารอิตาเลี่ยน",
+              restaurantTitle: "ร้านผัก",
               restaurantId: "300",
               image:
-                  "https://cdn.pixabay.com/photo/2018/03/04/20/05/pizza-3199081_1280.jpg"),
+                  "https://lh3.googleusercontent.com/proxy/68AfGXAc51jAyuAve-YtyF6RTFi3CIu5AaYnhyCkGXk4t7Ql4UCp9WlM0l-tM3BmZSXvC1XaU7io29RcYbaZeXzxGXx7HUw4yDRVaeol77GgA4a58DublRRDEaTA_3I"),
           MenuItem(
               id: "3",
-              title: "สปาเก็ตตี้คาโบนาร่า",
+              title: "ผักกาดหอม",
               price: 232.00,
-              restaurantTitle: "ร้านอาหารอิตาเลี่ยน",
+              restaurantTitle: "ร้านผัก",
               restaurantId: "300",
               image:
-                  "https://cdn.pixabay.com/photo/2018/11/10/00/38/pasta-3805772_1280.jpg"),
+                  "https://lh3.googleusercontent.com/proxy/AgZW3nvM8D9WIDpHCbf2HqFMFBQ7ggqsTiK7IYaaQCUGav1lNagHzFMNT73eP_Zo-YgIJtwx3u30bb7PembDle6Qa73XFnokVG9Kq6N1bmi6"),
           MenuItem(
               id: "4",
-              title: "ทิรามิซุ",
+              title: "ผักชี",
               price: 160.00,
-              restaurantTitle: "ร้านอาหารอิตาเลี่ยน",
+              restaurantTitle: "ร้านผัก",
               restaurantId: "300",
               image:
-                  "https://cdn.pixabay.com/photo/2021/04/12/10/42/tiramisu-6172170_1280.jpg"),
+                  "https://obs.line-scdn.net/0hwjdQj-RyKEVZKAOknaNXEmN-KypqRDtGPR55RgVGdnEhEWhBbRs1K3p8dSJwGG8bME9nInUhM3QkSmxEZBw1/w644"),
         ]),
   ];
 }

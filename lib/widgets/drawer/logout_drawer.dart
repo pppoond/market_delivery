@@ -28,7 +28,7 @@ class LogoutDrawer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "You're not login",
+              "คุณยังไม่ได้เข้าสู่ระบบ",
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
@@ -36,7 +36,7 @@ class LogoutDrawer extends StatelessWidget {
               ),
             ),
             Text(
-              "Please login to your account",
+              "กรุณาเข้าสู่ระบบก่อนดำเนินการต่อ",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
