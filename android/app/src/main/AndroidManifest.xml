@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.pondwickproduct.market_delivery">
+    package="com.pondwickproduct.taladsod">
    <application
-        android:label="market_delivery"
+        android:label="taladsod"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

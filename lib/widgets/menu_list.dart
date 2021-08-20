@@ -20,7 +20,7 @@ class MenuList extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Menu",
+                "รายการ",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               GestureDetector(

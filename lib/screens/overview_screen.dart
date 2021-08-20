@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:provider/provider.dart';
 
@@ -13,6 +14,7 @@ import '../widgets/drawer/app_drawer.dart';
 import '../model/cart.dart';
 
 class OverViewScreen extends StatelessWidget {
+  static const routeName = "/overview-screen";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +52,12 @@ class OverViewScreen extends StatelessWidget {
         centerTitle: true,
         toolbarHeight: 45,
         elevation: 1,
-        title: Text("Delivery"),
+        title: Text(
+          "Delivery",
+          // style: GoogleFonts.kanit(
+          //   textStyle: Theme.of(context).textTheme.headline6,
+          // ),
+        ),
         actions: [
           IconButton(
               onPressed: () {

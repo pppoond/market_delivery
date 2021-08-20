@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/auth/auth_logo.dart';
+import './store_screen.dart';
 
-import './rider_auth_screen.dart';
-
-class AuthScreen extends StatefulWidget {
-  static const routeName = "/auth-screen";
+class StoreAuthScreen extends StatefulWidget {
+  static const routeName = "/store-auth-screen";
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  _StoreAuthScreenState createState() => _StoreAuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _StoreAuthScreenState extends State<StoreAuthScreen> {
   bool isLogin = true;
+  bool isRider = true;
   Widget userInputField({required String hintText, var icon}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
@@ -52,7 +52,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "เข้าสู่ระบบ",
+                    "เข้าสู่ระบบร้านค้า",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -60,7 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Center(
                     child: Image.asset(
-                      "assets/images/rating.png",
+                      "assets/images/shops.png",
                       width: MediaQuery.of(context).size.width * 0.35,
                     ),
                   ),
@@ -110,7 +110,12 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    StoreScreen.routeName, (route) => false);
+                // Navigator.of(context)
+                //     .pushReplacementNamed(StoreScreen.routeName);
+              },
               style: TextButton.styleFrom(
                 primary: Colors.white,
                 backgroundColor: Theme.of(context).accentColor,
@@ -145,7 +150,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "สมัครบัญชี",
+                    "สมัครบัญชีร้านค้า",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -153,7 +158,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Center(
                     child: Image.asset(
-                      "assets/images/rating.png",
+                      "assets/images/shops.png",
                       width: MediaQuery.of(context).size.width * 0.35,
                     ),
                   ),
@@ -235,32 +240,6 @@ class _AuthScreenState extends State<AuthScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: TextButton(
-              style: ButtonStyle(
-                  overlayColor: MaterialStateProperty.all(Colors.transparent),
-                  padding:
-                      MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-              onPressed: () {
-                Navigator.of(context).pushNamed(RiderAuthScreen.routeName);
-              },
-              child: Text(
-                "ร้านค้าหรือไรเดอร์",
-                style: TextStyle(
-                    color: Theme.of(context).accentColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
       body: (isLogin) ? loginWidget() : registerWidget(),
     );
   }

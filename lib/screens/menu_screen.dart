@@ -51,7 +51,7 @@ class MenuScreen extends StatelessWidget {
         toolbarHeight: 45,
         elevation: 1,
         title: Text(
-          "ร้านอาหาร",
+          "รายการ",
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -93,7 +93,7 @@ class MenuScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 4, bottom: 10, top: 14),
               child: Text(
-                "เมนูอาหารทั้งหมด",
+                "รายการทั้งหมด",
                 style: TextStyle(
                   color: Colors.black87,
                   fontWeight: FontWeight.bold,

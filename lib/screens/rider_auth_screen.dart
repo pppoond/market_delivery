@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/auth/auth_logo.dart';
+import './store_auth_screen.dart';
+import './rider_screen.dart';
 
-import './rider_auth_screen.dart';
-
-class AuthScreen extends StatefulWidget {
-  static const routeName = "/auth-screen";
+class RiderAuthScreen extends StatefulWidget {
+  static const routeName = "/rider-auth-screen";
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  _RiderAuthScreenState createState() => _RiderAuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _RiderAuthScreenState extends State<RiderAuthScreen> {
   bool isLogin = true;
+  bool isRider = true;
   Widget userInputField({required String hintText, var icon}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
@@ -52,7 +52,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "เข้าสู่ระบบ",
+                    "เข้าสู่ระบบไรเดอร์",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -60,7 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Center(
                     child: Image.asset(
-                      "assets/images/rating.png",
+                      "assets/images/delivery.png",
                       width: MediaQuery.of(context).size.width * 0.35,
                     ),
                   ),
@@ -110,7 +110,10 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    RiderScreen.routeName, (route) => false);
+              },
               style: TextButton.styleFrom(
                 primary: Colors.white,
                 backgroundColor: Theme.of(context).accentColor,
@@ -145,7 +148,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "สมัครบัญชี",
+                    "สมัครบัญชีไรเดอร์",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
@@ -153,7 +156,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   Center(
                     child: Image.asset(
-                      "assets/images/rating.png",
+                      "assets/images/delivery.png",
                       width: MediaQuery.of(context).size.width * 0.35,
                     ),
                   ),
@@ -248,10 +251,12 @@ class _AuthScreenState extends State<AuthScreen> {
                       MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap),
               onPressed: () {
-                Navigator.of(context).pushNamed(RiderAuthScreen.routeName);
+                setState(() {
+                  isRider = !isRider;
+                });
               },
               child: Text(
-                "ร้านค้าหรือไรเดอร์",
+                (isRider) ? "ร้านค้า" : "ไรเดอร์",
                 style: TextStyle(
                     color: Theme.of(context).accentColor,
                     fontSize: 18,
@@ -261,7 +266,9 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ],
       ),
-      body: (isLogin) ? loginWidget() : registerWidget(),
+      body: (isRider)
+          ? ((isLogin) ? loginWidget() : registerWidget())
+          : StoreAuthScreen(),
     );
   }
 }

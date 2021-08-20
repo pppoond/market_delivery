@@ -48,7 +48,7 @@ class LogoutDrawer extends StatelessWidget {
         Divider(),
         drawerItem(
             leadingIcon: Icon(Icons.person),
-            title: "Login / Sign Up",
+            title: "เข้าสู่ระบบ / สมัครสมาชิก",
             onTap: () {
               // print("Log Out");
               Navigator.of(context).pushNamed(AuthScreen.routeName);
