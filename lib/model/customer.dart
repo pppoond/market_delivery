@@ -4,6 +4,13 @@
 
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+
+import '../utils/api.dart';
+
 Customer customerFromJson(String str) => Customer.fromJson(json.decode(str));
 
 String customerToJson(Customer data) => json.encode(data.toJson());
@@ -63,4 +70,55 @@ class Result {
         "sex": sex,
         "time_reg": timeReg.toIso8601String(),
       };
+}
+
+class Customers with ChangeNotifier {
+  bool? _loginStatus;
+
+  bool? get loginStatus {
+    return _loginStatus;
+  }
+
+  Future<bool> loginRider(
+      {required String username, required String password}) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    bool login;
+    var response = await http.post(Uri.parse(Api.loginCustomer), body: {
+      'username': username,
+      'password': password,
+    });
+    print(response.body);
+    if (response.body != null) {
+      login = true;
+    } else {
+      login = false;
+    }
+    sharedPreferences.setString("type", "customer");
+    _loginStatus = await loginCheck();
+    notifyListeners();
+    return login;
+  }
+
+  void logoutCustomer() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.remove("type");
+    _loginStatus = false;
+    notifyListeners();
+  }
+
+  Future<bool> loginCheck() async {
+    bool status;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? type = await sharedPreferences.getString("type");
+    if (type == "customer") {
+      status = true;
+      _loginStatus = status;
+    } else {
+      status = false;
+      _loginStatus = status;
+    }
+    print("Function Login Check = $status");
+    notifyListeners();
+    return status;
+  }
 }

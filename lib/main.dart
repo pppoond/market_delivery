@@ -26,6 +26,7 @@ import './screens/order/rider_result_screen.dart';
 import './model/restaurants.dart';
 import './model/cart.dart';
 import './model/rider.dart';
+import './model/customer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +71,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => Riders(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Customers(),
         ),
       ],
       child: MaterialApp(

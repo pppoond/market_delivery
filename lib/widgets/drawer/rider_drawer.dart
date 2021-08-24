@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../model/rider.dart';
 
 import '../../screens/overview_screen.dart';
 import '../../screens/wallet/rider_wallet_screen.dart';
@@ -25,6 +27,7 @@ class RiderDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final rider = Provider.of<Riders>(context, listen: false);
     return Column(
       children: [
         DrawerHeader(
@@ -99,6 +102,7 @@ class RiderDrawer extends StatelessWidget {
         drawerItem(
             title: "ออกจากระบบ",
             onTap: () {
+              rider.logoutRider();
               Navigator.of(context).restorablePushNamedAndRemoveUntil(
                   OverViewScreen.routeName, (route) => false);
             }),

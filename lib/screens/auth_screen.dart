@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-
-import '../widgets/auth/auth_logo.dart';
+import 'package:provider/provider.dart';
 
 import './rider_auth_screen.dart';
+import './overview_screen.dart';
+
+import '../model/customer.dart';
 
 class AuthScreen extends StatefulWidget {
   static const routeName = "/auth-screen";
@@ -13,10 +15,18 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool isLogin = true;
-  Widget userInputField({required String hintText, var icon}) {
+  TextEditingController usernameTextController = TextEditingController();
+  TextEditingController passwordTextController = TextEditingController();
+  Widget userInputField(
+      {required String hintText,
+      var icon,
+      TextEditingController? controller,
+      required bool obscureText}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
         decoration: InputDecoration(
           isDense: true,
           filled: true,
@@ -41,6 +51,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customer = Provider.of<Customers>(context, listen: false);
     Scaffold loginWidget() {
       return Scaffold(
         backgroundColor: Colors.white,
@@ -68,9 +79,13 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 10,
                   ),
                   userInputField(
-                      hintText: "Email",
+                      controller: usernameTextController,
+                      obscureText: false,
+                      hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      controller: passwordTextController,
+                      obscureText: true,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(
@@ -110,7 +125,18 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                dynamic checkLogin = await customer.loginRider(
+                    username: usernameTextController.text,
+                    password: passwordTextController.text);
+                if (checkLogin) {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      OverViewScreen.routeName, (route) => false);
+                  print("login success");
+                } else {
+                  print("login unsuccess");
+                }
+              },
               style: TextButton.styleFrom(
                 primary: Colors.white,
                 backgroundColor: Theme.of(context).accentColor,
@@ -161,15 +187,19 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 10,
                   ),
                   userInputField(
+                      obscureText: false,
                       hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Email",
                       icon: Icon(Icons.email, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Phone",
                       icon: Icon(Icons.phone, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(
