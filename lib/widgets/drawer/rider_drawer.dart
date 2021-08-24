@@ -32,6 +32,8 @@ class RiderDrawer extends StatelessWidget {
           child: Row(
             children: [
               CircleAvatar(
+                backgroundImage: NetworkImage(
+                    "https://asianwiki.com/images/3/31/Park_Seo-Joon-TCOE-GV.jpg"),
                 radius: 37,
               ),
               SizedBox(width: 15),
@@ -40,7 +42,7 @@ class RiderDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Rider Username",
+                    "สมหมาย",
                     style: TextStyle(
                       color: Theme.of(context).accentColor,
                       fontSize: 17,

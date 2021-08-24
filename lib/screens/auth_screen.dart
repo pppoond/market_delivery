@@ -251,7 +251,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 Navigator.of(context).pushNamed(RiderAuthScreen.routeName);
               },
               child: Text(
-                "ร้านค้าหรือไรเดอร์",
+                "ไรเดอร์หรือไรเดอร์",
                 style: TextStyle(
                     color: Theme.of(context).accentColor,
                     fontSize: 18,

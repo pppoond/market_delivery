@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../../widgets/wallet/rider_credit_modal.dart';
+import '../../widgets/wallet/rider_fill_modal.dart';
+
 class RiderCredit extends StatelessWidget {
   Widget drawerItem({required String title, var leadingIcon, required onTap}) {
     return Theme(
@@ -70,8 +73,19 @@ class RiderCredit extends StatelessWidget {
             leadingIcon: Icon(
               Icons.money,
             ),
+            title: "เติมเครดิต",
+            onTap: () {
+              RiderFillModal.showModal(ctx: context, orderId: "1");
+            }),
+        Divider(),
+        drawerItem(
+            leadingIcon: Icon(
+              Icons.money,
+            ),
             title: "ถอนเครดิตเข้ากระเป๋าเงิน",
-            onTap: () {}),
+            onTap: () {
+              RiderCreditModal.showModal(ctx: context, orderId: "1");
+            }),
         Divider(),
       ],
     );

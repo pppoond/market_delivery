@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../screens/order/rider_order_screen.dart';
+import '../../screens/order/rider_finish_screen.dart';
 
 class RiderIncome extends StatelessWidget {
   @override
@@ -85,7 +85,7 @@ class RiderIncome extends StatelessWidget {
               elevation: 0,
               child: InkWell(
                 onTap: () {
-                  Navigator.of(context).pushNamed(RiderOrderScreen.routeName);
+                  Navigator.of(context).pushNamed(RiderFinishScreen.routeName);
                 },
                 child: Padding(
                   padding: EdgeInsets.all(12),

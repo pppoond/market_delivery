@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
-class RiderOrderScreen extends StatelessWidget {
-  static const routeName = "/rider-order-screen";
+class RiderFinishScreen extends StatelessWidget {
+  static const routeName = "/rider-finish-screen";
   @override
   Widget build(BuildContext context) {
     return Scaffold(

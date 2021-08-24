@@ -39,7 +39,7 @@ class RestaurantList extends StatelessWidget {
             height: 14,
           ),
           Container(
-            height: MediaQuery.of(context).size.height * 0.19,
+            height: MediaQuery.of(context).size.height * 0.20,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: res.length,

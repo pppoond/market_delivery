@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import './store_auth_screen.dart';
 import './rider_screen.dart';
+
+import '../model/rider.dart';
 
 class RiderAuthScreen extends StatefulWidget {
   static const routeName = "/rider-auth-screen";
@@ -13,10 +16,18 @@ class RiderAuthScreen extends StatefulWidget {
 class _RiderAuthScreenState extends State<RiderAuthScreen> {
   bool isLogin = true;
   bool isRider = true;
-  Widget userInputField({required String hintText, var icon}) {
+  TextEditingController usernameTextController = TextEditingController();
+  TextEditingController passwordTextController = TextEditingController();
+  Widget userInputField(
+      {required String hintText,
+      var icon,
+      var controller,
+      required bool obscureText}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
+        obscureText: obscureText,
+        controller: controller,
         decoration: InputDecoration(
           isDense: true,
           filled: true,
@@ -41,6 +52,7 @@ class _RiderAuthScreenState extends State<RiderAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final rider = Provider.of<Riders>(context, listen: false);
     Scaffold loginWidget() {
       return Scaffold(
         backgroundColor: Colors.white,
@@ -68,9 +80,13 @@ class _RiderAuthScreenState extends State<RiderAuthScreen> {
                     height: 10,
                   ),
                   userInputField(
+                      obscureText: false,
+                      controller: usernameTextController,
                       hintText: "Email",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      controller: passwordTextController,
+                      obscureText: true,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(
@@ -110,9 +126,19 @@ class _RiderAuthScreenState extends State<RiderAuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    RiderScreen.routeName, (route) => false);
+              onPressed: () async {
+                bool checkLogin = await rider.loginRider(
+                    username: usernameTextController.text,
+                    password: passwordTextController.text);
+                // print("5555555555555555555");
+                // print(checkLogin.toString());
+                if (checkLogin) {
+                  print("login success");
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      RiderScreen.routeName, (route) => false);
+                } else {
+                  print("login unsuccess");
+                }
               },
               style: TextButton.styleFrom(
                 primary: Colors.white,
@@ -164,15 +190,19 @@ class _RiderAuthScreenState extends State<RiderAuthScreen> {
                     height: 10,
                   ),
                   userInputField(
+                      obscureText: false,
                       hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Email",
                       icon: Icon(Icons.email, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Phone",
                       icon: Icon(Icons.phone, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(

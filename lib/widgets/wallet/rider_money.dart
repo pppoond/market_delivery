@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:market_delivery/widgets/wallet/rider_money_modal.dart';
 
 class RiderMoney extends StatelessWidget {
   Widget drawerItem({required String title, var leadingIcon, required onTap}) {
@@ -71,7 +72,9 @@ class RiderMoney extends StatelessWidget {
               Icons.money,
             ),
             title: "ถอนเงินเข้าบัญชี",
-            onTap: () {}),
+            onTap: () {
+              RiderMoneyModal.showModal(ctx: context, orderId: "1");
+            }),
         Divider(),
       ],
     );

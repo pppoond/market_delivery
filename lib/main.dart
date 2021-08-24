@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './screens/overview_screen.dart';
 import './screens/detail_screen.dart';
@@ -19,14 +20,44 @@ import './screens/wallet/store_wallet_screen.dart';
 import './screens/wallet/rider_credit_screen.dart';
 import './screens/wallet/rider_money_screen.dart';
 import './screens/income/rider_income_screen.dart';
-import './screens/order/rider_order_screen.dart';
+import './screens/order/rider_finish_screen.dart';
+import './screens/order/rider_result_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
+import './model/rider.dart';
 
-void main() => runApp(MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  dynamic screen = await checkLogin();
+  runApp(MyApp(
+    screen: screen,
+  ));
+}
+
+Future<dynamic> checkLogin() async {
+  dynamic screen;
+  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+  var type = sharedPreferences.getString("type");
+  if (type != null) {
+    if (type == "customer") {
+      screen = OverViewScreen();
+    } else if (type == "rider") {
+      screen = RiderScreen();
+    } else if (type == "store") {
+      screen = StoreScreen();
+    } else {
+      screen = OverViewScreen();
+    }
+  } else {
+    screen = OverViewScreen();
+  }
+  return screen;
+}
 
 class MyApp extends StatelessWidget {
+  dynamic screen;
+  MyApp({this.screen});
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -36,7 +67,10 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => Cart(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Riders(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -47,7 +81,7 @@ class MyApp extends StatelessWidget {
           primaryColor: Colors.grey.shade100,
           accentColor: Colors.teal,
         ),
-        home: OverViewScreen(),
+        home: screen,
         routes: {
           OverViewScreen.routeName: (ctx) => OverViewScreen(),
           DetailScreen.routeName: (ctx) => DetailScreen(),
@@ -63,10 +97,11 @@ class MyApp extends StatelessWidget {
           StoreScreen.routeName: (ctx) => StoreScreen(),
           RiderWalletScreen.routeName: (ctx) => RiderWalletScreen(),
           RiderIncomeScreen.routeName: (ctx) => RiderIncomeScreen(),
-          RiderOrderScreen.routeName: (ctx) => RiderOrderScreen(),
+          RiderFinishScreen.routeName: (ctx) => RiderFinishScreen(),
           StoreWalletScreen.routeName: (ctx) => StoreWalletScreen(),
           RiderCreditScreen.routeName: (ctx) => RiderCreditScreen(),
           RiderMoneyScreen.routeName: (ctx) => RiderMoneyScreen(),
+          RiderResultScreen.routeName: (ctx) => RiderResultScreen(),
         },
       ),
     );
