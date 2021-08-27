@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/auth/auth_logo.dart';
 import './store_screen.dart';
+
+import '../model/store.dart';
 
 class StoreAuthScreen extends StatefulWidget {
   static const routeName = "/store-auth-screen";
@@ -13,10 +16,18 @@ class StoreAuthScreen extends StatefulWidget {
 class _StoreAuthScreenState extends State<StoreAuthScreen> {
   bool isLogin = true;
   bool isRider = true;
-  Widget userInputField({required String hintText, var icon}) {
+  TextEditingController usernameTextController = TextEditingController();
+  TextEditingController passwordTextController = TextEditingController();
+  Widget userInputField(
+      {required String hintText,
+      var icon,
+      TextEditingController? controller,
+      required bool obscureText}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
         decoration: InputDecoration(
           isDense: true,
           filled: true,
@@ -41,6 +52,7 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final store = Provider.of<Stores>(context, listen: false);
     Scaffold loginWidget() {
       return Scaffold(
         backgroundColor: Colors.white,
@@ -68,9 +80,13 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
                     height: 10,
                   ),
                   userInputField(
-                      hintText: "Email",
+                      controller: usernameTextController,
+                      obscureText: false,
+                      hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      controller: passwordTextController,
+                      obscureText: true,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(
@@ -110,11 +126,17 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    StoreScreen.routeName, (route) => false);
-                // Navigator.of(context)
-                //     .pushReplacementNamed(StoreScreen.routeName);
+              onPressed: () async {
+                bool? checkLogin = await store.loginStore(
+                    username: usernameTextController.text,
+                    password: passwordTextController.text);
+                if (checkLogin) {
+                  print("login unsuccess");
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      StoreScreen.routeName, (route) => false);
+                } else {
+                  print("login unsuccess");
+                }
               },
               style: TextButton.styleFrom(
                 primary: Colors.white,
@@ -166,15 +188,19 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
                     height: 10,
                   ),
                   userInputField(
+                      obscureText: false,
                       hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Email",
                       icon: Icon(Icons.email, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Phone",
                       icon: Icon(Icons.phone, color: Colors.grey)),
                   userInputField(
+                      obscureText: false,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(

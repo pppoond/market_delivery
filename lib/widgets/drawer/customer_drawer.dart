@@ -33,46 +33,50 @@ class CustomerDrawer extends StatelessWidget {
       children: [
         DrawerHeader(
           // decoration: BoxDecoration(color: Colors.orange),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 37,
-              ),
-              SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Customer Username",
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    style: ButtonStyle(
-                      overlayColor: MaterialStateProperty.all(
-                        Colors.transparent,
-                      ),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.zero,
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      "แก้ไขข้อมูลส่วนตัว",
+          child: Consumer<Customers>(
+            builder: (_, customerData, child) => Row(
+              children: [
+                CircleAvatar(
+                  radius: 37,
+                ),
+                SizedBox(width: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      (customerData.customerModel != null)
+                          ? customerData.customerModel!.username
+                          : "",
                       style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
+                        color: Theme.of(context).accentColor,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    TextButton(
+                      style: ButtonStyle(
+                        overlayColor: MaterialStateProperty.all(
+                          Colors.transparent,
+                        ),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                          EdgeInsets.zero,
+                        ),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () {},
+                      child: Text(
+                        "แก้ไขข้อมูลส่วนตัว",
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         drawerItem(

@@ -13,7 +13,7 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         // child: LogoutDrawer(),
         child: Consumer<Customers>(builder: (_, customerData, child) {
-          customerData.loginCheck();
+          // customerData.loginCheck();
           return (customerData.loginStatus == true)
               ? LoginDrawer()
               : LogoutDrawer();

@@ -29,42 +29,64 @@ class StoreDrawer extends StatelessWidget {
     return Column(
       children: [
         DrawerHeader(
+          padding: EdgeInsets.all(0),
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: NetworkImage(
+                  "https://cdn.chiangmainews.co.th/wp-content/uploads/2016/12/07143833/10-3.jpg"),
+              fit: BoxFit.cover,
+            ),
+          ),
           // decoration: BoxDecoration(color: Colors.orange),
-          child: Row(
+          child: Stack(
+            fit: StackFit.passthrough,
             children: [
-              CircleAvatar(
-                radius: 37,
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [Colors.black87, Colors.transparent],
+                      begin: const FractionalOffset(0.0, 0.8),
+                      end: const FractionalOffset(0.0, 0.0),
+                      stops: [0.0, 1.0],
+                      tileMode: TileMode.clamp),
+                ),
               ),
-              SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+              Row(
                 children: [
-                  Text(
-                    "Store Username",
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    style: ButtonStyle(
-                      overlayColor: MaterialStateProperty.all(
-                        Colors.transparent,
-                      ),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.zero,
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      "แก้ไขข้อมูลส่วนตัว",
-                      style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Store Username",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          style: ButtonStyle(
+                            overlayColor: MaterialStateProperty.all(
+                              Colors.transparent,
+                            ),
+                            padding: MaterialStateProperty.all<EdgeInsets>(
+                              EdgeInsets.zero,
+                            ),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          onPressed: () {},
+                          child: Text(
+                            "แก้ไขข้อมูลส่วนตัว",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -73,14 +95,28 @@ class StoreDrawer extends StatelessWidget {
           ),
         ),
         drawerItem(
-            leadingIcon: Icon(Icons.favorite),
+            leadingIcon: Icon(Icons.list_sharp),
+            title: "คำสั่งซื้อ",
+            onTap: () {
+              // Navigator.of(context).pushNamed(FavoriteScreen.routeName);
+            }),
+        Divider(),
+        drawerItem(
+            leadingIcon: Icon(Icons.money),
+            title: "รายได้",
+            onTap: () {
+              // Navigator.of(context).pushNamed(FavoriteScreen.routeName);
+            }),
+        Divider(),
+        drawerItem(
+            leadingIcon: Icon(Icons.production_quantity_limits_outlined),
             title: "จัดการสินค้า",
             onTap: () {
               // Navigator.of(context).pushNamed(FavoriteScreen.routeName);
             }),
         Divider(),
         drawerItem(
-            leadingIcon: Icon(Icons.shopping_cart),
+            leadingIcon: Icon(Icons.wallet_travel),
             title: "กระเป๋าเงิน",
             onTap: () {
               Navigator.of(context).pushNamed(StoreWalletScreen.routeName);

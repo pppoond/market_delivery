@@ -1,3 +1,4 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,16 +16,22 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   bool isLogin = true;
+  bool? _usernameNull;
+  TextEditingController customerNameTextController = TextEditingController();
+  TextEditingController customerPhoneTextController = TextEditingController();
   TextEditingController usernameTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
   Widget userInputField(
       {required String hintText,
       var icon,
       TextEditingController? controller,
-      required bool obscureText}) {
+      required bool obscureText,
+      var usernameNull,
+      Function(String)? onChanged}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
+        onChanged: onChanged,
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
@@ -34,6 +41,17 @@ class _AuthScreenState extends State<AuthScreen> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none),
+          suffix: (usernameNull != null)
+              ? (usernameNull)
+                  ? Text(
+                      "ใช้งานได้",
+                      style: TextStyle(color: Colors.green.shade500),
+                    )
+                  : Text(
+                      "มีผู้ใช้งานแล้ว",
+                      style: TextStyle(color: Colors.green.shade500),
+                    )
+              : null,
           prefixIcon: (icon == null) ? null : icon,
           // icon: (icon == null) ? null : icon,
           hintText: hintText,
@@ -126,7 +144,7 @@ class _AuthScreenState extends State<AuthScreen> {
             padding: EdgeInsets.all(20.0),
             child: TextButton(
               onPressed: () async {
-                dynamic checkLogin = await customer.loginRider(
+                dynamic checkLogin = await customer.loginCustomer(
                     username: usernameTextController.text,
                     password: passwordTextController.text);
                 if (checkLogin) {
@@ -187,18 +205,25 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 10,
                   ),
                   userInputField(
+                      onChanged: (value) async {
+                        print(value);
+                      },
+                      controller: usernameTextController,
                       obscureText: false,
                       hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      controller: customerNameTextController,
                       obscureText: false,
-                      hintText: "Email",
+                      hintText: "Name",
                       icon: Icon(Icons.email, color: Colors.grey)),
                   userInputField(
+                      controller: customerPhoneTextController,
                       obscureText: false,
                       hintText: "Phone",
                       icon: Icon(Icons.phone, color: Colors.grey)),
                   userInputField(
+                      controller: passwordTextController,
                       obscureText: false,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
@@ -239,7 +264,41 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                if (usernameTextController.text != "" &&
+                    passwordTextController.text != "" &&
+                    customerNameTextController.text != "" &&
+                    customerPhoneTextController.text != "") {
+                  bool? register = await customer.register(
+                    username: usernameTextController.text,
+                    password: passwordTextController.text,
+                    customerName: customerNameTextController.text,
+                    customerPhone: customerPhoneTextController.text,
+                  );
+                  if (register) {
+                    CoolAlert.show(
+                      context: context,
+                      title: "สำเร็จ",
+                      type: CoolAlertType.success,
+                      text: "สมัครสมาชิกสำเร็จ",
+                    );
+                  } else {
+                    CoolAlert.show(
+                      context: context,
+                      title: "ผิดพลาด",
+                      type: CoolAlertType.error,
+                      text: "ข้อมูลไม่ถูกต้อง",
+                    );
+                  }
+                } else {
+                  CoolAlert.show(
+                    context: context,
+                    title: "คำเตือน",
+                    type: CoolAlertType.warning,
+                    text: "กรุณากรอกข้อมูลให้ครบ",
+                  );
+                }
+              },
               style: TextButton.styleFrom(
                 primary: Colors.white,
                 backgroundColor: Theme.of(context).accentColor,
@@ -281,7 +340,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 Navigator.of(context).pushNamed(RiderAuthScreen.routeName);
               },
               child: Text(
-                "ไรเดอร์หรือไรเดอร์",
+                "ไรเดอร์หรือร้าน",
                 style: TextStyle(
                     color: Theme.of(context).accentColor,
                     fontSize: 18,

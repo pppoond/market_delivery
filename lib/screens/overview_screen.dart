@@ -12,11 +12,18 @@ import '../widgets/menu_list.dart';
 import '../widgets/drawer/app_drawer.dart';
 
 import '../model/cart.dart';
+import '../model/customer.dart';
 
 class OverViewScreen extends StatelessWidget {
   static const routeName = "/overview-screen";
+
+  @override
+  void initState() {}
   @override
   Widget build(BuildContext context) {
+    final customer = Provider.of<Customers>(context, listen: false);
+    customer.loginCheck();
+    customer.findCustomer();
     return Scaffold(
       drawer: AppDrawer(),
       floatingActionButton: Container(
