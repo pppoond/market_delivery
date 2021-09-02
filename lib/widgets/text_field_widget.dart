@@ -2,12 +2,22 @@ import 'package:flutter/material.dart';
 
 class TextFieldWidget extends StatefulWidget {
   String hintText;
-  var icon;
+  Icon? icon;
   TextEditingController controller;
+  Function(String)? onChanged;
+  bool readOnly;
+  bool enableInteractiveSelection;
+  bool enabled;
+  bool obscureText;
   TextFieldWidget({
     required this.hintText,
-    required this.icon,
+    this.icon,
     required this.controller,
+    this.onChanged,
+    this.readOnly = false,
+    this.enableInteractiveSelection = true,
+    this.enabled = true,
+    this.obscureText = false,
   });
 
   @override
@@ -20,11 +30,18 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
+        obscureText: widget.obscureText,
+        // enableInteractiveSelection: widget.enableInteractiveSelection,
+        focusNode: FocusNode(),
+        readOnly: widget.readOnly,
+        onChanged: widget.onChanged,
         controller: widget.controller,
         decoration: InputDecoration(
+          enabled: widget.enabled,
           isDense: true,
           filled: true,
-          fillColor: Colors.grey.shade100,
+          fillColor:
+              (widget.enabled) ? Colors.grey.shade100 : Colors.grey.shade300,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
@@ -29,5 +30,31 @@ class Stores with ChangeNotifier {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.remove("type");
     notifyListeners();
+  }
+
+  Future<bool> register({
+    required String username,
+    required String password,
+    required String customerName,
+    required String customerPhone,
+  }) async {
+    bool register;
+    var response = await http.post(Uri.parse(Api.registerCustomer), body: {
+      'username': username,
+      'password': password,
+      'customer_name': customerName,
+      'customer_phone': customerPhone,
+    });
+
+    var results = jsonDecode(response.body);
+    print(results['msg']);
+    var result = results['result'];
+    if (results['msg'] == "success") {
+      register = true;
+    } else {
+      register = false;
+    }
+    notifyListeners();
+    return register;
   }
 }

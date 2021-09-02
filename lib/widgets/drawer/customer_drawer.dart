@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/screens/account_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../screens/favorite_screen.dart';
@@ -64,7 +65,10 @@ class CustomerDrawer extends StatelessWidget {
                         ),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed(AccountScreen.routeName);
+                      },
                       child: Text(
                         "แก้ไขข้อมูลส่วนตัว",
                         style: TextStyle(

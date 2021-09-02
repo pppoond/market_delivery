@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/customer.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/cart.dart';
+import '../model/customer.dart';
 
 import '../screens/favorite_screen.dart';
 import '../screens/cart_screen.dart';
@@ -11,9 +14,22 @@ import '../widgets/account/customer_account.dart';
 import '../widgets/account/rider_account.dart';
 import '../widgets/account/store_account.dart';
 
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends StatefulWidget {
   static const routeName = "/account-screen";
+
+  @override
+  State<AccountScreen> createState() => _AccountScreenState();
+}
+
+class _AccountScreenState extends State<AccountScreen> {
   String isWho = "";
+
+  @override
+  void initState() {
+    // print("AccountScreen");
+    checkLogin();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,41 +37,8 @@ class AccountScreen extends StatelessWidget {
         centerTitle: true,
         toolbarHeight: 45,
         elevation: 1,
-        title: Text("Delivery"),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(FavoriteScreen.routeName);
-              },
-              icon: Icon(Icons.favorite_border)),
-          Consumer<Cart>(
-            builder: (ctx, cartData, child) {
-              if (cartData.cart.length < 1) {
-                return IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(CartScreen.routeName);
-                  },
-                  icon: Icon(
-                    Icons.shopping_cart,
-                  ),
-                );
-              }
-              return Badge(
-                color: Colors.red,
-                value: cartData.cart.length.toString(),
-                child: child,
-              );
-            },
-            child: IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(CartScreen.routeName);
-              },
-              icon: Icon(
-                Icons.shopping_cart,
-              ),
-            ),
-          ),
-        ],
+        title: Text("บัญชีผู้ใช้"),
+        actions: [],
       ),
       body: (isWho == "customer")
           ? CustomerAccount()
@@ -65,5 +48,13 @@ class AccountScreen extends StatelessWidget {
                   ? RiderAccount()
                   : Container(),
     );
+  }
+
+  void checkLogin() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    isWho = (await sharedPreferences.getString('type'))!;
+    setState(() {
+      // print(isWho);
+    });
   }
 }

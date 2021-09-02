@@ -15,18 +15,20 @@ class Customer {
   Customer({
     required this.customerId,
     required this.username,
-    this.password,
+    this.password = "",
     required this.customerName,
     required this.customerPhone,
+    this.profileImage = "",
     required this.sex,
     required this.timeReg,
   });
 
   final int customerId;
   final String username;
-  final String? password;
-  final String? customerName;
+  final String password;
+  final String customerName;
   final String customerPhone;
+  final String profileImage;
   final String sex;
   final DateTime timeReg;
 
@@ -36,6 +38,7 @@ class Customer {
         password: json["password"],
         customerName: json["customer_name"],
         customerPhone: json["customer_phone"],
+        profileImage: json['profile_image'],
         sex: json["sex"],
         timeReg: DateTime.parse(json["time_reg"]),
       );
@@ -68,37 +71,42 @@ class Customers with ChangeNotifier {
     return _customerId;
   }
 
-  Future<bool> findByUsername({required String username}) async {
+  Future<bool> findByUsernameCheckNull({required String username}) async {
     bool _usernameNull;
     var response =
         await http.get(Uri.parse("${Api.customer}?find_username=${username}"));
     var results = jsonDecode(response.body);
-    print(results);
+    // print(results);
     var result = results['result']!;
-    if (result["username"] != null) {
-      _usernameNull = false;
-    } else {
+    if (result.isEmpty) {
       _usernameNull = true;
+    } else {
+      _usernameNull = false;
     }
+    // print("check before return");
+    // print(_usernameNull);
+    // print("c____________________");
     return _usernameNull;
   }
 
   void findCustomer() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? customerId = sharedPreferences.getString('customerId');
+    String? customerId = await sharedPreferences.getString('customerId');
     if (customerId != null) {
       var response =
           await http.get(Uri.parse("${Api.customer}?findid=${customerId}"));
       var results = jsonDecode(response.body);
-      print("reeeeeeeeeeeeeeeeeeeeeeeeee");
-      print(results);
-      var result = results['result']!;
+      // print("reeeeeeeeeeeeeeeeeeeeeeeeee");
+      // print(results['result'][0]['customer_id']);
+      var result = results['result'][0];
+      // int customerIdLoad = int.parse(result['customer_id']);
       _customerModel = Customer(
         customerId: result['customer_id'],
         customerName: result['customer_name'],
         customerPhone: result['customer_phone'],
+        password: result['password'],
         sex: result['sex'],
-        timeReg: result['time_reg'],
+        timeReg: DateTime.parse(result['time_reg']),
         username: result['username'],
       );
     }

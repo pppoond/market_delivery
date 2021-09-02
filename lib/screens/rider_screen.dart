@@ -8,6 +8,7 @@ import 'package:market_delivery/screens/order/rider_result_screen.dart';
 import 'package:market_delivery/widgets/order/rider_order_modal.dart';
 
 import '../widgets/drawer/rider_drawer.dart';
+import './stream_api_screen.dart';
 
 class RiderScreen extends StatefulWidget {
   static const routeName = "/rider-screen";
@@ -46,6 +47,13 @@ class _RiderScreenState extends State<RiderScreen> {
                             setState(() {
                               noOrder = !noOrder;
                             });
+                          },
+                          icon: Icon(Icons.notifications_none),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => StreamApiScreen()));
                           },
                           icon: Icon(Icons.notifications_none),
                         ),

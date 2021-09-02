@@ -49,7 +49,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     )
                   : Text(
                       "มีผู้ใช้งานแล้ว",
-                      style: TextStyle(color: Colors.green.shade500),
+                      style: TextStyle(color: Colors.red.shade500),
                     )
               : null,
           prefixIcon: (icon == null) ? null : icon,
@@ -207,7 +207,17 @@ class _AuthScreenState extends State<AuthScreen> {
                   userInputField(
                       onChanged: (value) async {
                         print(value);
+                        _usernameNull = await customer.findByUsernameCheckNull(
+                            username: value);
+                        print("-------------");
+                        print(_usernameNull);
+                        print("-------------");
+                        if (value == "") {
+                          _usernameNull = null;
+                        }
+                        setState(() {});
                       },
+                      usernameNull: _usernameNull,
                       controller: usernameTextController,
                       obscureText: false,
                       hintText: "Username",
@@ -264,41 +274,43 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () async {
-                if (usernameTextController.text != "" &&
-                    passwordTextController.text != "" &&
-                    customerNameTextController.text != "" &&
-                    customerPhoneTextController.text != "") {
-                  bool? register = await customer.register(
-                    username: usernameTextController.text,
-                    password: passwordTextController.text,
-                    customerName: customerNameTextController.text,
-                    customerPhone: customerPhoneTextController.text,
-                  );
-                  if (register) {
-                    CoolAlert.show(
-                      context: context,
-                      title: "สำเร็จ",
-                      type: CoolAlertType.success,
-                      text: "สมัครสมาชิกสำเร็จ",
-                    );
-                  } else {
-                    CoolAlert.show(
-                      context: context,
-                      title: "ผิดพลาด",
-                      type: CoolAlertType.error,
-                      text: "ข้อมูลไม่ถูกต้อง",
-                    );
-                  }
-                } else {
-                  CoolAlert.show(
-                    context: context,
-                    title: "คำเตือน",
-                    type: CoolAlertType.warning,
-                    text: "กรุณากรอกข้อมูลให้ครบ",
-                  );
-                }
-              },
+              onPressed: (_usernameNull == true)
+                  ? () async {
+                      if (usernameTextController.text != "" &&
+                          passwordTextController.text != "" &&
+                          customerNameTextController.text != "" &&
+                          customerPhoneTextController.text != "") {
+                        bool? register = await customer.register(
+                          username: usernameTextController.text,
+                          password: passwordTextController.text,
+                          customerName: customerNameTextController.text,
+                          customerPhone: customerPhoneTextController.text,
+                        );
+                        if (register) {
+                          CoolAlert.show(
+                            context: context,
+                            title: "สำเร็จ",
+                            type: CoolAlertType.success,
+                            text: "สมัครสมาชิกสำเร็จ",
+                          );
+                        } else {
+                          CoolAlert.show(
+                            context: context,
+                            title: "ผิดพลาด",
+                            type: CoolAlertType.error,
+                            text: "ข้อมูลไม่ถูกต้อง",
+                          );
+                        }
+                      } else {
+                        CoolAlert.show(
+                          context: context,
+                          title: "คำเตือน",
+                          type: CoolAlertType.warning,
+                          text: "กรุณากรอกข้อมูลให้ครบ",
+                        );
+                      }
+                    }
+                  : null,
               style: TextButton.styleFrom(
                 primary: Colors.white,
                 backgroundColor: Theme.of(context).accentColor,
