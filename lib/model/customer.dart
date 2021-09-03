@@ -105,6 +105,7 @@ class Customers with ChangeNotifier {
         customerName: result['customer_name'],
         customerPhone: result['customer_phone'],
         password: result['password'],
+        profileImage: result['profile_image'],
         sex: result['sex'],
         timeReg: DateTime.parse(result['time_reg']),
         username: result['username'],

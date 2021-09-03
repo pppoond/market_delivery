@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:market_delivery/screens/account_screen.dart';
+
 import 'package:provider/provider.dart';
 
 import '../../screens/favorite_screen.dart';
@@ -7,6 +8,8 @@ import '../../screens/cart_screen.dart';
 import '../../screens/overview_screen.dart';
 
 import '../../model/customer.dart';
+
+import '../../utils/api.dart';
 
 class CustomerDrawer extends StatelessWidget {
   Widget drawerItem({required String title, var leadingIcon, required onTap}) {
@@ -38,7 +41,13 @@ class CustomerDrawer extends StatelessWidget {
             builder: (_, customerData, child) => Row(
               children: [
                 CircleAvatar(
-                  radius: 37,
+                  backgroundColor: Theme.of(context).accentColor,
+                  radius: 50,
+                  backgroundImage: (customerData
+                          .customerModel!.profileImage.isNotEmpty)
+                      ? NetworkImage(Api.imageUrl +
+                          customerData.customerModel!.profileImage)
+                      : AssetImage("assets/images/user.png") as ImageProvider,
                 ),
                 SizedBox(width: 15),
                 Column(
@@ -47,11 +56,21 @@ class CustomerDrawer extends StatelessWidget {
                   children: [
                     Text(
                       (customerData.customerModel != null)
-                          ? customerData.customerModel!.username
+                          ? "@" + customerData.customerModel!.username
+                          : "",
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    Text(
+                      (customerData.customerModel != null)
+                          ? customerData.customerModel!.customerName
                           : "",
                       style: TextStyle(
                         color: Theme.of(context).accentColor,
-                        fontSize: 17,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
