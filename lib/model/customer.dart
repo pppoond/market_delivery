@@ -4,10 +4,14 @@
 
 import 'dart:convert';
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:dio/dio.dart' as dio;
 
 import '../utils/api.dart';
 
@@ -192,5 +196,59 @@ class Customers with ChangeNotifier {
     }
     notifyListeners();
     return register;
+  }
+
+  Future<dynamic> updateCustomer({
+    required String profileImage,
+    required int customerId,
+    required String username,
+    required String password,
+    required String customerName,
+    required String customerPhone,
+    required int sex,
+  }) async {
+    var results;
+    print("update Customer");
+    var formData = dio.FormData.fromMap({
+      "customer_id": customerId,
+      "username": username,
+      "password": password,
+      "customer_name": customerName,
+      "customer_phone": customerPhone,
+      "sex": sex,
+      "profile_image": profileImage,
+    });
+    try {
+      results = await dio.Dio().post(Api.updateCustomer, data: formData);
+    } catch (e) {
+      print(e);
+    }
+    return results;
+  }
+
+  // Container showMap() {
+  //   LatLng latLng = LatLng(16.20144295022659, 103.28276975227374);
+  //   CameraPosition cameraPosition = CameraPosition(
+  //     target: latLng,
+  //     zoom: 16.0,
+  //   );
+  //   return Container(
+  //     child: GoogleMap(
+  //       initialCameraPosition: cameraPosition,
+  //       mapType: MapType.normal,
+  //       zoomControlsEnabled: false,
+  //       onMapCreated: (controller) {},
+  //     ),
+  //   );
+  // }
+
+  Future<dynamic> showConfirmAlert({required BuildContext context}) async {
+    return CoolAlert.show(
+      context: context,
+      title: "ต้องการบันทึกหรือไม่",
+      type: CoolAlertType.confirm,
+      confirmBtnText: "ยืนยัน",
+      onConfirmBtnTap: () {},
+    );
   }
 }

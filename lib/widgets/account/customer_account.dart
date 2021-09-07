@@ -8,6 +8,7 @@ import 'package:dio/dio.dart' as dio;
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -27,199 +28,438 @@ class CustomerAccount extends StatefulWidget {
 class _CustomerAccountState extends State<CustomerAccount> {
   io.File? file;
   final ImagePicker _picker = ImagePicker();
-  TextEditingController? usernameTextController;
 
-  TextEditingController? passwordTextController;
-
-  TextEditingController? customerNameTextController;
-
-  TextEditingController? customerPhoneTextController;
-
-  TextEditingController? sexTextController = TextEditingController();
+  TextEditingController usernameTextController = TextEditingController();
+  TextEditingController passwordTextController = TextEditingController();
+  TextEditingController customerNameTextController = TextEditingController();
+  TextEditingController customerPhoneTextController = TextEditingController();
+  TextEditingController sexTextController = TextEditingController();
+  TextEditingController addressTextController = TextEditingController();
 
   Customer? customerModel;
+
+  // dynamic customerProvider;
 
   int? dropdownValue = 1;
   int? _selectedValue = 1;
   String? customerName;
 
   @override
+  void initState() {
+    WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      // await this.updateUI();
+      await getCustomer(ctx: context);
+      // customerProvider = Provider.of<Customers>(context, listen: false);
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // final customer = Provider.of<Customers>(context, listen: false);
+    final customer = Provider.of<Customers>(context, listen: false);
 
     // dropdownValue = 1;
     // _selectedValue = 0;
-    getCustomer(ctx: context);
-    return ListView(
-      padding: EdgeInsets.only(left: 16, right: 16),
-      children: [
-        SizedBox(
-          height: 7,
-        ),
-        Text(
-          "แก้ไขบัญชีผู้ใช้งาน",
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
+    // getCustomer(ctx: context);
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("บัญชีผู้ใช้"),
+        actions: [
+          TextButton(
+              style: ButtonStyle(),
+              onPressed: () async {
+                await checkTextFieldNotNull().then((value) {
+                  print(value);
+                  if (value == true) {
+                    CoolAlert.show(
+                        context: context,
+                        type: CoolAlertType.confirm,
+                        title: "ต้องการบันทึกข้อมูลหรือไม่ ?",
+                        confirmBtnText: "ยืนยัน",
+                        onConfirmBtnTap: () {
+                          if (file != null) {
+                            uploadImage(context: context);
+                          } else {
+                            int sex = (_selectedValue! + 1);
+                            customer
+                                .updateCustomer(
+                              customerId: customerModel!.customerId,
+                              username: usernameTextController.text,
+                              password: passwordTextController.text,
+                              customerName: customerNameTextController.text,
+                              customerPhone: customerPhoneTextController.text,
+                              sex: sex,
+                              profileImage: customerModel!.profileImage,
+                            )
+                                .then((value) {
+                              print("${value.data['msg']}");
+                              var results = value.data;
+                              if (results['msg'] == "success") {
+                                print("Success");
+                                CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.success,
+                                ).then((value) {
+                                  customer.findCustomer();
+                                  getCustomer(ctx: context).then(
+                                      (value) => Navigator.of(context).pop());
+                                });
+                              } else {
+                                print("Error");
+                                CoolAlert.show(
+                                  context: context,
+                                  title: "มีข้อผิดพลาด",
+                                  text: "กรุณาลองใหม่อีกครั้ง",
+                                  type: CoolAlertType.error,
+                                );
+                              }
+                              print("Finish");
+                            });
+                          }
+                        },
+                        cancelBtnText: "ยกเลิก");
+                  } else {
+                    CoolAlert.show(
+                      context: context,
+                      type: CoolAlertType.error,
+                      title: "กรุณากรอกรหัสผ่าน",
+                    );
+                  }
+                });
+              },
+              child: Text(
+                "บันทึก",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ))
+        ],
+        toolbarHeight: 45,
+        elevation: 1,
+      ),
+      body: ListView(
+        padding: EdgeInsets.only(left: 16, right: 16),
+        children: [
+          SizedBox(
+            height: 7,
           ),
-        ),
-        SizedBox(
-          height: 7,
-        ),
-        Divider(),
-        SizedBox(
-          height: 7,
-        ),
-        Container(
-          child: Column(
-            children: [
-              Consumer<Customers>(
-                builder: (context, customerData, child) => CircleAvatar(
-                  backgroundColor: Theme.of(context).accentColor,
-                  radius: 50,
-                  backgroundImage: (file != null)
-                      ? FileImage(file!)
-                      : (customerModel!.profileImage.isNotEmpty)
-                          ? NetworkImage(
-                              Api.imageUrl + customerModel!.profileImage)
-                          : AssetImage("assets/images/user.png")
-                              as ImageProvider,
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(50),
-                          // color: Colors.black.withOpacity(0.5),
-                          gradient: LinearGradient(
-                              colors: [
-                                Colors.black87.withOpacity(.5),
-                                Colors.transparent
-                              ],
-                              begin: const FractionalOffset(0.0, 0.5),
-                              end: const FractionalOffset(0.0, 0.0),
-                              stops: [0.0, 0.0],
-                              tileMode: TileMode.clamp),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 15,
-                        left: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: () {
-                            print("Select Image");
-                            showAlertImage(
-                              title: "",
-                              content: "",
-                              context: context,
-                              defaultActionText: "Camera",
-                              cancelActionText: "Gallary",
-                            );
-                          },
-                          child: Icon(
-                            Icons.camera_alt,
-                            color: Colors.white38,
-                            size: 27,
+          Text(
+            "แก้ไขบัญชีผู้ใช้งาน",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          Divider(),
+          SizedBox(
+            height: 7,
+          ),
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Consumer<Customers>(
+                  builder: (context, customerData, child) => Center(
+                    child: CircleAvatar(
+                      backgroundColor: Theme.of(context).accentColor,
+                      radius: 50,
+                      backgroundImage: (file != null)
+                          ? FileImage(file!)
+                          : (customerModel?.profileImage != null)
+                              ? NetworkImage(
+                                  Api.imageUrl + customerModel!.profileImage)
+                              : AssetImage("assets/images/user.png")
+                                  as ImageProvider,
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              // color: Colors.black.withOpacity(0.5),
+                              gradient: LinearGradient(
+                                  colors: [
+                                    Colors.black87.withOpacity(.5),
+                                    Colors.transparent
+                                  ],
+                                  begin: const FractionalOffset(0.0, 0.5),
+                                  end: const FractionalOffset(0.0, 0.0),
+                                  stops: [0.0, 0.0],
+                                  tileMode: TileMode.clamp),
+                            ),
                           ),
-                        ),
+                          Positioned(
+                            bottom: 15,
+                            left: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                print("Select Image");
+                                showAlertImage(
+                                  title: "",
+                                  content: "",
+                                  context: context,
+                                  defaultActionText: "Camera",
+                                  cancelActionText: "Gallary",
+                                );
+                              },
+                              child: Icon(
+                                Icons.camera_alt,
+                                color: Colors.white38,
+                                size: 27,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 7,
+                ),
+                TextFieldWidget(
+                  hintText: "ชื่อผู้ใช้",
+                  controller: usernameTextController,
+                  readOnly: true,
+                  enabled: false,
+                ),
+                TextFieldWidget(
+                    hintText: "ชื่อ", controller: customerNameTextController),
+                TextFieldWidget(
+                    icon: Icon(Icons.phone_iphone),
+                    hintText: "มือมือ",
+                    controller: customerPhoneTextController),
+                Consumer<Customers>(
+                  builder: (context, customerData, child) => Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          _showSexPicker(context);
+                        },
+                        child: TextFieldWidget(
+                            suffixIconEndable: true,
+                            icon: Icon(Icons.arrow_downward),
+                            // enabled: false,
+                            enabled: false,
+                            readOnly: true,
+                            hintText: "ชื่อ",
+                            controller: sexTextController),
+                      ),
+                      // GestureDetector(
+                      //   child: _selectedValue == 0
+                      //       ? Text("ชาย")
+                      //       : _selectedValue == 1
+                      //           ? Text("หญิง")
+                      //           : Text("อื่นๆ"),
+                      // ),
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 7,
-              ),
-              TextFieldWidget(
-                hintText: "ชื่อผู้ใช้",
-                controller: usernameTextController!,
-                readOnly: true,
-                enabled: false,
-              ),
-              TextFieldWidget(
-                  hintText: "ชื่อ", controller: customerNameTextController!),
-              TextFieldWidget(
-                  hintText: "มือมือ", controller: customerPhoneTextController!),
-              Consumer<Customers>(
-                builder: (context, customerData, child) => Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _showSexPicker(context);
-                      },
-                      child: TextFieldWidget(
-                          suffixIconEndable: true,
-                          icon: Icon(Icons.arrow_downward),
-                          // enabled: false,
-                          enabled: false,
-                          readOnly: true,
-                          hintText: "ชื่อ",
-                          controller: sexTextController!),
-                    ),
-                    GestureDetector(
-                      child: _selectedValue == 0
-                          ? Text("ชาย")
-                          : _selectedValue == 1
-                              ? Text("หญิง")
-                              : Text("อื่นๆ"),
-                    ),
-                  ],
-                ),
-              ),
-              TextFieldWidget(
-                obscureText: true,
-                hintText: "รหัสผ่าน",
-                controller: passwordTextController!,
-              ),
-              // showImage(),
-              Container(
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
+                // GestureDetector(
+                //   child: Container(
+                //     margin: EdgeInsets.only(bottom: 12),
+                //     child: Text(
+                //       "แก้ไขรหัสผ่าน",
+                //       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                //     ),
+                //   ),
+                // ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 12),
                   child: TextButton(
-                    onPressed: () async {
-                      await checkTextFieldNotNull().then((value) {
-                        print(value);
-                        if (value == true) {
-                          CoolAlert.show(
-                              context: context,
-                              type: CoolAlertType.confirm,
-                              title: "ต้องการบันทึกข้อมูลหรือไม่ ?",
-                              confirmBtnText: "ยืนยัน",
-                              onConfirmBtnTap: () => uploadImage(),
-                              cancelBtnText: "ยกเลิก");
-                        } else {
-                          CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.error,
-                            title: "กรุณากรอกรหัสผ่าน",
-                          );
-                        }
-                      });
-                    },
-                    style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      backgroundColor: Theme.of(context).accentColor,
-                      minimumSize: Size(
-                        double.infinity,
-                        50,
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.all(
+                        Colors.transparent,
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                      padding: MaterialStateProperty.all<EdgeInsets>(
+                        EdgeInsets.zero,
                       ),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
+                    onPressed: () {
+                      // Navigator.of(context)
+                      //     .pushNamed(AccountScreen.routeName);
+                    },
                     child: Text(
-                      "บันทึก",
+                      "แก้ไขรหัสผ่าน",
                       style: TextStyle(
-                        fontSize: 18,
-                      ),
+                          // color: Colors.grey,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
-              ),
-            ],
+                TextFieldWidget(
+                  obscureText: true,
+                  hintText: "รหัสผ่าน",
+                  controller: passwordTextController,
+                ),
+                // showImage(),
+                // Container(
+                //   child: Padding(
+                //     padding: EdgeInsets.all(0.0),
+                //     child: TextButton(
+                //       onPressed: () async {
+                //         await checkTextFieldNotNull().then((value) {
+                //           print(value);
+                //           if (value == true) {
+                //             CoolAlert.show(
+                //                 context: context,
+                //                 type: CoolAlertType.confirm,
+                //                 title: "ต้องการบันทึกข้อมูลหรือไม่ ?",
+                //                 confirmBtnText: "ยืนยัน",
+                //                 onConfirmBtnTap: () {
+                //                   if (file != null) {
+                //                     uploadImage(context: context);
+                //                   } else {
+                //                     int sex = (_selectedValue! + 1);
+                //                     customer
+                //                         .updateCustomer(
+                //                       customerId: customerModel!.customerId,
+                //                       username: usernameTextController.text,
+                //                       password: passwordTextController.text,
+                //                       customerName:
+                //                           customerNameTextController.text,
+                //                       customerPhone:
+                //                           customerPhoneTextController.text,
+                //                       sex: sex,
+                //                       profileImage: customerModel!.profileImage,
+                //                     )
+                //                         .then((value) {
+                //                       print("${value.data['msg']}");
+                //                       var results = value.data;
+                //                       if (results['msg'] == "success") {
+                //                         print("Success");
+                //                         CoolAlert.show(
+                //                           context: context,
+                //                           type: CoolAlertType.success,
+                //                         ).then((value) {
+                //                           customer.findCustomer();
+                //                           getCustomer(ctx: context).then(
+                //                               (value) =>
+                //                                   Navigator.of(context).pop());
+                //                         });
+                //                       } else {
+                //                         print("Error");
+                //                         CoolAlert.show(
+                //                           context: context,
+                //                           title: "มีข้อผิดพลาด",
+                //                           text: "กรุณาลองใหม่อีกครั้ง",
+                //                           type: CoolAlertType.error,
+                //                         );
+                //                       }
+                //                       print("Finish");
+                //                     });
+                //                   }
+                //                 },
+                //                 cancelBtnText: "ยกเลิก");
+                //           } else {
+                //             CoolAlert.show(
+                //               context: context,
+                //               type: CoolAlertType.error,
+                //               title: "กรุณากรอกรหัสผ่าน",
+                //             );
+                //           }
+                //         });
+                //       },
+                //       style: TextButton.styleFrom(
+                //         primary: Colors.white,
+                //         backgroundColor: Theme.of(context).accentColor,
+                //         minimumSize: Size(
+                //           double.infinity,
+                //           50,
+                //         ),
+                //         shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(10),
+                //         ),
+                //       ),
+                //       child: Text(
+                //         "บันทึก",
+                //         style: TextStyle(
+                //           fontSize: 18,
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+              ],
+            ),
           ),
-        ),
-      ],
+          Divider(),
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "ที่อยู่",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 7,
+                ),
+                Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Theme.of(context).accentColor,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Expanded(
+                                child: Text(
+                              "บ้านเลขที่ 16 ซอย 4 หมู่บ้านเดอะชิล ต.ในเมือง อ.เมือง จ.มหาสารคาม",
+                              style: TextStyle(color: Colors.white),
+                            ))
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 12),
+                  child: TextButton(
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.all(
+                        Colors.transparent,
+                      ),
+                      padding: MaterialStateProperty.all<EdgeInsets>(
+                        EdgeInsets.zero,
+                      ),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    onPressed: () {
+                      // Navigator.of(context)
+                      //     .pushNamed(AccountScreen.routeName);
+                      showModal(ctx: context);
+                    },
+                    child: Text(
+                      "แก้ไขที่อยู่",
+                      style: TextStyle(
+                          // color: Colors.grey,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 16,
+          )
+        ],
+      ),
     );
   }
 
@@ -264,11 +504,12 @@ class _CustomerAccountState extends State<CustomerAccount> {
     } catch (e) {}
   }
 
-  Future<Null> uploadImage() async {
+  Future<Null> uploadImage({required BuildContext context}) async {
+    final customerProvider = Provider.of<Customers>(context, listen: false);
     Random random = Random();
     int i = random.nextInt(1000000);
     String nameImage = 'customer$i.jpg';
-
+    int sex = (_selectedValue! + 1);
     try {
       Map<String, dynamic> map = Map();
       map['file'] =
@@ -280,45 +521,85 @@ class _CustomerAccountState extends State<CustomerAccount> {
         print("name image");
         print("$nameImage");
         print("name image");
-        updateCustomer(profile_image: nameImage);
+        // updateCustomer(ctx: context, profile_image: nameImage);
+        customerProvider
+            .updateCustomer(
+          customerId: customerModel!.customerId,
+          username: usernameTextController.text,
+          password: passwordTextController.text,
+          customerName: customerNameTextController.text,
+          customerPhone: customerPhoneTextController.text,
+          sex: sex,
+          profileImage: nameImage,
+        )
+            .then((value) {
+          print("${value.data['msg']}");
+          var results = value.data;
+          if (results['msg'] == "success") {
+            print("Success");
+            CoolAlert.show(
+              context: context,
+              type: CoolAlertType.success,
+            ).then((value) async {
+              await getCustomer(ctx: context)
+                  .then((value) => Navigator.of(context).pop());
+            });
+          } else {
+            print("Error");
+            CoolAlert.show(
+              context: context,
+              title: "มีข้อผิดพลาด",
+              text: "กรุณาลองใหม่อีกครั้ง",
+              type: CoolAlertType.error,
+            );
+          }
+          print("Finish");
+        });
       });
     } catch (e) {}
   }
 
-  Future<Null> updateCustomer({String? profile_image}) async {
-    print("update Customer");
-    var formData = dio.FormData.fromMap({
-      "customer_id": customerModel!.customerId,
-      "username": usernameTextController!.text,
-      "password": passwordTextController!.text,
-      "customer_name": customerNameTextController!.text,
-      "customer_phone": customerPhoneTextController!.text,
-      "sex": dropdownValue,
-      "profile_image": profile_image,
-    });
-    try {
-      await dio.Dio().post(Api.updateCustomer, data: formData).then((value) {
-        print("${value.data['msg']}");
-        var results = value.data;
-        if (results['msg'] == "success") {
-          print("Success");
-          CoolAlert.show(
-            context: context,
-            type: CoolAlertType.success,
-          );
-        } else {
-          print("Error");
-          CoolAlert.show(
-            context: context,
-            type: CoolAlertType.error,
-          );
-        }
-        print("Finish");
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
+  // Future<Null> updateCustomer(
+  //     {required BuildContext ctx, String? profile_image}) async {
+  //   print("update Customer");
+  //   int sex = (_selectedValue! + 1);
+  //   var formData = dio.FormData.fromMap({
+  //     "customer_id": customerModel?.customerId,
+  //     "username": usernameTextController.text,
+  //     "password": passwordTextController.text,
+  //     "customer_name": customerNameTextController.text,
+  //     "customer_phone": customerPhoneTextController.text,
+  //     "sex": sex,
+  //     "profile_image": profile_image,
+  //   });
+  //   try {
+  //     await dio.Dio().post(Api.updateCustomer, data: formData).then((value) {
+  //       print("${value.data['msg']}");
+  //       var results = value.data;
+  //       if (results['msg'] == "success") {
+  //         print("Success");
+  //         CoolAlert.show(
+  //           context: context,
+  //           type: CoolAlertType.success,
+  //         ).then((value) {
+  //           getCustomer(ctx: ctx);
+  //           Navigator.of(context).pop();
+  //         });
+  //       } else {
+  //         print("Error");
+  //         CoolAlert.show(
+  //           context: context,
+  //           title: "มีข้อผิดพลาด",
+  //           text: "กรุณาลองใหม่อีกครั้ง",
+  //           type: CoolAlertType.error,
+  //         );
+  //       }
+  //       print("Finish");
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   void _showSexPicker(BuildContext ctx) {
     showCupertinoModalPopup(
@@ -385,13 +666,15 @@ class _CustomerAccountState extends State<CustomerAccount> {
     print("Get Customer");
     final customer = Provider.of<Customers>(ctx, listen: false);
     customer.findCustomer();
-    customerModel = customer.customerModel;
-
+    customerModel = await customer.customerModel;
     if (customerModel!.sex == "1") {
+      _selectedValue = 0;
       customerName = "ชาย";
     } else if (customerModel!.sex == "2") {
+      _selectedValue = 1;
       customerName = "หญิง";
     } else {
+      _selectedValue = 2;
       customerName = "อื่นๆ";
     }
     usernameTextController =
@@ -418,16 +701,16 @@ class _CustomerAccountState extends State<CustomerAccount> {
 
   Future<bool> checkTextFieldNotNull() async {
     bool? notNull;
-    print("username : ${usernameTextController!.text}");
-    print("password : ${passwordTextController!.text}");
-    print("customerName : ${customerNameTextController!.text}");
-    print("customerPhone : ${customerPhoneTextController!.text}");
-    print("sex : ${sexTextController!.text}");
-    if (usernameTextController!.text != "" &&
-        passwordTextController!.text != "" &&
-        customerNameTextController!.text != "" &&
-        customerPhoneTextController!.text != "" &&
-        sexTextController!.text != "") {
+    print("username : ${usernameTextController.text}");
+    print("password : ${passwordTextController.text}");
+    print("customerName : ${customerNameTextController.text}");
+    print("customerPhone : ${customerPhoneTextController.text}");
+    print("sex : ${sexTextController.text}");
+    if (usernameTextController.text != "" &&
+        passwordTextController.text != "" &&
+        customerNameTextController.text != "" &&
+        customerPhoneTextController.text != "" &&
+        sexTextController.text != "") {
       print("Not Null");
       notNull = true;
     } else {
@@ -435,5 +718,136 @@ class _CustomerAccountState extends State<CustomerAccount> {
       notNull = false;
     }
     return notNull;
+  }
+
+  showModal({required BuildContext ctx}) {
+    final customer = Provider.of<Customers>(ctx, listen: false);
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        context: ctx,
+        builder: (ctx) {
+          return StatefulBuilder(builder: (ctx, setState) {
+            return Container(
+              height: MediaQuery.of(ctx).size.height * 0.7,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+              ),
+              child: Container(
+                // padding: EdgeInsets.symmetric(vertical: 16),
+                color: Colors.white,
+                child: ListView(
+                  children: [
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        "แก้ไขที่อยู่",
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 7,
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(bottom: 7),
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Theme.of(context).accentColor,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                        child: Text(
+                                      "บ้านเลขที่ 16 ซอย 4 หมู่บ้านเดอะชิล ต.ในเมือง อ.เมือง จ.มหาสารคาม",
+                                      style: TextStyle(color: Colors.white),
+                                    ))
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(bottom: 7),
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.grey.shade400,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                        child: Text(
+                                      "หอเดอะชิล 16 มมส ต.ท่าขอนยาง อ.กันทรวิชัย จ.มหาสารคาม",
+                                      style: TextStyle(color: Colors.white),
+                                    ))
+                                  ],
+                                ),
+                              ),
+                              TextFieldWidget(
+                                hintText: "ที่อยู่",
+                                controller: addressTextController,
+                                icon: TextButton(
+                                  onPressed: () {
+                                    customer.showConfirmAlert(context: context);
+                                  },
+                                  child: Text("เพิ่มที่อยู่"),
+                                ),
+                                suffixIconEndable: true,
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.location_pin),
+                                  Expanded(
+                                      child: Container(
+                                    child: Text("Latlng......"),
+                                  ))
+                                ],
+                              ),
+                              SizedBox(
+                                height: 7,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          child: showMap(),
+                          // child: customer.showMap(),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+  Container showMap() {
+    LatLng latLng = LatLng(16.20144295022659, 103.28276975227374);
+    CameraPosition cameraPosition = CameraPosition(
+      target: latLng,
+      zoom: 16.0,
+    );
+    return Container(
+      child: GoogleMap(
+        initialCameraPosition: cameraPosition,
+        mapType: MapType.normal,
+        zoomControlsEnabled: false,
+        onMapCreated: (controller) {},
+      ),
+    );
   }
 }

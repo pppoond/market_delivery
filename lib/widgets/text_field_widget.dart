@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TextFieldWidget extends StatefulWidget {
   String hintText;
-  Icon? icon;
+  var icon;
   TextEditingController controller;
   Function(String)? onChanged;
   bool readOnly;

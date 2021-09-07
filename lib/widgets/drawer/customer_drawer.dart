@@ -40,63 +40,77 @@ class CustomerDrawer extends StatelessWidget {
           child: Consumer<Customers>(
             builder: (_, customerData, child) => Row(
               children: [
-                CircleAvatar(
-                  backgroundColor: Theme.of(context).accentColor,
-                  radius: 50,
-                  backgroundImage: (customerData
-                          .customerModel!.profileImage.isNotEmpty)
-                      ? NetworkImage(Api.imageUrl +
-                          customerData.customerModel!.profileImage)
-                      : AssetImage("assets/images/user.png") as ImageProvider,
+                Expanded(
+                  flex: 3,
+                  child: CircleAvatar(
+                    backgroundColor: Theme.of(context).accentColor,
+                    radius: 50,
+                    backgroundImage: (customerData
+                                .customerModel?.profileImage !=
+                            null)
+                        ? NetworkImage(
+                            Api.imageUrl +
+                                customerData.customerModel!.profileImage,
+                          )
+                        : AssetImage("assets/images/user.png") as ImageProvider,
+                  ),
                 ),
                 SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      (customerData.customerModel != null)
-                          ? "@" + customerData.customerModel!.username
-                          : "",
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
-                        fontSize: 15,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    Text(
-                      (customerData.customerModel != null)
-                          ? customerData.customerModel!.customerName
-                          : "",
-                      style: TextStyle(
-                        color: Theme.of(context).accentColor,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      style: ButtonStyle(
-                        overlayColor: MaterialStateProperty.all(
-                          Colors.transparent,
-                        ),
-                        padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.zero,
-                        ),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context)
-                            .pushNamed(AccountScreen.routeName);
-                      },
-                      child: Text(
-                        "แก้ไขข้อมูลส่วนตัว",
+                Expanded(
+                  flex: 7,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        (customerData.customerModel != null)
+                            ? "@" + customerData.customerModel!.username
+                            : "",
                         style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.grey.shade500,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal,
+                        ),
                       ),
-                    ),
-                  ],
+                      Row(
+                        children: [],
+                      ),
+                      Text(
+                        (customerData.customerModel != null)
+                            ? customerData.customerModel!.customerName
+                            : "",
+                        style: TextStyle(
+                          color: Theme.of(context).accentColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.fade,
+                        softWrap: false,
+                      ),
+                      TextButton(
+                        style: ButtonStyle(
+                          overlayColor: MaterialStateProperty.all(
+                            Colors.transparent,
+                          ),
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                            EdgeInsets.zero,
+                          ),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushNamed(AccountScreen.routeName);
+                        },
+                        child: Text(
+                          "แก้ไขข้อมูลส่วนตัว",
+                          style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -104,14 +118,14 @@ class CustomerDrawer extends StatelessWidget {
         ),
         drawerItem(
             leadingIcon: Icon(Icons.favorite),
-            title: "My Favorite",
+            title: "ร้านที่ชอบ",
             onTap: () {
               Navigator.of(context).pushNamed(FavoriteScreen.routeName);
             }),
         Divider(),
         drawerItem(
             leadingIcon: Icon(Icons.shopping_cart),
-            title: "My Cart",
+            title: "ตะกร้า",
             onTap: () {
               Navigator.of(context).pushNamed(CartScreen.routeName);
             }),

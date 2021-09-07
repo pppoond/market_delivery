@@ -60,7 +60,7 @@ class OverViewScreen extends StatelessWidget {
         toolbarHeight: 45,
         elevation: 1,
         title: Text(
-          "Delivery",
+          "ตลาดสด",
           // style: GoogleFonts.kanit(
           //   textStyle: Theme.of(context).textTheme.headline6,
           // ),
