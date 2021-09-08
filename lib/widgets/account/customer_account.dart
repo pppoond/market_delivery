@@ -721,117 +721,140 @@ class _CustomerAccountState extends State<CustomerAccount> {
   }
 
   showModal({required BuildContext ctx}) {
-    final customer = Provider.of<Customers>(ctx, listen: false);
+    // final customer = Provider.of<Customers>(ctx, listen: false);
+    int isSelect = 0;
     return showModalBottomSheet(
         isScrollControlled: true,
         context: ctx,
         builder: (ctx) {
-          return StatefulBuilder(builder: (ctx, setState) {
-            return Container(
-              height: MediaQuery.of(ctx).size.height * 0.7,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-              ),
-              child: Container(
-                // padding: EdgeInsets.symmetric(vertical: 16),
-                color: Colors.white,
-                child: ListView(
-                  children: [
-                    SizedBox(
-                      height: 16,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "แก้ไขที่อยู่",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 7,
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(bottom: 7),
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: Theme.of(context).accentColor,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                        child: Text(
-                                      "บ้านเลขที่ 16 ซอย 4 หมู่บ้านเดอะชิล ต.ในเมือง อ.เมือง จ.มหาสารคาม",
-                                      style: TextStyle(color: Colors.white),
-                                    ))
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.only(bottom: 7),
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: Colors.grey.shade400,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                        child: Text(
-                                      "หอเดอะชิล 16 มมส ต.ท่าขอนยาง อ.กันทรวิชัย จ.มหาสารคาม",
-                                      style: TextStyle(color: Colors.white),
-                                    ))
-                                  ],
-                                ),
-                              ),
-                              TextFieldWidget(
-                                hintText: "ที่อยู่",
-                                controller: addressTextController,
-                                icon: TextButton(
-                                  onPressed: () {
-                                    customer.showConfirmAlert(context: context);
-                                  },
-                                  child: Text("เพิ่มที่อยู่"),
-                                ),
-                                suffixIconEndable: true,
-                              ),
-                              Row(
-                                children: [
-                                  Icon(Icons.location_pin),
-                                  Expanded(
-                                      child: Container(
-                                    child: Text("Latlng......"),
-                                  ))
-                                ],
-                              ),
-                              SizedBox(
-                                height: 7,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.4,
-                          child: showMap(),
-                          // child: customer.showMap(),
-                        )
-                      ],
-                    ),
-                  ],
+          return Consumer<Customers>(
+            builder: (ctx, customerData, child) =>
+                StatefulBuilder(builder: (ctx, setState) {
+              return Container(
+                height: MediaQuery.of(ctx).size.height * 0.7,
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
                 ),
-              ),
-            );
-          });
+                child: Container(
+                  // padding: EdgeInsets.symmetric(vertical: 16),
+                  color: Colors.white,
+                  child: ListView(
+                    children: [
+                      SizedBox(
+                        height: 16,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          "แก้ไขที่อยู่",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 7,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    isSelect = 0;
+                                    customerData.notifyListeners();
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 7),
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: (isSelect == 0)
+                                          ? Theme.of(context).accentColor
+                                          : Colors.grey.shade400,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                            child: Text(
+                                          "บ้านเลขที่ 16 ซอย 4 หมู่บ้านเดอะชิล ต.ในเมือง อ.เมือง จ.มหาสารคาม",
+                                          style: TextStyle(color: Colors.white),
+                                        ))
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    isSelect = 1;
+                                    customerData.notifyListeners();
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(bottom: 7),
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: (isSelect == 1)
+                                          ? Theme.of(context).accentColor
+                                          : Colors.grey.shade400,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Expanded(
+                                            child: Text(
+                                          "หอเดอะชิล 16 มมส ต.ท่าขอนยาง อ.กันทรวิชัย จ.มหาสารคาม",
+                                          style: TextStyle(color: Colors.white),
+                                        ))
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TextFieldWidget(
+                                  hintText: "ที่อยู่",
+                                  controller: addressTextController,
+                                  icon: TextButton(
+                                    onPressed: () {
+                                      customerData.showConfirmAlert(
+                                          context: context);
+                                    },
+                                    child: Text("เพิ่มที่อยู่"),
+                                  ),
+                                  suffixIconEndable: true,
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.location_pin),
+                                    Expanded(
+                                        child: Container(
+                                      child: Text("Latlng......"),
+                                    ))
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 7,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: showMap(),
+                            // child: customer.showMap(),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          );
         });
   }
 

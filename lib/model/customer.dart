@@ -103,14 +103,30 @@ class Customers with ChangeNotifier {
       // print("reeeeeeeeeeeeeeeeeeeeeeeeee");
       // print(results['result'][0]['customer_id']);
       var result = results['result'][0];
+      // String profileImage;
+      // String sex;
+      // String customerPhone;
       // int customerIdLoad = int.parse(result['customer_id']);
+      // if (result['profile_image'] != null &&
+      //     result['sex'] != null &&
+      //     result['customer_phone'] != null) {
+      //   profileImage = result['profile_image'];
+      //   sex = result['sex'];
+      //   customerPhone = result['customer_phone'];
+      // } else {
+      //   profileImage = "";
+      //   sex = "";
+      //   customerPhone = "";
+      // }
       _customerModel = Customer(
         customerId: result['customer_id'],
         customerName: result['customer_name'],
-        customerPhone: result['customer_phone'],
+        customerPhone:
+            result['customer_phone'] != null ? result['customer_phone'] : "",
         password: result['password'],
-        profileImage: result['profile_image'],
-        sex: result['sex'],
+        profileImage:
+            result['profile_image'] != null ? result['profile_image'] : "",
+        sex: result['sex'] != null ? result['sex'] : "",
         timeReg: DateTime.parse(result['time_reg']),
         username: result['username'],
       );
@@ -241,6 +257,24 @@ class Customers with ChangeNotifier {
   //     ),
   //   );
   // }
+
+  Future<Null> addAddress({
+    required String customerId,
+    required String address,
+    required String lat,
+    required String lng,
+    required String addr_status,
+  }) async {
+    await http.post(Uri.parse(Api.addCustomerAddress), body: {
+      'customer_id': customerId,
+      'address': address,
+      'lat': lat,
+      'lng': lng,
+      'addr_status': addr_status,
+    }).then((value) {
+      if (value == "success") {}
+    });
+  }
 
   Future<dynamic> showConfirmAlert({required BuildContext context}) async {
     return CoolAlert.show(
