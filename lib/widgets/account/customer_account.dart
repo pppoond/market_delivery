@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+
+import '../../screens/account/add_address_screen.dart';
 
 import '../../model/customer.dart';
 
@@ -40,13 +42,18 @@ class _CustomerAccountState extends State<CustomerAccount> {
 
   // dynamic customerProvider;
 
+  double? lat;
+  double? lng;
+
   int? dropdownValue = 1;
   int? _selectedValue = 1;
   String? customerName;
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance?.addPostFrameCallback((_) async {
+      findLatLng();
       // await this.updateUI();
       await getCustomer(ctx: context);
       // customerProvider = Provider.of<Customers>(context, listen: false);
@@ -168,10 +175,12 @@ class _CustomerAccountState extends State<CustomerAccount> {
                       backgroundImage: (file != null)
                           ? FileImage(file!)
                           : (customerModel?.profileImage != null)
-                              ? NetworkImage(
-                                  Api.imageUrl + customerModel!.profileImage)
-                              : AssetImage("assets/images/user.png")
-                                  as ImageProvider,
+                              ? (customerModel?.profileImage != "")
+                                  ? NetworkImage(Api.imageUrl +
+                                      customerModel!.profileImage)
+                                  : AssetImage("assets/images/user.png")
+                                      as ImageProvider
+                              : AssetImage("assets/images/user.png"),
                       child: Stack(
                         children: [
                           Container(
@@ -226,7 +235,10 @@ class _CustomerAccountState extends State<CustomerAccount> {
                   enabled: false,
                 ),
                 TextFieldWidget(
-                    hintText: "ชื่อ", controller: customerNameTextController),
+                    hintText: "ชื่อ",
+                    controller: (context)
+                        .watch<Customers>()
+                        .customerNameTextController),
                 TextFieldWidget(
                     icon: Icon(Icons.phone_iphone),
                     hintText: "มือมือ",
@@ -441,6 +453,9 @@ class _CustomerAccountState extends State<CustomerAccount> {
                     onPressed: () {
                       // Navigator.of(context)
                       //     .pushNamed(AccountScreen.routeName);
+                      // showModal(ctx: context);
+                      // Navigator.of(context)
+                      //     .pushNamed(AddAddressScreen.routeName);
                       showModal(ctx: context);
                     },
                     child: Text(
@@ -731,123 +746,197 @@ class _CustomerAccountState extends State<CustomerAccount> {
             builder: (ctx, customerData, child) =>
                 StatefulBuilder(builder: (ctx, setState) {
               return Container(
-                height: MediaQuery.of(ctx).size.height * 0.7,
+                height: MediaQuery.of(ctx).size.height * 0.85,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                 ),
                 child: Container(
                   // padding: EdgeInsets.symmetric(vertical: 16),
                   color: Colors.white,
-                  child: ListView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 16,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          "แก้ไขที่อยู่",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height: 7,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    isSelect = 0;
-                                    customerData.notifyListeners();
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(bottom: 7),
-                                    padding: EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: (isSelect == 0)
-                                          ? Theme.of(context).accentColor
-                                          : Colors.grey.shade400,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                      Expanded(
+                        flex: 5,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: ListView(
+                            children: [
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    height: 7,
+                                  ),
+                                  Container(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Expanded(
-                                            child: Text(
-                                          "บ้านเลขที่ 16 ซอย 4 หมู่บ้านเดอะชิล ต.ในเมือง อ.เมือง จ.มหาสารคาม",
-                                          style: TextStyle(color: Colors.white),
-                                        ))
+                                        Text(
+                                          "แก้ไขที่อยู่",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        SizedBox(
+                                          height: 7,
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            isSelect = 0;
+                                            customerData.notifyListeners();
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(bottom: 7),
+                                            padding: EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              color: (isSelect == 0)
+                                                  ? Theme.of(context)
+                                                      .accentColor
+                                                  : Colors.grey.shade400,
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                    child: Text(
+                                                  "บ้านเลขที่ 16 ซอย 4 หมู่บ้านเดอะชิล ต.ในเมือง อ.เมือง จ.มหาสารคาม",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ))
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () {
+                                            isSelect = 1;
+                                            customerData.notifyListeners();
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(bottom: 7),
+                                            padding: EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              color: (isSelect == 1)
+                                                  ? Theme.of(context)
+                                                      .accentColor
+                                                  : Colors.grey.shade400,
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                    child: Text(
+                                                  "หอเดอะชิล 16 มมส ต.ท่าขอนยาง อ.กันทรวิชัย จ.มหาสารคาม",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ))
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    isSelect = 1;
-                                    customerData.notifyListeners();
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(bottom: 7),
-                                    padding: EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: (isSelect == 1)
-                                          ? Theme.of(context).accentColor
-                                          : Colors.grey.shade400,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
+                                  Container(
+                                    child: Column(
                                       children: [
-                                        Expanded(
-                                            child: Text(
-                                          "หอเดอะชิล 16 มมส ต.ท่าขอนยาง อ.กันทรวิชัย จ.มหาสารคาม",
-                                          style: TextStyle(color: Colors.white),
-                                        ))
+                                        Divider(),
+                                        TextFieldWidget(
+                                          hintText: "ที่อยู่",
+                                          controller: addressTextController,
+                                          // icon: TextButton(
+                                          //   onPressed: () {
+                                          //     customerData.showConfirmAlert(
+                                          //         context: context);
+                                          //   },
+                                          //   child: Text("เพิ่มที่อยู่"),
+                                          // ),
+                                          suffixIconEndable: true,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Icon(Icons.location_pin),
+                                            Container(
+                                              child: TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                            AddAddressScreen
+                                                                .routeName);
+                                                  },
+                                                  child: Text(
+                                                    "ปักหมุดที่ตั้ง",
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )),
+                                            ),
+                                            Expanded(
+                                              child: Container(
+                                                child: customerData.lat != null
+                                                    ? Text(
+                                                        "Latitude : ${customerData.lat}\nLongtitude : ${customerData.lng}")
+                                                    : Text(""),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ],
                                     ),
                                   ),
-                                ),
-                                TextFieldWidget(
-                                  hintText: "ที่อยู่",
-                                  controller: addressTextController,
-                                  icon: TextButton(
-                                    onPressed: () {
-                                      customerData.showConfirmAlert(
-                                          context: context);
-                                    },
-                                    child: Text("เพิ่มที่อยู่"),
+                                  SizedBox(
+                                    height: 7,
                                   ),
-                                  suffixIconEndable: true,
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.location_pin),
-                                    Expanded(
-                                        child: Container(
-                                      child: Text("Latlng......"),
-                                    ))
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 7,
-                                ),
-                              ],
-                            ),
+                                  Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.3,
+                                      child: showMap(ctx: ctx)),
+                                  ElevatedButton(
+                                      style: ButtonStyle(
+                                          elevation:
+                                              MaterialStateProperty.all(0)),
+                                      onPressed: () {
+                                        CoolAlert.show(
+                                            context: context,
+                                            title:
+                                                "ต้องการบันทึกที่อยู่หรือไม่",
+                                            confirmBtnText: "บันทึก",
+                                            cancelBtnText: "ยกเลิก",
+                                            type: CoolAlertType.confirm,
+                                            onConfirmBtnTap: () {
+                                              customerData
+                                                  .addAddress()
+                                                  .then((value) {
+                                                var results = jsonDecode(value);
+                                                if (results['msg'] ==
+                                                    "success") {
+                                                  CoolAlert.show(
+                                                      context: context,
+                                                      type: CoolAlertType
+                                                          .success);
+                                                } else {
+                                                  CoolAlert.show(
+                                                      context: context,
+                                                      type:
+                                                          CoolAlertType.error);
+                                                }
+                                              });
+                                            });
+                                      },
+                                      child: Text("เพิ่มที่อยู่"))
+                                ],
+                              ),
+                            ],
                           ),
-                          Container(
-                            height: MediaQuery.of(context).size.height * 0.4,
-                            child: showMap(),
-                            // child: customer.showMap(),
-                          )
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -858,19 +947,76 @@ class _CustomerAccountState extends State<CustomerAccount> {
         });
   }
 
-  Container showMap() {
-    LatLng latLng = LatLng(16.20144295022659, 103.28276975227374);
-    CameraPosition cameraPosition = CameraPosition(
-      target: latLng,
-      zoom: 16.0,
-    );
+  Container showMap({required BuildContext ctx, LatLng? latLng}) {
+    // LatLng latLng = LatLng(16.20144295022659, 103.28276975227374);
+    // LatLng? onTapMap;
+
+    List<Marker> _marker = [];
     return Container(
-      child: GoogleMap(
-        initialCameraPosition: cameraPosition,
-        mapType: MapType.normal,
-        zoomControlsEnabled: false,
-        onMapCreated: (controller) {},
+      child: Consumer<Customers>(
+        builder: (ctx, customerData, child) => Container(
+          child: GoogleMap(
+            onTap: (LatLng latLng) {
+              // onTapMap = LatLng(latLng.latitude, latLng.longitude);
+              print("on tap map");
+              print("Lat : ${latLng.latitude} Lng : ${latLng.longitude}");
+              _marker = [];
+              _marker.add((Marker(
+                markerId: MarkerId(latLng.toString()),
+                position: latLng,
+              )));
+              customerData.notifyListeners();
+            },
+
+            initialCameraPosition: CameraPosition(
+              target: LatLng(
+                  customerData.lat != null ? customerData.lat! : 16.0132,
+                  customerData.lng != null ? customerData.lng! : 103.1615),
+              zoom: 16.0,
+            ),
+            mapType: MapType.normal,
+            myLocationButtonEnabled: true,
+            // myLocationEnabled: true,
+            zoomControlsEnabled: false,
+            onMapCreated: (controller) {
+              controller.animateCamera(
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                      target: LatLng(customerData.lat!, customerData.lng!),
+                      zoom: 15),
+                ),
+              );
+            },
+            // markers: Set.from(_marker),
+            markers: {
+              if (customerData.lat != null)
+                Marker(
+                  markerId: MarkerId("1"),
+                  position: LatLng(customerData.lat!, customerData.lng!),
+                  // infoWindow: InfoWindow(
+                  //     title: "สนามบินสุวรรณภูมิ",
+                  //     snippet: "สนามบินนานาชาติของประเทศไทย"),
+                ),
+            },
+          ),
+        ),
       ),
     );
+  }
+
+  Future<Null> findLatLng() async {
+    LocationData? locationData = await findLocationData();
+    lat = locationData!.latitude;
+    lng = locationData.longitude;
+    print('lat : $lat  lng : $lng');
+  }
+
+  Future<LocationData?> findLocationData() async {
+    Location location = Location();
+    try {
+      return location.getLocation();
+    } catch (e) {
+      return null;
+    }
   }
 }

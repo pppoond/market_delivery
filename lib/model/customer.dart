@@ -7,6 +7,8 @@ import 'dart:convert';
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -59,21 +61,59 @@ class Customer {
 }
 
 class Customers with ChangeNotifier {
+  TextEditingController _usernameTextController = TextEditingController();
+  TextEditingController _passwordTextController = TextEditingController();
+  TextEditingController _customerNameTextController = TextEditingController();
+  TextEditingController _customerPhoneTextController = TextEditingController();
+  TextEditingController _sexTextController = TextEditingController();
+  TextEditingController _addressTextController = TextEditingController();
+
   Customer? _customerModel;
   bool? _loginStatus;
   String? _customerId;
 
-  Customer? get customerModel {
-    return _customerModel;
-  }
+  double? _lat;
+  double? _lng;
 
-  bool? get loginStatus {
-    return _loginStatus;
-  }
+  TextEditingController get usernameTextController =>
+      this._usernameTextController;
 
-  String? get customerId {
-    return _customerId;
-  }
+  set usernameTextController(TextEditingController value) =>
+      this._usernameTextController = value;
+
+  get passwordTextController => this._passwordTextController;
+
+  set passwordTextController(value) => this._passwordTextController = value;
+
+  get customerNameTextController => this._customerNameTextController;
+
+  set customerNameTextController(value) =>
+      this._customerNameTextController = value;
+
+  get customerPhoneTextController => this._customerPhoneTextController;
+
+  set customerPhoneTextController(value) =>
+      this._customerPhoneTextController = value;
+
+  get sexTextController => this._sexTextController;
+
+  set sexTextController(value) => this._sexTextController = value;
+
+  get addressTextController => this._addressTextController;
+
+  set addressTextController(value) => this._addressTextController = value;
+
+  double? get lat => this._lat;
+
+  set lat(double? value) => this._lat = value;
+
+  get lng => this._lng;
+
+  set lng(value) => this._lng = value;
+
+  Customer? get customerModel => _customerModel;
+  bool? get loginStatus => _loginStatus;
+  String? get customerId => _customerId;
 
   Future<bool> findByUsernameCheckNull({required String username}) async {
     bool _usernameNull;
@@ -130,6 +170,9 @@ class Customers with ChangeNotifier {
         timeReg: DateTime.parse(result['time_reg']),
         username: result['username'],
       );
+
+      this._customerNameTextController =
+          TextEditingController(text: customerModel!.customerName);
     }
 
     notifyListeners();
@@ -242,41 +285,27 @@ class Customers with ChangeNotifier {
     return results;
   }
 
-  // Container showMap() {
-  //   LatLng latLng = LatLng(16.20144295022659, 103.28276975227374);
-  //   CameraPosition cameraPosition = CameraPosition(
-  //     target: latLng,
-  //     zoom: 16.0,
-  //   );
-  //   return Container(
-  //     child: GoogleMap(
-  //       initialCameraPosition: cameraPosition,
-  //       mapType: MapType.normal,
-  //       zoomControlsEnabled: false,
-  //       onMapCreated: (controller) {},
-  //     ),
-  //   );
-  // }
-
-  Future<Null> addAddress({
-    required String customerId,
-    required String address,
-    required String lat,
-    required String lng,
-    required String addr_status,
-  }) async {
-    await http.post(Uri.parse(Api.addCustomerAddress), body: {
+  Future<dynamic> addAddress(
+      // {
+      // required String customerId,
+      // required String address,
+      // required String lat,
+      // required String lng,
+      // required String addr_status,
+      // }
+      ) async {
+    dynamic results = await http.post(Uri.parse(Api.addCustomerAddress), body: {
       'customer_id': customerId,
-      'address': address,
-      'lat': lat,
-      'lng': lng,
-      'addr_status': addr_status,
-    }).then((value) {
-      if (value == "success") {}
+      'address': _addressTextController.text,
+      'lat': _lat,
+      'lng': _lng,
+      'addr_status': 0,
     });
+    return results;
   }
 
   Future<dynamic> showConfirmAlert({required BuildContext context}) async {
+    print(_addressTextController.text);
     return CoolAlert.show(
       context: context,
       title: "ต้องการบันทึกหรือไม่",
@@ -284,5 +313,36 @@ class Customers with ChangeNotifier {
       confirmBtnText: "ยืนยัน",
       onConfirmBtnTap: () {},
     );
+  }
+
+  Future<Null> findLatLng() async {
+    await permissionHandle();
+    LocationData? locationData = await findLocationData();
+    _lat = locationData!.latitude;
+    _lng = locationData.longitude;
+    print('lat : $lat  lng : $lng');
+    notifyListeners();
+  }
+
+  Future<LocationData?> findLocationData() async {
+    Location location = Location();
+    try {
+      return location.getLocation();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Null> setLatLng(LatLng latLng) async {
+    _lat = latLng.latitude;
+    _lng = latLng.longitude;
+  }
+
+  Future<void> permissionHandle() async {
+    var location = await Permission.location;
+    print(location.status);
+    if (location.status == location.status.isDenied) {
+      location.request();
+    }
   }
 }

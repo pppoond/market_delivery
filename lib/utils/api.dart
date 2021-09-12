@@ -6,6 +6,7 @@ class Api {
   static String customer = "$host/api/customers.php";
   static String registerCustomer = "$host/api/add_customer.php";
   static String addCustomerAddress = "$host/api/add_address.php";
+  static String addresses = "$host/api/addresses.php";
   static String uploadImage = "$host/api/upload_image.php";
   static String updateCustomer = "$host/api/update_customer.php";
 

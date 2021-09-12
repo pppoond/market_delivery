@@ -45,14 +45,22 @@ class CustomerDrawer extends StatelessWidget {
                   child: CircleAvatar(
                     backgroundColor: Theme.of(context).accentColor,
                     radius: 50,
-                    backgroundImage: (customerData
-                                .customerModel?.profileImage !=
-                            null)
-                        ? NetworkImage(
-                            Api.imageUrl +
-                                customerData.customerModel!.profileImage,
-                          )
-                        : AssetImage("assets/images/user.png") as ImageProvider,
+                    backgroundImage:
+                        (customerData.customerModel?.profileImage != null)
+                            ? (customerData.customerModel?.profileImage != "")
+                                ? NetworkImage(
+                                    Api.imageUrl +
+                                        customerData
+                                            .customerModel!.profileImage,
+                                  )
+                                : AssetImage("assets/images/user.png")
+                                    as ImageProvider
+
+                            // :NetworkImage(
+                            //     Api.imageUrl +
+                            //         customerData.customerModel!.profileImage,
+                            //   )
+                            : AssetImage("assets/images/user.png"),
                   ),
                 ),
                 SizedBox(width: 15),
