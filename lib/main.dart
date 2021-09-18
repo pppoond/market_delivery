@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:market_delivery/screens/account/add_address_screen.dart';
+import 'package:market_delivery/model/product.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,6 +23,8 @@ import './screens/wallet/rider_money_screen.dart';
 import './screens/income/rider_income_screen.dart';
 import './screens/order/rider_finish_screen.dart';
 import './screens/order/rider_result_screen.dart';
+import './screens/account/add_address_screen.dart';
+import './screens/store/product_management_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -80,6 +82,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => Stores(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => Products(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -112,6 +117,7 @@ class MyApp extends StatelessWidget {
           RiderMoneyScreen.routeName: (ctx) => RiderMoneyScreen(),
           RiderResultScreen.routeName: (ctx) => RiderResultScreen(),
           AddAddressScreen.routeName: (ctx) => AddAddressScreen(),
+          ProductManagementScreen.routeName: (ctx) => ProductManagementScreen(),
         },
       ),
     );

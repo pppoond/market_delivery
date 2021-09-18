@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
+import '../../screens/store/product_management_screen.dart';
+
+import '../../model/store.dart';
+
 import '../../widgets/wallet/store_wallet.dart';
 
 import '../../screens/overview_screen.dart';
@@ -26,6 +32,7 @@ class StoreDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final store = Provider.of<Stores>(context, listen: false);
     return Column(
       children: [
         DrawerHeader(
@@ -112,7 +119,8 @@ class StoreDrawer extends StatelessWidget {
             leadingIcon: Icon(Icons.production_quantity_limits_outlined),
             title: "จัดการสินค้า",
             onTap: () {
-              // Navigator.of(context).pushNamed(FavoriteScreen.routeName);
+              Navigator.of(context)
+                  .pushNamed(ProductManagementScreen.routeName);
             }),
         Divider(),
         drawerItem(
@@ -127,6 +135,7 @@ class StoreDrawer extends StatelessWidget {
         drawerItem(
             title: "ออกจากระบบ",
             onTap: () {
+              store.logoutStore();
               Navigator.of(context).restorablePushNamedAndRemoveUntil(
                   OverViewScreen.routeName, (route) => false);
               print("Log Out");

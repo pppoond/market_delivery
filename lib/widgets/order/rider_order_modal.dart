@@ -7,6 +7,8 @@ class RiderOrderModal {
     required String orderId,
   }) {
     return showModalBottomSheet(
+        barrierColor: Colors.black.withOpacity(0.55),
+        backgroundColor: Colors.transparent,
         isScrollControlled: true,
         context: ctx,
         builder: (ctx) {

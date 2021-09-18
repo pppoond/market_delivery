@@ -131,7 +131,7 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
                     username: usernameTextController.text,
                     password: passwordTextController.text);
                 if (checkLogin) {
-                  print("login unsuccess");
+                  print("login success");
                   Navigator.of(context).pushNamedAndRemoveUntil(
                       StoreScreen.routeName, (route) => false);
                 } else {

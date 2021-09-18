@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:io';
@@ -12,6 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:market_delivery/model/address_model.dart';
 import 'package:provider/provider.dart';
 
 import '../../screens/account/add_address_screen.dart';
@@ -64,7 +66,7 @@ class _CustomerAccountState extends State<CustomerAccount> {
   @override
   Widget build(BuildContext context) {
     final customer = Provider.of<Customers>(context, listen: false);
-
+    // customer.findAddress();
     // dropdownValue = 1;
     // _selectedValue = 0;
     // getCustomer(ctx: context);
@@ -735,214 +737,612 @@ class _CustomerAccountState extends State<CustomerAccount> {
     return notNull;
   }
 
-  showModal({required BuildContext ctx}) {
+  showModal({required BuildContext ctx}) async {
     // final customer = Provider.of<Customers>(ctx, listen: false);
-    int isSelect = 0;
+    // AddressModel _addressModel =
+    //     (ctx).watch<Customers>().listAddressModel.elementAt(1);
+    // int isSelect = 0;
     return showModalBottomSheet(
         isScrollControlled: true,
         context: ctx,
         builder: (ctx) {
-          return Consumer<Customers>(
-            builder: (ctx, customerData, child) =>
-                StatefulBuilder(builder: (ctx, setState) {
-              return Container(
-                height: MediaQuery.of(ctx).size.height * 0.85,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                ),
-                child: Container(
-                  // padding: EdgeInsets.symmetric(vertical: 16),
-                  color: Colors.white,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 5,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: ListView(
-                            children: [
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    height: 7,
-                                  ),
-                                  Container(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+          return Container(
+            child: Consumer<Customers>(
+                builder: (ctx, customerData, child) =>
+
+                    // customerData.findAddress();
+                    Container(
+                      height: MediaQuery.of(ctx).size.height * 0.85,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      child: Container(
+                        // padding: EdgeInsets.symmetric(vertical: 16),
+                        color: Colors.white,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children: [
+                                    Column(
                                       children: [
-                                        Text(
-                                          "แก้ไขที่อยู่",
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.bold),
+                                        SizedBox(
+                                          height: 7,
+                                        ),
+                                        Container(
+                                            child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "แก้ไขที่อยู่",
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            SizedBox(
+                                              height: 7,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "ที่อยู่ปัจจุบัน",
+                                                  style: TextStyle(
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                SizedBox(
+                                                  height: 7,
+                                                ),
+                                                // ListView.builder(
+                                                //     shrinkWrap: true,
+                                                //     physics: ScrollPhysics(),
+                                                //     itemCount: customerData
+                                                //                 .listAddressModel
+                                                //                 .length >
+                                                //             0
+                                                //         ? customerData
+                                                //             .listAddressModel.length
+                                                //         : 0,
+                                                //     itemBuilder: (ctx, i) {
+                                                //       AddressModel addressModel =
+                                                //           customerData
+                                                //               .listAddressModel[i];
+                                                //       bool isCheck;
+                                                //       if (addressModel.addrStatus ==
+                                                //           "1") {
+                                                //         isCheck = true;
+                                                //       } else {
+                                                //         isCheck = false;
+                                                //       }
+                                                //       print("Checkkkkkkkkkkkkkkkk");
+                                                //       print(addressModel.addrStatus
+                                                //           .toString());
+                                                //       return StatefulBuilder(
+                                                //         builder: (ctx, setState) =>
+                                                //             ListTile(
+                                                //           leading: Checkbox(
+                                                //             value: isCheck,
+                                                //             onChanged: (bool? value) {
+                                                //               print(value);
+                                                //               CoolAlert.show(
+                                                //                   context: ctx,
+                                                //                   title:
+                                                //                       "เปลี่ยนแปลงที่อยู่หรือไม่?",
+                                                //                   confirmBtnText:
+                                                //                       "ยืนยัน",
+                                                //                   cancelBtnText:
+                                                //                       "ยกเลือก",
+                                                //                   type: CoolAlertType
+                                                //                       .confirm,
+                                                //                   onConfirmBtnTap:
+                                                //                       () async {
+                                                //                     await customerData
+                                                //                         .updateAddressStatus(
+                                                //                             addressId: addressModel
+                                                //                                 .addressId
+                                                //                                 .toString(),
+                                                //                             addrStatus:
+                                                //                                 1.toString())
+                                                //                         .then((value) {
+                                                //                       print(
+                                                //                           "----value----");
+                                                //                       print(value);
+                                                //                       if (value[
+                                                //                               'msg'] ==
+                                                //                           'success') {
+                                                //                         customerData
+                                                //                             .findAddress();
+
+                                                //                         isCheck =
+                                                //                             !isCheck;
+                                                //                         customerData
+                                                //                             .notifyListeners();
+                                                //                         Navigator.of(
+                                                //                                 context)
+                                                //                             .pop();
+                                                //                       }
+                                                //                     });
+                                                //                   });
+                                                //             },
+                                                //           ),
+                                                //           title: Text(
+                                                //               addressModel.address),
+                                                //           dense: true,
+                                                //           trailing: IconButton(
+                                                //               onPressed: () {
+                                                //                 showCupertinoDialog(
+                                                //                   barrierDismissible:
+                                                //                       true,
+                                                //                   context: context,
+                                                //                   builder: (context) =>
+                                                //                       CupertinoAlertDialog(
+                                                //                     // title: Text(title),
+                                                //                     // content: Text(content),
+                                                //                     actions: [
+                                                //                       CupertinoDialogAction(
+                                                //                           onPressed: () => chooseImage(
+                                                //                                   context,
+                                                //                                   ImageSource
+                                                //                                       .camera)
+                                                //                               .then((value) =>
+                                                //                                   Navigator.of(context)
+                                                //                                       .pop()),
+                                                //                           child: Text(
+                                                //                               "แก้ไข")),
+                                                //                       CupertinoDialogAction(
+                                                //                           onPressed: () => chooseImage(
+                                                //                                   context,
+                                                //                                   ImageSource
+                                                //                                       .gallery)
+                                                //                               .then((value) =>
+                                                //                                   Navigator.of(context)
+                                                //                                       .pop()),
+                                                //                           child: Text(
+                                                //                               "ลบ")),
+                                                //                       CupertinoDialogAction(
+                                                //                         onPressed: () =>
+                                                //                             Navigator.of(
+                                                //                                     context)
+                                                //                                 .pop(),
+                                                //                         child: Text(
+                                                //                             "ยกเลิก"),
+                                                //                         textStyle: TextStyle(
+                                                //                             color: Colors
+                                                //                                 .redAccent),
+                                                //                       ),
+                                                //                     ],
+                                                //                   ),
+                                                //                 );
+                                                //               },
+                                                //               icon: Icon(
+                                                //                   Icons.more_vert)),
+                                                //         ),
+                                                //       );
+                                                //     }),
+                                                ListView.builder(
+                                                    physics: ScrollPhysics(),
+                                                    shrinkWrap: true,
+                                                    itemCount: customerData
+                                                                .listAddressModel
+                                                                .length >
+                                                            0
+                                                        ? customerData
+                                                            .listAddressModel
+                                                            .length
+                                                        : 0,
+                                                    itemBuilder: (ctx, i) {
+                                                      var data = customerData
+                                                          .listAddressModel[i];
+                                                      var checkStatus =
+                                                          customerData
+                                                              .listAddressModel[
+                                                                  i]
+                                                              .addrStatus;
+                                                      if (checkStatus == "1") {
+                                                        return Container(
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              7),
+                                                                  border: Border
+                                                                      .all(
+                                                                    width: 1,
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .accentColor,
+                                                                  )),
+                                                          child: ListTile(
+                                                            dense: true,
+                                                            leading: Container(
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .all(7),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .accentColor,
+                                                                ),
+                                                                child: Icon(
+                                                                  Icons.check,
+                                                                  color: Colors
+                                                                      .white,
+                                                                )),
+                                                            title: Text(
+                                                                "${data.address}"),
+                                                            trailing:
+                                                                IconButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      showCupertinoDialog(
+                                                                        barrierDismissible:
+                                                                            true,
+                                                                        context:
+                                                                            context,
+                                                                        builder:
+                                                                            (context) =>
+                                                                                CupertinoAlertDialog(
+                                                                          // title: Text(title),
+                                                                          // content: Text(content),
+                                                                          actions: [
+                                                                            CupertinoDialogAction(
+                                                                                onPressed: () => chooseImage(context, ImageSource.camera).then((value) => Navigator.of(context).pop()),
+                                                                                child: Text("แก้ไข")),
+                                                                            CupertinoDialogAction(
+                                                                                onPressed: () => chooseImage(context, ImageSource.gallery).then((value) => Navigator.of(context).pop()),
+                                                                                child: Text("ลบ")),
+                                                                            CupertinoDialogAction(
+                                                                              onPressed: () => Navigator.of(context).pop(),
+                                                                              child: Text("ยกเลิก"),
+                                                                              textStyle: TextStyle(color: Colors.redAccent),
+                                                                            ),
+                                                                          ],
+                                                                        ),
+                                                                      );
+                                                                    },
+                                                                    icon: Icon(Icons
+                                                                        .more_vert)),
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        // return Container(
+                                                        //   decoration: BoxDecoration(
+                                                        //       border: Border.all(
+                                                        //     width: 1,
+                                                        //     color: Theme.of(context)
+                                                        //         .accentColor,
+                                                        //   )),
+                                                        //   child: ListTile(
+                                                        //     dense: true,
+                                                        //     leading:
+                                                        //         Icon(Icons.check),
+                                                        //   ),
+                                                        // );
+                                                        return SizedBox();
+                                                      }
+                                                    }),
+                                                Divider(),
+                                                SizedBox(height: 7),
+                                                Text(
+                                                  "ที่อยู่อื่นๆ",
+                                                  style: TextStyle(
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                SizedBox(
+                                                  height: 7,
+                                                ),
+                                                ListView.builder(
+                                                    physics: ScrollPhysics(),
+                                                    shrinkWrap: true,
+                                                    itemCount: customerData
+                                                                .listAddressModel
+                                                                .length >
+                                                            0
+                                                        ? customerData
+                                                            .listAddressModel
+                                                            .length
+                                                        : 0,
+                                                    itemBuilder: (ctx, i) {
+                                                      var data = customerData
+                                                          .listAddressModel[i];
+                                                      var checkStatus =
+                                                          customerData
+                                                              .listAddressModel[
+                                                                  i]
+                                                              .addrStatus;
+                                                      if (checkStatus == "0") {
+                                                        return Material(
+                                                          elevation: 1,
+                                                          child: Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          7),
+                                                              // border: Border.all(
+                                                              //   width: 1,
+                                                              //   color: Theme.of(context)
+                                                              //       .accentColor,
+                                                              // ),
+                                                            ),
+                                                            child: ListTile(
+                                                              dense: true,
+                                                              leading: Icon(Icons
+                                                                  .location_pin),
+                                                              title: Text(
+                                                                  "${data.address}"),
+                                                              trailing:
+                                                                  IconButton(
+                                                                      onPressed:
+                                                                          () {
+                                                                        showCupertinoDialog(
+                                                                          barrierDismissible:
+                                                                              true,
+                                                                          context:
+                                                                              context,
+                                                                          builder: (context) =>
+                                                                              CupertinoAlertDialog(
+                                                                            // title: Text(title),
+                                                                            // content: Text(content),
+                                                                            actions: [
+                                                                              CupertinoDialogAction(
+                                                                                  onPressed: () async {
+                                                                                    await customerData.updateAddressStatus(addressId: data.addressId.toString(), addrStatus: "1");
+                                                                                    Navigator.of(context).pop();
+                                                                                    // Navigator.of(context).pop();
+                                                                                    await customerData.findAddress().then((value) {
+                                                                                      // showModal(ctx: ctx);
+                                                                                    });
+                                                                                  },
+                                                                                  child: Text("เลือกเป็นค่าเริ่มต้น")),
+                                                                              CupertinoDialogAction(
+                                                                                onPressed: () => chooseImage(context, ImageSource.camera).then((value) => Navigator.of(context).pop()),
+                                                                                child: Text("แก้ไข"),
+                                                                              ),
+                                                                              CupertinoDialogAction(
+                                                                                onPressed: () => customerData.deleteAddress(addressId: data.addressId.toString()).then((value) {
+                                                                                  if (value['msg'] == 'success') {
+                                                                                    CoolAlert.show(context: context, type: CoolAlertType.success).then((value) => Navigator.of(context).pop());
+                                                                                  } else {
+                                                                                    CoolAlert.show(context: context, type: CoolAlertType.error);
+                                                                                  }
+                                                                                }),
+                                                                                child: Text("ลบ"),
+                                                                              ),
+                                                                              CupertinoDialogAction(
+                                                                                onPressed: () => Navigator.of(context).pop(),
+                                                                                child: Text("ยกเลิก"),
+                                                                                textStyle: TextStyle(color: Colors.redAccent),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        );
+                                                                      },
+                                                                      icon: Icon(
+                                                                          Icons
+                                                                              .more_vert)),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        // return Container(
+                                                        //   decoration: BoxDecoration(
+                                                        //       border: Border.all(
+                                                        //     width: 1,
+                                                        //     color: Theme.of(context)
+                                                        //         .accentColor,
+                                                        //   )),
+                                                        //   child: ListTile(
+                                                        //     dense: true,
+                                                        //     leading:
+                                                        //         Icon(Icons.check),
+                                                        //   ),
+                                                        // );
+                                                        return SizedBox();
+                                                      }
+                                                    })
+                                              ],
+                                            )
+                                          ],
+                                        )),
+                                        Divider(),
+                                        Container(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "เพิ่มที่อยู่",
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              SizedBox(
+                                                height: 7,
+                                              ),
+                                              TextFieldWidget(
+                                                hintText: "ที่อยู่",
+                                                controller: customerData
+                                                    .addressTextController,
+                                                // icon: TextButton(
+                                                //   onPressed: () {
+                                                //     customerData.showConfirmAlert(
+                                                //         context: context);
+                                                //   },
+                                                //   child: Text("เพิ่มที่อยู่"),
+                                                // ),
+                                                suffixIconEndable: true,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Icon(Icons.location_pin),
+                                                  Container(
+                                                    child: TextButton(
+                                                        onPressed: () async {
+                                                          await Navigator.of(
+                                                                  context)
+                                                              .pushNamed(
+                                                                  AddAddressScreen
+                                                                      .routeName)
+                                                              .then((value) {
+                                                            print(
+                                                                "On Move Back");
+                                                            customerData
+                                                                .moveCamera();
+                                                          });
+                                                        },
+                                                        child: Text(
+                                                          "ปักหมุดตำแหน่ง",
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                        )),
+                                                  ),
+                                                  Expanded(
+                                                    child: Container(
+                                                      child: customerData.lat !=
+                                                              null
+                                                          ? Text(
+                                                              "Latitude : ${customerData.lat}\nLongtitude : ${customerData.lng}")
+                                                          : Text(""),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                         SizedBox(
                                           height: 7,
                                         ),
-                                        InkWell(
-                                          onTap: () {
-                                            isSelect = 0;
-                                            customerData.notifyListeners();
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(bottom: 7),
-                                            padding: EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              color: (isSelect == 0)
-                                                  ? Theme.of(context)
-                                                      .accentColor
-                                                  : Colors.grey.shade400,
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                    child: Text(
-                                                  "บ้านเลขที่ 16 ซอย 4 หมู่บ้านเดอะชิล ต.ในเมือง อ.เมือง จ.มหาสารคาม",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ))
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        InkWell(
-                                          onTap: () {
-                                            isSelect = 1;
-                                            customerData.notifyListeners();
-                                          },
-                                          child: Container(
-                                            margin: EdgeInsets.only(bottom: 7),
-                                            padding: EdgeInsets.all(12),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                              color: (isSelect == 1)
-                                                  ? Theme.of(context)
-                                                      .accentColor
-                                                  : Colors.grey.shade400,
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Expanded(
-                                                    child: Text(
-                                                  "หอเดอะชิล 16 มมส ต.ท่าขอนยาง อ.กันทรวิชัย จ.มหาสารคาม",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ))
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Column(
-                                      children: [
-                                        Divider(),
-                                        TextFieldWidget(
-                                          hintText: "ที่อยู่",
-                                          controller: addressTextController,
-                                          // icon: TextButton(
-                                          //   onPressed: () {
-                                          //     customerData.showConfirmAlert(
-                                          //         context: context);
-                                          //   },
-                                          //   child: Text("เพิ่มที่อยู่"),
-                                          // ),
-                                          suffixIconEndable: true,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Icon(Icons.location_pin),
-                                            Container(
-                                              child: TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pushNamed(
-                                                            AddAddressScreen
-                                                                .routeName);
-                                                  },
-                                                  child: Text(
-                                                    "ปักหมุดที่ตั้ง",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  )),
-                                            ),
-                                            Expanded(
-                                              child: Container(
-                                                child: customerData.lat != null
-                                                    ? Text(
-                                                        "Latitude : ${customerData.lat}\nLongtitude : ${customerData.lng}")
-                                                    : Text(""),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 7,
-                                  ),
-                                  Container(
-                                      height:
-                                          MediaQuery.of(context).size.height *
+                                        Container(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
                                               0.3,
-                                      child: showMap(ctx: ctx)),
-                                  ElevatedButton(
-                                      style: ButtonStyle(
-                                          elevation:
-                                              MaterialStateProperty.all(0)),
-                                      onPressed: () {
-                                        CoolAlert.show(
-                                            context: context,
-                                            title:
-                                                "ต้องการบันทึกที่อยู่หรือไม่",
-                                            confirmBtnText: "บันทึก",
-                                            cancelBtnText: "ยกเลิก",
-                                            type: CoolAlertType.confirm,
-                                            onConfirmBtnTap: () {
-                                              customerData
-                                                  .addAddress()
-                                                  .then((value) {
-                                                var results = jsonDecode(value);
-                                                if (results['msg'] ==
-                                                    "success") {
-                                                  CoolAlert.show(
-                                                      context: context,
-                                                      type: CoolAlertType
-                                                          .success);
-                                                } else {
-                                                  CoolAlert.show(
-                                                      context: context,
-                                                      type:
-                                                          CoolAlertType.error);
-                                                }
-                                              });
-                                            });
-                                      },
-                                      child: Text("เพิ่มที่อยู่"))
-                                ],
+                                          // child: showMap(ctx: ctx),
+                                          child: GoogleMap(
+                                            onTap: (LatLng latLng) async {},
+
+                                            initialCameraPosition:
+                                                CameraPosition(
+                                              target: LatLng(
+                                                  customerData.lat != null
+                                                      ? customerData.lat!
+                                                      : 16.0132,
+                                                  customerData.lng != null
+                                                      ? customerData.lng!
+                                                      : 103.1615),
+                                              zoom: 16.0,
+                                            ),
+                                            mapType: MapType.normal,
+                                            myLocationButtonEnabled: true,
+                                            // myLocationEnabled: true,
+                                            zoomControlsEnabled: false,
+                                            onMapCreated: (controller) {
+                                              // controller.animateCamera(
+                                              //   CameraUpdate.newCameraPosition(
+                                              //     CameraPosition(
+                                              //         target: LatLng(customerData.lat!, customerData.lng!),
+                                              //         zoom: 15),
+                                              //   ),
+                                              // );
+                                              // _controller.complete(controller);
+                                              customerData.controller
+                                                  .complete(controller);
+                                            },
+                                            // markers: Set.from(_marker),
+                                            markers: {
+                                              if (customerData.lat != null)
+                                                Marker(
+                                                  markerId: MarkerId("1"),
+                                                  position: LatLng(
+                                                      customerData.lat!,
+                                                      customerData.lng!),
+                                                  // infoWindow: InfoWindow(
+                                                  //     title: "สนามบินสุวรรณภูมิ",
+                                                  //     snippet: "สนามบินนานาชาติของประเทศไทย"),
+                                                ),
+                                            },
+                                          ),
+                                        ),
+                                        ElevatedButton(
+                                            style: ButtonStyle(
+                                                elevation:
+                                                    MaterialStateProperty.all(
+                                                        0)),
+                                            onPressed: () {
+                                              CoolAlert.show(
+                                                  context: context,
+                                                  title:
+                                                      "ต้องการบันทึกที่อยู่หรือไม่",
+                                                  confirmBtnText: "บันทึก",
+                                                  cancelBtnText: "ยกเลิก",
+                                                  type: CoolAlertType.confirm,
+                                                  onConfirmBtnTap: () async {
+                                                    await customerData
+                                                        .addAddress()
+                                                        .then((value) {
+                                                      print(value);
+                                                      // var results = jsonDecode(
+                                                      //     value.toString());
+                                                      print(value['msg']);
+                                                      if (value['msg'] ==
+                                                          "success") {
+                                                        CoolAlert.show(
+                                                                context:
+                                                                    context,
+                                                                type:
+                                                                    CoolAlertType
+                                                                        .success)
+                                                            .then(
+                                                          (value) =>
+                                                              Navigator.of(
+                                                                      context)
+                                                                  .pop(),
+                                                        );
+                                                      } else {
+                                                        CoolAlert.show(
+                                                            context: context,
+                                                            type: CoolAlertType
+                                                                .error);
+                                                      }
+                                                    });
+                                                  });
+                                              // .then((value) => Navigator.of(
+                                              //     context)
+                                              // .pop());
+                                            },
+                                            child: Text("เพิ่มที่อยู่"))
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                            // Expanded(flex: 1, child: Container()),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
-            }),
+                    )),
           );
         });
   }
@@ -950,22 +1350,29 @@ class _CustomerAccountState extends State<CustomerAccount> {
   Container showMap({required BuildContext ctx, LatLng? latLng}) {
     // LatLng latLng = LatLng(16.20144295022659, 103.28276975227374);
     // LatLng? onTapMap;
-
+    Completer<GoogleMapController> _controller = Completer();
     List<Marker> _marker = [];
     return Container(
       child: Consumer<Customers>(
         builder: (ctx, customerData, child) => Container(
           child: GoogleMap(
-            onTap: (LatLng latLng) {
+            onTap: (LatLng latLng) async {
               // onTapMap = LatLng(latLng.latitude, latLng.longitude);
-              print("on tap map");
-              print("Lat : ${latLng.latitude} Lng : ${latLng.longitude}");
-              _marker = [];
-              _marker.add((Marker(
-                markerId: MarkerId(latLng.toString()),
-                position: latLng,
-              )));
-              customerData.notifyListeners();
+              // print("on tap map");
+              // print("Lat : ${latLng.latitude} Lng : ${latLng.longitude}");
+              // _marker = [];
+              // _marker.add((Marker(
+              //   markerId: MarkerId(latLng.toString()),
+              //   position: latLng,
+              // )));
+              // customerData.notifyListeners();
+
+              // final GoogleMapController controller = await _controller.future;
+              // controller
+              //     .moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
+              //   target: latLng,
+              //   zoom: 14,
+              // )));
             },
 
             initialCameraPosition: CameraPosition(
@@ -979,13 +1386,15 @@ class _CustomerAccountState extends State<CustomerAccount> {
             // myLocationEnabled: true,
             zoomControlsEnabled: false,
             onMapCreated: (controller) {
-              controller.animateCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                      target: LatLng(customerData.lat!, customerData.lng!),
-                      zoom: 15),
-                ),
-              );
+              // controller.animateCamera(
+              //   CameraUpdate.newCameraPosition(
+              //     CameraPosition(
+              //         target: LatLng(customerData.lat!, customerData.lng!),
+              //         zoom: 15),
+              //   ),
+              // );
+              // _controller.complete(controller);
+              // customerData.controller.complete(controller);
             },
             // markers: Set.from(_marker),
             markers: {

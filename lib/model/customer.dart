@@ -2,12 +2,14 @@
 //
 //     final customer = customerFromJson(jsonString);
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:market_delivery/model/address_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,6 +63,8 @@ class Customer {
 }
 
 class Customers with ChangeNotifier {
+  List<AddressModel> _listAddressModel = [];
+
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _customerNameTextController = TextEditingController();
@@ -74,6 +78,12 @@ class Customers with ChangeNotifier {
 
   double? _lat;
   double? _lng;
+
+  Completer<GoogleMapController> _controller = Completer();
+  List<AddressModel> get listAddressModel => this._listAddressModel;
+
+  set listAddressModel(List<AddressModel> value) =>
+      this._listAddressModel = value;
 
   TextEditingController get usernameTextController =>
       this._usernameTextController;
@@ -110,6 +120,11 @@ class Customers with ChangeNotifier {
   get lng => this._lng;
 
   set lng(value) => this._lng = value;
+
+  Completer<GoogleMapController> get controller => this._controller;
+
+  set controller(Completer<GoogleMapController> value) =>
+      this._controller = value;
 
   Customer? get customerModel => _customerModel;
   bool? get loginStatus => _loginStatus;
@@ -174,7 +189,7 @@ class Customers with ChangeNotifier {
       this._customerNameTextController =
           TextEditingController(text: customerModel!.customerName);
     }
-
+    findAddress();
     notifyListeners();
   }
 
@@ -294,14 +309,24 @@ class Customers with ChangeNotifier {
       // required String addr_status,
       // }
       ) async {
-    dynamic results = await http.post(Uri.parse(Api.addCustomerAddress), body: {
-      'customer_id': customerId,
-      'address': _addressTextController.text,
-      'lat': _lat,
-      'lng': _lng,
-      'addr_status': 0,
-    });
-    return results;
+    print("Add Address");
+    try {
+      var results = await http.post(Uri.parse(Api.addCustomerAddress), body: {
+        'customer_id': customerModel!.customerId.toString(),
+        'address': _addressTextController.text.toString(),
+        'lat': _lat.toString(),
+        'lng': _lng.toString(),
+        'addr_status': 0.toString(),
+      });
+      print("Add Address");
+      var result = jsonDecode(results.body);
+      print(result.toString());
+      print("______________");
+      await findAddress();
+      return result;
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<dynamic> showConfirmAlert({required BuildContext context}) async {
@@ -336,6 +361,7 @@ class Customers with ChangeNotifier {
   Future<Null> setLatLng(LatLng latLng) async {
     _lat = latLng.latitude;
     _lng = latLng.longitude;
+    // moveCamera();
   }
 
   Future<void> permissionHandle() async {
@@ -343,6 +369,84 @@ class Customers with ChangeNotifier {
     print(location.status);
     if (location.status == location.status.isDenied) {
       location.request();
+    }
+  }
+
+  Future<void> moveCamera() async {
+    final GoogleMapController controller = await _controller.future;
+    controller.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
+      target: LatLng(_lat!, _lng!),
+      zoom: 14,
+    )));
+    notifyListeners();
+  }
+
+  Future<Null> findAddress() async {
+    _listAddressModel.clear();
+    if (customerModel?.customerId != null) {
+      await http
+          .get(Uri.parse(
+              Api.addresses + "?find_customer_id=${customerModel!.customerId}"))
+          .then((value) {
+        var results = jsonDecode(value.body);
+        // print(results['result']);
+        for (var item in results['result']) {
+          _listAddressModel.add(AddressModel(
+            addressId: item['address_id'],
+            customerId: item['customer_id'],
+            address: item['address'],
+            lat: item['lat'],
+            lng: item['lng'],
+            addrStatus: item['addr_status'],
+            timeReg: DateTime.parse(item['time_reg']),
+          ));
+        }
+      });
+    }
+
+    notifyListeners();
+  }
+
+  Future<dynamic> updateAddressStatus({
+    required String addressId,
+    required String addrStatus,
+  }) async {
+    try {
+      for (var item in _listAddressModel) {
+        var result = await http.post(Uri.parse(Api.updateAddrStatus), body: {
+          'address_id': item.addressId.toString(),
+          'addr_status': "0"
+        });
+        print('Loop item ${item.addressId}');
+
+        print(jsonDecode(result.body).toString());
+        print('Loop item ${item.addressId}');
+      }
+      var results = await http.post(Uri.parse(Api.updateAddrStatus), body: {
+        'address_id': addressId.toString(),
+        'addr_status': addrStatus.toString()
+      });
+      var result = jsonDecode(results.body);
+      // print(result.toString());
+      return result;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> onRefreshWidget() async {
+    await findAddress();
+  }
+
+  Future<dynamic> deleteAddress({required String addressId}) async {
+    try {
+      var results =
+          await http.get(Uri.parse(Api.addresses + "?delete_by_id=$addressId"));
+      var result = jsonDecode(results.body);
+      findAddress();
+      return result;
+    } catch (e) {
+      print(e);
     }
   }
 }
