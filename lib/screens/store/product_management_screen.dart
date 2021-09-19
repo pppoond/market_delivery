@@ -32,25 +32,35 @@ class ProductManagementScreen extends StatelessWidget {
             height: 7,
           ),
           Consumer<Products>(
-            builder: (context, productData, child) => ListView.builder(
-                itemCount: productData.products != null
-                    ? productData.productLength
-                    : 0,
-                physics: ScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, i) {
-                  return Container(
-                      margin: EdgeInsets.only(bottom: 7),
-                      padding: EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(7),
-                          color: i.floor().isEven
-                              ? Theme.of(context).accentColor.withOpacity(0.3)
-                              : Colors.grey.shade300),
-                      child: ProductListItem(
-                        product: productData.products[i],
-                      ));
-                }),
+            builder: (context, productData, child) => Column(
+              children: [
+                productData.products.isNotEmpty
+                    ? ListView.builder(
+                        itemCount: productData.products.length > 0
+                            ? productData.products.length
+                            : 0,
+                        physics: ScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, i) {
+                          return Container(
+                              margin: EdgeInsets.only(bottom: 7),
+                              padding: EdgeInsets.all(7),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(7),
+                                  color: i.floor().isEven
+                                      ? Theme.of(context)
+                                          .accentColor
+                                          .withOpacity(0.3)
+                                      : Colors.grey.shade300),
+                              child: ProductListItem(
+                                product: productData.products[i],
+                              ));
+                        })
+                    : Center(
+                        child: Text("ไม่มีสินค้า"),
+                      ),
+              ],
+            ),
           ),
         ],
       ),

@@ -103,7 +103,8 @@ class ProductListItem extends StatelessWidget {
                             CupertinoActionSheetAction(
                                 onPressed: () {
                                   ProductModal.showModal(
-                                      context: context, productId: "1");
+                                      context: context,
+                                      productId: product.productId);
                                 },
                                 child: Text("แก้ไข")),
                             CupertinoActionSheetAction(

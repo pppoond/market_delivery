@@ -58,29 +58,68 @@ class Product {
 class Products with ChangeNotifier {
   //---------------variable---------------------
 
-  List<Product>? _products = [];
+  List<Product> _products = [];
+
+  TextEditingController _productIdController = TextEditingController();
+  TextEditingController _storeIdController = TextEditingController();
+  TextEditingController _categoryIdController = TextEditingController();
+  TextEditingController _productNameController = TextEditingController();
+  TextEditingController _productDetailController = TextEditingController();
+  TextEditingController _statusController = TextEditingController();
 
   //---------------GetterSetter----------------
 
-  get products => this._products;
+  List<Product> get products => this._products;
 
-  get productLength => this._products!.length;
+  // get productLength => this._products.length;
 
   set products(value) => this._products = value;
+
+  TextEditingController get productIdController => this._productIdController;
+
+  set productIdController(TextEditingController value) =>
+      this._productIdController = value;
+
+  TextEditingController get storeIdController => this._storeIdController;
+
+  set storeIdController(TextEditingController value) =>
+      this._storeIdController = value;
+
+  TextEditingController get categoryIdController => this._categoryIdController;
+
+  set categoryIdController(TextEditingController value) =>
+      this._categoryIdController = value;
+
+  TextEditingController get productNameController =>
+      this._productNameController;
+
+  set productNameController(TextEditingController value) =>
+      this._productNameController = value;
+
+  TextEditingController get productDetailController =>
+      this._productDetailController;
+
+  set productDetailController(TextEditingController value) =>
+      this._productDetailController = value;
+
+  TextEditingController get statusController => this._statusController;
+
+  set statusController(TextEditingController value) =>
+      this._statusController = value;
 
   //----------------method--------------------
 
   Future<void> getProduct({required String storeId}) async {
-    _products!.clear();
+    _products.clear();
     await http
         .get(Uri.parse(Api.products + "?find_store_id=$storeId"))
         .then((value) {
       var results = jsonDecode(value.body);
       var result = results['result'];
       for (var item in result) {
-        _products!.add(Product.fromJson(item));
+        _products.add(Product.fromJson(item));
       }
-      print(_products!.length);
+      print(_products.length);
       notifyListeners();
     });
   }
@@ -88,12 +127,13 @@ class Products with ChangeNotifier {
   Future<dynamic> addProduct() async {}
   Future<dynamic> updateProduct() async {}
   Future<dynamic> deleteProduct({required String productId}) async {}
-  Future<dynamic> findById({required String productId}) async {
+  Future<Product> findById({required String productId}) async {
     Product product;
     var response =
         await http.get(Uri.parse(Api.products + "?findid=$productId"));
     var results = jsonDecode(response.body);
     var result = results['result'];
+    print(result.toString());
     product = Product.fromJson(result[0]);
     notifyListeners();
     return product;
