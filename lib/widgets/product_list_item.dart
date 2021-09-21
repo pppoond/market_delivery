@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 
+import 'package:provider/src/provider.dart';
+
 import '../widgets/product/product_modal.dart';
+import '../model/product_image.dart';
 
 import '../../utils/api.dart';
 
@@ -101,8 +104,12 @@ class ProductListItem extends StatelessWidget {
                         return CupertinoAlertDialog(
                           actions: [
                             CupertinoActionSheetAction(
-                                onPressed: () {
-                                  ProductModal.showModal(
+                                onPressed: () async {
+                                  await Provider.of<ProductImages>(context,
+                                          listen: false)
+                                      .resetFile();
+
+                                  await ProductModal.showModal(
                                       context: context,
                                       productId: product.productId);
                                 },

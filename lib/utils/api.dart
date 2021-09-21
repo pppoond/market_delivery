@@ -18,5 +18,8 @@ class Api {
 
   static String products = "$host/api/products.php";
 
+  static String productImages = "$host/api/product_images.php";
+  static String uploadProductImage = "$host/api/upload_product_image.php";
+
   static String imageUrl = "$host/api/uploads/";
 }

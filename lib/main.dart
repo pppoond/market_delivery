@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:market_delivery/model/product.dart';
+
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,6 +31,8 @@ import './model/cart.dart';
 import './model/rider.dart';
 import './model/customer.dart';
 import './model/store.dart';
+import './model/product_image.dart';
+import './model/product.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -84,6 +86,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => Products(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProductImages(),
         ),
       ],
       child: MaterialApp(
