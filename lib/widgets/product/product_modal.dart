@@ -16,6 +16,8 @@ class ProductModal {
     required String productId,
   }) async {
     final products = Provider.of<Products>(context, listen: false);
+    final productImagesProvider =
+        Provider.of<ProductImages>(context, listen: false);
     Product model = await products.findById(productId: productId);
     products.productIdController = TextEditingController(text: model.productId);
     products.storeIdController = TextEditingController(text: model.storeId);
@@ -85,7 +87,61 @@ class ProductModal {
                                             fontWeight: FontWeight.bold),
                                       ),
                                       TextButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            CoolAlert.show(
+                                                context: context,
+                                                title: "คำเตือน!",
+                                                text:
+                                                    "ต้องการบันทึกใช่หรือไม่?",
+                                                confirmBtnText: "ยืนยัน",
+                                                cancelBtnText: "ยกเลิก",
+                                                type: CoolAlertType.confirm,
+                                                onConfirmBtnTap: () {
+                                                  productImagesProvider
+                                                      .uploadImage(
+                                                          context: context,
+                                                          productId:
+                                                              model.productId)
+                                                      .then((value) async {
+                                                    if (value['msg'] ==
+                                                        'success') {
+                                                      ProductImage item =
+                                                          await productImagesProvider.findById(
+                                                              proImgId: value[
+                                                                          'result']
+                                                                      [
+                                                                      'pro_img_id']
+                                                                  .toString());
+                                                      productImagesProvider
+                                                          .resetFile();
+                                                      model.productImages!
+                                                          .add(item);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      CoolAlert.show(
+                                                          title: "สำเร็จ",
+                                                          text:
+                                                              "บันทึกข้อมูลสำเร็จ",
+                                                          context: context,
+                                                          type: CoolAlertType
+                                                              .success);
+                                                    } else {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      CoolAlert.show(
+                                                          title: "มีข้อผิดพลาด",
+                                                          text:
+                                                              "กรุณาลองใหม่อีกครั้งภายหลัง",
+                                                          context: context,
+                                                          type: CoolAlertType
+                                                              .error);
+                                                    }
+                                                    productImagesProvider
+                                                        .notifyListeners();
+                                                  });
+                                                  // productData.updateProduct();
+                                                });
+                                          },
                                           child: Text(
                                             "บันทึก",
                                             style: TextStyle(

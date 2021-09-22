@@ -45,6 +45,7 @@ class ProductImages with ChangeNotifier {
   List<ProductImage> _productImages = [];
 
   io.File? _file;
+  List<io.File>? _listFile;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -75,12 +76,16 @@ class ProductImages with ChangeNotifier {
     });
   }
 
-  Future<dynamic> addProductImage() async {
+  Future<dynamic> addProductImage(
+      {required String productId, required String proImgAddr}) async {
     var uri = Api.productImages;
-    var response = await http.post(Uri.parse(uri), body: {});
+    var response = await http.post(Uri.parse(uri), body: {
+      "product_id": productId,
+      "pro_img_addr": proImgAddr,
+    });
     var results = jsonDecode(response.body);
-    var result = results['result'];
-    return result;
+    // var result = results['result'];
+    return results;
   }
 
   Future<dynamic> updateProductImage(
@@ -102,13 +107,17 @@ class ProductImages with ChangeNotifier {
   Future<ProductImage> findById({required String proImgId}) async {
     ProductImage product;
     var response =
-        await http.get(Uri.parse(Api.products + "?findid=$proImgId"));
+        await http.get(Uri.parse(Api.productImages + "?findid=$proImgId"));
     var results = jsonDecode(response.body);
     var result = results['result'];
-    print(result.toString());
-    product = ProductImage.fromJson(result[0]);
-    notifyListeners();
-    return product;
+    if (result != null) {
+      print(result.toString());
+      product = ProductImage.fromJson(result[0]);
+      notifyListeners();
+      return product;
+    } else {
+      return null!;
+    }
   }
 
   Future<void> chooseImage(BuildContext ctx, ImageSource imageSource) async {
@@ -120,66 +129,37 @@ class ProductImages with ChangeNotifier {
       );
 
       _file = io.File(object!.path);
+      // _listFile!.add(io.File(object!.path));
     } catch (e) {
       print(e);
     }
     notifyListeners();
   }
 
-  Future<void> uploadImage({required BuildContext context}) async {
+  Future<dynamic> uploadImage(
+      {required BuildContext context, required String productId}) async {
     Random random = Random();
     int i = random.nextInt(1000000);
     final DateFormat formatter = DateFormat('MMddyyyy');
     String createDate = formatter.format(DateTime.now());
     String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
-    print(nameImage);
-    // try {
-    //   Map<String, dynamic> map = Map();
-    //   map['file'] =
-    //       await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
+    // print(nameImage);
+    try {
+      Map<String, dynamic> map = Map();
+      map['file'] =
+          await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
 
-    //   dio.FormData formData = dio.FormData.fromMap(map);
-    //   await dio.Dio().post(Api.uploadImage, data: formData).then((value) {
-    //     print("Response ==>> $value");
-    //     print("name image");
-    //     print("$nameImage");
-    //     print("name image");
-    //     // updateCustomer(ctx: context, profile_image: nameImage);
-    //     // customerProvider
-    //     //     .updateCustomer(
-    //     //   customerId: customerModel!.customerId,
-    //     //   username: usernameTextController.text,
-    //     //   password: passwordTextController.text,
-    //     //   customerName: customerNameTextController.text,
-    //     //   customerPhone: customerPhoneTextController.text,
-    //     //   sex: sex,
-    //     //   profileImage: nameImage,
-    //     // )
-    //     //     .then((value) {
-    //     //   print("${value.data['msg']}");
-    //     //   var results = value.data;
-    //     //   if (results['msg'] == "success") {
-    //     //     print("Success");
-    //     //     CoolAlert.show(
-    //     //       context: context,
-    //     //       type: CoolAlertType.success,
-    //     //     ).then((value) async {
-    //     //       await getCustomer(ctx: context)
-    //     //           .then((value) => Navigator.of(context).pop());
-    //     //     });
-    //     //   } else {
-    //     //     print("Error");
-    //     //     CoolAlert.show(
-    //     //       context: context,
-    //     //       title: "มีข้อผิดพลาด",
-    //     //       text: "กรุณาลองใหม่อีกครั้ง",
-    //     //       type: CoolAlertType.error,
-    //     //     );
-    //     //   }
-    //     //   print("Finish");
-    //     // });
-    //   });
-    // } catch (e) {}
+      dio.FormData formData = dio.FormData.fromMap(map);
+      var response =
+          await dio.Dio().post(Api.uploadProductImage, data: formData);
+      print(response.data);
+      var response_add =
+          await addProductImage(productId: productId, proImgAddr: nameImage);
+      print(response_add);
+      return response_add;
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> resetFile() async {
