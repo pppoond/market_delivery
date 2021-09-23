@@ -44,8 +44,8 @@ class ProductImages with ChangeNotifier {
 
   List<ProductImage> _productImages = [];
 
-  io.File? _file;
-  List<io.File>? _listFile;
+  // io.File? _file;
+  List<io.File> _listFile = [];
 
   final ImagePicker _picker = ImagePicker();
 
@@ -55,9 +55,13 @@ class ProductImages with ChangeNotifier {
 
   set productImages(List<ProductImage> value) => this._productImages = value;
 
-  io.File? get file => this._file;
+  // io.File? get file => this._file;
 
-  set file(io.File? value) => this._file = value;
+  // set file(io.File? value) => this._file = value;
+
+  List<io.File> get listFile => this._listFile;
+
+  set listFile(List<io.File> value) => this._listFile = value;
 
   //--------------------method--------------------
 
@@ -121,33 +125,54 @@ class ProductImages with ChangeNotifier {
   }
 
   Future<void> chooseImage(BuildContext ctx, ImageSource imageSource) async {
-    try {
-      var object = await _picker.pickImage(
-        source: imageSource,
-        maxHeight: 800.0,
-        maxWidth: 800.0,
-      );
+    var object = await _picker.pickImage(
+      source: imageSource,
+      maxHeight: 800.0,
+      maxWidth: 800.0,
+    );
 
-      _file = io.File(object!.path);
-      // _listFile!.add(io.File(object!.path));
-    } catch (e) {
-      print(e);
-    }
+    // _file = io.File(object!.path);
+    _listFile.add(io.File(object!.path));
+    print("object length = ${_listFile.length}");
     notifyListeners();
   }
 
-  Future<dynamic> uploadImage(
+  Future<List<dynamic>> uploadImage(
       {required BuildContext context, required String productId}) async {
-    Random random = Random();
-    int i = random.nextInt(1000000);
-    final DateFormat formatter = DateFormat('MMddyyyy');
-    String createDate = formatter.format(DateTime.now());
-    String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
-    // print(nameImage);
-    try {
+    // Random random = Random();
+    // int i = random.nextInt(1000000);
+    // final DateFormat formatter = DateFormat('MMddyyyy');
+    // String createDate = formatter.format(DateTime.now());
+    // String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
+    // // print(nameImage);
+    // try {
+    //   Map<String, dynamic> map = Map();
+    //   map['file'] =
+    //       await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
+
+    //   dio.FormData formData = dio.FormData.fromMap(map);
+    //   var response =
+    //       await dio.Dio().post(Api.uploadProductImage, data: formData);
+    //   print(response.data);
+    //   var response_add =
+    //       await addProductImage(productId: productId, proImgAddr: nameImage);
+    //   print(response_add);
+    //   return response_add;
+    // } catch (e) {
+    //   print(e);
+    // }
+    List<dynamic> _listItem = [];
+    for (var item in _listFile) {
+      Random random = Random();
+      int i = random.nextInt(1000000);
+      final DateFormat formatter = DateFormat('MMddyyyy');
+      String createDate = formatter.format(DateTime.now());
+      String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
+      // print(nameImage);
+
       Map<String, dynamic> map = Map();
       map['file'] =
-          await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
+          await dio.MultipartFile.fromFile(item.path, filename: nameImage);
 
       dio.FormData formData = dio.FormData.fromMap(map);
       var response =
@@ -156,14 +181,46 @@ class ProductImages with ChangeNotifier {
       var response_add =
           await addProductImage(productId: productId, proImgAddr: nameImage);
       print(response_add);
-      return response_add;
-    } catch (e) {
-      print(e);
+      _listItem.add(response_add);
     }
+    /*
+      before return 
+      Note
+      [
+        {
+        msg: "success",
+        status: 200,
+        result {
+          pro_img_id: "xxx"
+        }
+      }
+      {
+        msg: "success",
+        status: 200,
+        result {
+          pro_img_id: "xxx"
+        }
+      }
+      {
+        msg: "success",
+        status: 200,
+        result {
+          pro_img_id: "xxx"
+        }
+      }
+      ]
+    */
+
+    return _listItem;
   }
 
   Future<void> resetFile() async {
-    _file = null;
+    _listFile.clear();
+    notifyListeners();
+  }
+
+  Future<void> resetIndexFile({required int index}) async {
+    _listFile.removeAt(index);
     notifyListeners();
   }
 }

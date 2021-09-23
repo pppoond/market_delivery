@@ -63,6 +63,8 @@ class Customer {
 }
 
 class Customers with ChangeNotifier {
+  //--------------------------variable----------------------
+
   List<AddressModel> _listAddressModel = [];
 
   TextEditingController _usernameTextController = TextEditingController();
@@ -80,6 +82,9 @@ class Customers with ChangeNotifier {
   double? _lng;
 
   Completer<GoogleMapController> _controller = Completer();
+
+  //--------------------------GetterSetter-------------------------
+
   List<AddressModel> get listAddressModel => this._listAddressModel;
 
   set listAddressModel(List<AddressModel> value) =>
@@ -129,6 +134,8 @@ class Customers with ChangeNotifier {
   Customer? get customerModel => _customerModel;
   bool? get loginStatus => _loginStatus;
   String? get customerId => _customerId;
+
+  //---------------------------method-----------------------------------
 
   Future<bool> findByUsernameCheckNull({required String username}) async {
     bool _usernameNull;

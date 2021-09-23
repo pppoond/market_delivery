@@ -125,7 +125,24 @@ class Products with ChangeNotifier {
   }
 
   Future<dynamic> addProduct() async {}
-  Future<dynamic> updateProduct() async {}
+  Future<dynamic> updateProduct(
+      {required String productId,
+      required String categoryId,
+      required String productName,
+      required String productDetail}) async {
+    var uri = Api.updateProduct;
+    var response = await http.post(Uri.parse(uri), body: {
+      'product_id': productId,
+      'category_id': categoryId,
+      'product_name': productName,
+      'product_detail': productDetail,
+    });
+    var results = jsonDecode(response.body);
+    print(results);
+    notifyListeners();
+    return results;
+  }
+
   Future<dynamic> deleteProduct({required String productId}) async {}
   Future<Product> findById({required String productId}) async {
     Product product;
