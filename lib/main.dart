@@ -25,6 +25,7 @@ import './screens/order/rider_finish_screen.dart';
 import './screens/order/rider_result_screen.dart';
 import './screens/account/add_address_screen.dart';
 import './screens/store/product_management_screen.dart';
+import './screens/store/add_product.screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -123,6 +124,7 @@ class MyApp extends StatelessWidget {
           RiderResultScreen.routeName: (ctx) => RiderResultScreen(),
           AddAddressScreen.routeName: (ctx) => AddAddressScreen(),
           ProductManagementScreen.routeName: (ctx) => ProductManagementScreen(),
+          AddProductScreen.routeName: (ctx) => AddProductScreen(),
         },
       ),
     );

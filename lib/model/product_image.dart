@@ -75,7 +75,7 @@ class ProductImages with ChangeNotifier {
       for (var item in result) {
         _productImages.add(ProductImage.fromJson(item));
       }
-      print(_productImages.length);
+      debugPrint(_productImages.length.toString());
       notifyListeners();
     });
   }
@@ -115,7 +115,7 @@ class ProductImages with ChangeNotifier {
     var results = jsonDecode(response.body);
     var result = results['result'];
     if (result != null) {
-      print(result.toString());
+      debugPrint(result.toString());
       product = ProductImage.fromJson(result[0]);
       notifyListeners();
       return product;
@@ -133,34 +133,12 @@ class ProductImages with ChangeNotifier {
 
     // _file = io.File(object!.path);
     _listFile.add(io.File(object!.path));
-    print("object length = ${_listFile.length}");
+    debugPrint("object length = ${_listFile.length}");
     notifyListeners();
   }
 
   Future<List<dynamic>> uploadImage(
       {required BuildContext context, required String productId}) async {
-    // Random random = Random();
-    // int i = random.nextInt(1000000);
-    // final DateFormat formatter = DateFormat('MMddyyyy');
-    // String createDate = formatter.format(DateTime.now());
-    // String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
-    // // print(nameImage);
-    // try {
-    //   Map<String, dynamic> map = Map();
-    //   map['file'] =
-    //       await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
-
-    //   dio.FormData formData = dio.FormData.fromMap(map);
-    //   var response =
-    //       await dio.Dio().post(Api.uploadProductImage, data: formData);
-    //   print(response.data);
-    //   var response_add =
-    //       await addProductImage(productId: productId, proImgAddr: nameImage);
-    //   print(response_add);
-    //   return response_add;
-    // } catch (e) {
-    //   print(e);
-    // }
     List<dynamic> _listItem = [];
     for (var item in _listFile) {
       Random random = Random();
@@ -168,7 +146,7 @@ class ProductImages with ChangeNotifier {
       final DateFormat formatter = DateFormat('MMddyyyy');
       String createDate = formatter.format(DateTime.now());
       String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
-      // print(nameImage);
+      // debugPrint(nameImage);
 
       Map<String, dynamic> map = Map();
       map['file'] =
@@ -177,10 +155,10 @@ class ProductImages with ChangeNotifier {
       dio.FormData formData = dio.FormData.fromMap(map);
       var response =
           await dio.Dio().post(Api.uploadProductImage, data: formData);
-      print(response.data);
+      debugPrint(response.data.toString());
       var response_add =
           await addProductImage(productId: productId, proImgAddr: nameImage);
-      print(response_add);
+      debugPrint(response_add.toString());
       _listItem.add(response_add);
     }
     /*

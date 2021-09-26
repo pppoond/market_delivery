@@ -66,6 +66,8 @@ class Products with ChangeNotifier {
   TextEditingController _productNameController = TextEditingController();
   TextEditingController _productDetailController = TextEditingController();
   TextEditingController _statusController = TextEditingController();
+  TextEditingController _priceController = TextEditingController();
+  TextEditingController _unitController = TextEditingController();
 
   //---------------GetterSetter----------------
 
@@ -107,6 +109,16 @@ class Products with ChangeNotifier {
   set statusController(TextEditingController value) =>
       this._statusController = value;
 
+  TextEditingController get priceController => this._priceController;
+
+  set priceController(TextEditingController value) =>
+      this._priceController = value;
+
+  TextEditingController get unitController => this._unitController;
+
+  set unitController(TextEditingController value) =>
+      this._unitController = value;
+
   //----------------method--------------------
 
   Future<void> getProduct({required String storeId}) async {
@@ -119,12 +131,27 @@ class Products with ChangeNotifier {
       for (var item in result) {
         _products.add(Product.fromJson(item));
       }
-      print(_products.length);
+      debugPrint(_products.length.toString());
       notifyListeners();
     });
   }
 
-  Future<dynamic> addProduct() async {}
+  Future<dynamic> addProduct(
+      {required String storeId,
+      required String categoryId,
+      required String productName,
+      required String productDetail}) async {
+    var uri = Api.products;
+    var response = await http.post(Uri.parse(uri), body: {
+      "store_id": storeId,
+      "category_id": categoryId,
+      "product_name": productName,
+      "product_detail": productDetail,
+    });
+    var results = jsonDecode(response.body);
+    return results;
+  }
+
   Future<dynamic> updateProduct(
       {required String productId,
       required String categoryId,
@@ -138,7 +165,7 @@ class Products with ChangeNotifier {
       'product_detail': productDetail,
     });
     var results = jsonDecode(response.body);
-    print(results);
+    debugPrint(results);
     notifyListeners();
     return results;
   }
@@ -150,9 +177,25 @@ class Products with ChangeNotifier {
         await http.get(Uri.parse(Api.products + "?findid=$productId"));
     var results = jsonDecode(response.body);
     var result = results['result'];
-    print(result.toString());
+    debugPrint(result.toString());
     product = Product.fromJson(result[0]);
     notifyListeners();
     return product;
+  }
+
+  Future<bool> validateForm() async {
+    bool checkNull = false;
+    if (_productIdController.text.isNotEmpty &&
+        _categoryIdController.text.isNotEmpty &&
+        _productNameController.text.isNotEmpty &&
+        _productDetailController.text.isNotEmpty &&
+        _priceController.text.isNotEmpty &&
+        _categoryIdController.text.isNotEmpty &&
+        _unitController.text.isNotEmpty) {
+      checkNull = true;
+    } else {
+      checkNull = false;
+    }
+    return checkNull;
   }
 }

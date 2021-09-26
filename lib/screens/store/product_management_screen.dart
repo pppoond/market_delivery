@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/screens/store/add_product.screen.dart';
 
 import 'package:provider/provider.dart';
 
 import '../../model/product.dart';
+import '../../model/store.dart';
 import '../../widgets/product_list_item.dart';
 
 class ProductManagementScreen extends StatelessWidget {
@@ -10,7 +12,10 @@ class ProductManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final products = Provider.of<Products>(context, listen: false);
+    final storeProvider = Provider.of<Stores>(context, listen: false);
+    // products.getProduct(storeId: storeProvider.storeModel.storeId.toString());
     products.getProduct(storeId: "1");
+    print(storeProvider.storeModel.storeId.toString());
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 45,
@@ -128,7 +133,9 @@ class ProductManagementScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16)),
               child: TextButton(
                 clipBehavior: Clip.none,
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushNamed(AddProductScreen.routeName);
+                },
                 child: Row(
                   children: [
                     Icon(

@@ -32,10 +32,11 @@ class Store {
     this.wallet = "",
     this.lat = 0,
     this.lng = 0,
+    required this.status,
     required this.timeReg,
   });
 
-  int storeId;
+  String storeId;
   String username;
   String password;
   String storeName;
@@ -44,6 +45,7 @@ class Store {
   String wallet;
   double lat;
   double lng;
+  int status;
   DateTime timeReg;
 
   factory Store.fromJson(Map<String, dynamic> json) => Store(
@@ -56,6 +58,7 @@ class Store {
         wallet: json["wallet"],
         lat: json["lat"].toDouble(),
         lng: json["lng"].toDouble(),
+        status: json['status'],
         timeReg: DateTime.parse(json["time_reg"]),
       );
 
@@ -69,6 +72,7 @@ class Store {
         "wallet": wallet,
         "lat": lat,
         "lng": lng,
+        "status": status,
         "time_reg": timeReg.toIso8601String(),
       };
 }
@@ -76,7 +80,14 @@ class Store {
 class Stores with ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
   //-----------------------------------------variable-------------------------------------------
-  Store? _storeModel;
+  Store _storeModel = Store(
+      storeId: "",
+      username: "",
+      password: "",
+      storeName: "",
+      storePhone: "",
+      status: 0,
+      timeReg: DateTime.now());
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _storeNameTextController = TextEditingController();
@@ -84,9 +95,9 @@ class Stores with ChangeNotifier {
   io.File? _file;
   //-------------------Getter_and_Setter----------------------------------------
 
-  get storeModel => this._storeModel;
+  Store get storeModel => this._storeModel;
 
-  set storeModel(value) => this._storeModel = value;
+  set storeModel(Store value) => this._storeModel = value;
 
   get usernameTextController => this._usernameTextController;
 
@@ -106,7 +117,7 @@ class Stores with ChangeNotifier {
   //--------------------method-------------------------------------------------------------------------
   // Stores.onLoadClass() {
   //   findStore();
-  //   print("Onload Store Class");
+  //   debugPrint("Onload Store Class");
   // }
 
   Future<bool> loginStore(
@@ -117,7 +128,7 @@ class Stores with ChangeNotifier {
       'username': username,
       'password': password,
     });
-    print(response.body);
+    debugPrint(response.body);
     var results = jsonDecode(response.body);
     var result = results['result'];
     if (result['msg'] == 'success') {
@@ -151,7 +162,7 @@ class Stores with ChangeNotifier {
     });
 
     var results = jsonDecode(response.body);
-    print(results['msg']);
+    debugPrint(results['msg']);
     var result = results['result'];
     if (results['msg'] == "success") {
       register = true;
@@ -166,26 +177,36 @@ class Stores with ChangeNotifier {
     try {
       var results = await dio.Dio().post("", data: {});
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
   Future<void> findStore({String username = ""}) async {
+    debugPrint("Find Store");
+    debugPrint(username.toString());
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    try {
-      await http
-          .get(Uri.parse(Api.stores + "?find_username=${username}"))
-          .then((value) {
-        var result = jsonDecode(value.body);
-        _storeModel = Store.fromJson(result['result'][0]);
-        sharedPreferences.setString(
-            "storeId", result['result'][0]['store_id'].toString());
-      });
-    } catch (e) {
-      print("catch error");
-      print(e);
-      print("________________________");
-    }
+
+    var response =
+        await http.get(Uri.parse(Api.stores + "?find_username=${username}"));
+
+    var result = jsonDecode(response.body);
+    debugPrint(result.toString());
+    // storeModel = Store.fromJson(result['result'][0]);
+    _storeModel = Store(
+      storeId: result['result'][0]['store_id'],
+      username: result['result'][0]['username'],
+      password: result['result'][0]['password'],
+      storeName: result['result'][0]['store_name'],
+      storePhone: result['result'][0]['store_phone'],
+      status: result['result'][0]['status'],
+      timeReg: DateTime.parse(result['result'][0]['time_reg']),
+    );
+    sharedPreferences.setString(
+        "storeId", result['result'][0]['store_id'].toString());
+
+    // debugPrint("catch error");
+    // debugPrint(e.toString());
+    // debugPrint("________________________");
 
     notifyListeners();
   }
@@ -200,7 +221,7 @@ class Stores with ChangeNotifier {
 
       _file = io.File(object!.path);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 
@@ -215,14 +236,14 @@ class Stores with ChangeNotifier {
 
       dio.FormData formData = dio.FormData.fromMap(map);
       await dio.Dio().post(Api.uploadImage, data: formData).then((value) {
-        print("Response ==>> $value");
-        print("name image");
-        print("$nameImage");
-        print("name image");
+        debugPrint("Response ==>> $value");
+        debugPrint("name image");
+        debugPrint("$nameImage");
+        debugPrint("name image");
         // updateCustomer(ctx: context, profile_image: nameImage);
       });
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 }

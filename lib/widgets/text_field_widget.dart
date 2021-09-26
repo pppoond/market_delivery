@@ -10,19 +10,21 @@ class TextFieldWidget extends StatefulWidget {
   bool enabled;
   bool obscureText;
   bool suffixIconEndable;
+  Color color;
   // String initialValue;
-  TextFieldWidget({
-    required this.hintText,
-    this.icon,
-    required this.controller,
-    this.onChanged,
-    this.readOnly = false,
-    this.enableInteractiveSelection = true,
-    this.enabled = true,
-    this.obscureText = false,
-    this.suffixIconEndable = false,
-    // this.initialValue = "",
-  });
+  TextFieldWidget(
+      {required this.hintText,
+      this.icon,
+      required this.controller,
+      this.onChanged,
+      this.readOnly = false,
+      this.enableInteractiveSelection = true,
+      this.enabled = true,
+      this.obscureText = false,
+      this.suffixIconEndable = false,
+      this.color = Colors.white
+      // this.initialValue = "",
+      });
 
   @override
   _TextFieldWidgetState createState() => _TextFieldWidgetState();
@@ -45,8 +47,11 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
           enabled: widget.enabled,
           isDense: true,
           filled: true,
-          fillColor:
-              (widget.enabled) ? Colors.grey.shade100 : Colors.grey.shade300,
+          fillColor: (widget.enabled)
+              ? Colors.grey.shade100
+              : (widget.color != null)
+                  ? widget.color
+                  : Colors.red.shade300,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none),

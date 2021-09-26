@@ -118,7 +118,7 @@ class StoreDrawer extends StatelessWidget {
         drawerItem(
             leadingIcon: Icon(Icons.production_quantity_limits_outlined),
             title: "จัดการสินค้า",
-            onTap: () {
+            onTap: () async {
               Navigator.of(context)
                   .pushNamed(ProductManagementScreen.routeName);
             }),
