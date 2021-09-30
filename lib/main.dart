@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:market_delivery/screens/store/store_detail_screen.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -125,6 +126,7 @@ class MyApp extends StatelessWidget {
           AddAddressScreen.routeName: (ctx) => AddAddressScreen(),
           ProductManagementScreen.routeName: (ctx) => ProductManagementScreen(),
           AddProductScreen.routeName: (ctx) => AddProductScreen(),
+          StoreDetailScreen.routeName: (ctx) => StoreDetailScreen(),
         },
       ),
     );

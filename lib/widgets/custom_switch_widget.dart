@@ -24,11 +24,13 @@ class _CustomSwitchWidgetState extends State<CustomSwitchWidget> {
       activeTextColor: Colors.white,
       inactiveTextColor: Colors.white,
       value: widget.isActive,
-      onToggle: (value) {
-        setState(() {
-          widget.isActive = value;
-        });
-      },
+      // onToggle: (value) {
+      //   setState(() {
+      //     print(value);
+      //     widget.isActive = value;
+      //   });
+      // },
+      onToggle: widget.onToggle,
       activeColor: Theme.of(context).accentColor,
     );
   }

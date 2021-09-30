@@ -88,6 +88,9 @@ class Stores with ChangeNotifier {
       storePhone: "",
       status: 0,
       timeReg: DateTime.now());
+
+  List<Store> _allStores = [];
+
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _storeNameTextController = TextEditingController();
@@ -98,6 +101,10 @@ class Stores with ChangeNotifier {
   Store get storeModel => this._storeModel;
 
   set storeModel(Store value) => this._storeModel = value;
+
+  List<Store> get allStores => this._allStores;
+
+  set allStores(List<Store> value) => this._allStores = value;
 
   get usernameTextController => this._usernameTextController;
 
@@ -119,6 +126,20 @@ class Stores with ChangeNotifier {
   //   findStore();
   //   debugPrint("Onload Store Class");
   // }
+
+  Future<void> getAllStores() async {
+    _allStores.clear();
+    await http.get(Uri.parse(Api.stores)).then((value) {
+      var results = jsonDecode(value.body);
+      var result = results['result'];
+      debugPrint(result.toString());
+      for (var item in result) {
+        _allStores.add(Store.fromJson(item));
+      }
+      debugPrint(_allStores.length.toString());
+      notifyListeners();
+    });
+  }
 
   Future<bool> loginStore(
       {required String username, required String password}) async {
@@ -209,6 +230,23 @@ class Stores with ChangeNotifier {
     // debugPrint("________________________");
 
     notifyListeners();
+  }
+
+  Future<void> findById({required String storeId}) async {
+    var response = await http.get(Uri.parse(Api.stores + "?findid=${storeId}"));
+
+    var result = jsonDecode(response.body);
+    debugPrint(result.toString());
+    // storeModel = Store.fromJson(result['result'][0]);
+    _storeModel = Store(
+      storeId: result['result'][0]['store_id'],
+      username: result['result'][0]['username'],
+      password: result['result'][0]['password'],
+      storeName: result['result'][0]['store_name'],
+      storePhone: result['result'][0]['store_phone'],
+      status: result['result'][0]['status'],
+      timeReg: DateTime.parse(result['result'][0]['time_reg']),
+    );
   }
 
   Future<Null> chooseImage(BuildContext ctx, ImageSource imageSource) async {

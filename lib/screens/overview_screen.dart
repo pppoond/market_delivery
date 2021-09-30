@@ -10,6 +10,8 @@ import '../widgets/restaurant_list.dart';
 import '../widgets/badge.dart';
 import '../widgets/menu_list.dart';
 import '../widgets/drawer/app_drawer.dart';
+import '../widgets/product/product_list.dart';
+import '../widgets/store/store_list.dart';
 
 import '../model/cart.dart';
 import '../model/customer.dart';
@@ -104,8 +106,10 @@ class OverViewScreen extends StatelessWidget {
         padding: EdgeInsets.only(left: 16, bottom: 0),
         child: ListView(
           children: [
-            MenuList(),
-            RestaurantList(),
+            // MenuList(),
+            // RestaurantList(),
+            ProductList(),
+            StoreList()
           ],
         ),
       ),

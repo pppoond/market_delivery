@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:provider/provider.dart';
 
 import 'package:provider/src/provider.dart';
 
@@ -14,7 +15,7 @@ import '../../model/product.dart';
 import 'custom_switch_widget.dart';
 
 class ProductListItem extends StatelessWidget {
-  final Product product;
+  Product product;
 
   ProductListItem({required this.product});
   @override
@@ -41,7 +42,7 @@ class ProductListItem extends StatelessWidget {
               //   topLeft: Radius.circular(4),
               //   topRight: Radius.circular(4),
               // ),
-              borderRadius: BorderRadius.circular(7),
+              borderRadius: BorderRadius.circular(12),
             ),
             width: 85,
             height: 85,
@@ -81,16 +82,34 @@ class ProductListItem extends StatelessWidget {
               SizedBox(
                 height: 7,
               ),
-              CustomSwitchWidget(
-                onToggle: (value) {},
-                isActive: false,
+              Consumer<Products>(
+                builder: (context, productData, child) => CustomSwitchWidget(
+                  onToggle: (value) {
+                    if (value == true) {
+                      product.status = "1";
+                    } else {
+                      product.status = "0";
+                    }
+                    print(value);
+                    productData.updateStatus(
+                        productId: product.productId, status: product.status);
+                    // productData.notifyListeners();
+                  },
+                  isActive: product.status == "1" ? true : false,
+                ),
               ),
               SizedBox(
                 height: 7,
               ),
-              Text(
-                "พร้อมขาย",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Consumer<Products>(
+                builder: (context, productData, child) => Text(
+                  product.status == "1" ? "พร้อม" : "ไม่พร้อม",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: product.status == "1"
+                          ? Theme.of(context).accentColor
+                          : Colors.grey),
+                ),
               ),
             ],
           )),

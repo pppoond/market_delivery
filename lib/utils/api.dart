@@ -16,8 +16,10 @@ class Api {
   static String uploadImage = "$host/api/upload_image.php";
   static String updateCustomer = "$host/api/update_customer.php";
 
-  static String products = "$host/api/products.php";
-  static String updateProduct = "$host/api/update_product.php";
+  static String products = "$host/api/products.php"; //get products
+  static String updateProduct = "$host/api/update_product.php"; //update product
+  static String updateProductStatus =
+      "$host/api/update_product_status.php"; //update status product
 
   static String productImages = "$host/api/product_images.php";
   static String uploadProductImage = "$host/api/upload_product_image.php";

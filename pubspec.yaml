@@ -41,6 +41,7 @@ dependencies:
   permission_handler: ^8.1.6
   flutter_switch: ^0.3.2
   intl: ^0.17.0
+  flutter_svg: ^0.22.0
 
 dev_dependencies:
   flutter_test:

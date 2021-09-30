@@ -17,6 +17,7 @@ class Product {
     required this.productName,
     this.productDetail = "",
     this.status = "0",
+    this.price = "0",
     required this.timeReg,
     this.productImages,
   });
@@ -27,6 +28,7 @@ class Product {
   String productName;
   String productDetail;
   String status;
+  String price;
   DateTime timeReg;
   List<ProductImage>? productImages;
 
@@ -37,6 +39,7 @@ class Product {
         productName: json["product_name"],
         productDetail: json["product_detail"],
         status: json["status"],
+        price: json['price'],
         timeReg: DateTime.parse(json["time_reg"]),
         productImages: List<ProductImage>.from(
             json["product_images"].map((x) => ProductImage.fromJson(x))),
@@ -49,6 +52,7 @@ class Product {
         "product_name": productName,
         "product_detail": productDetail,
         "status": status,
+        "price": price,
         "time_reg": timeReg.toIso8601String(),
         "product_images":
             List<dynamic>.from(productImages!.map((x) => x.toJson())),
@@ -59,6 +63,8 @@ class Products with ChangeNotifier {
   //---------------variable---------------------
 
   List<Product> _products = [];
+
+  List<Product> _allProducts = [];
 
   TextEditingController _productIdController = TextEditingController();
   TextEditingController _storeIdController = TextEditingController();
@@ -76,6 +82,10 @@ class Products with ChangeNotifier {
   // get productLength => this._products.length;
 
   set products(value) => this._products = value;
+
+  List<Product> get allProducts => this._allProducts;
+
+  set allProducts(List<Product> value) => this._allProducts = value;
 
   TextEditingController get productIdController => this._productIdController;
 
@@ -136,6 +146,19 @@ class Products with ChangeNotifier {
     });
   }
 
+  Future<void> getAllProduct() async {
+    _allProducts.clear();
+    await http.get(Uri.parse(Api.products)).then((value) {
+      var results = jsonDecode(value.body);
+      var result = results['result'];
+      for (var item in result) {
+        _allProducts.add(Product.fromJson(item));
+      }
+      debugPrint(_products.length.toString());
+      notifyListeners();
+    });
+  }
+
   Future<dynamic> addProduct(
       {required String storeId,
       required String categoryId,
@@ -170,6 +193,16 @@ class Products with ChangeNotifier {
     return results;
   }
 
+  Future<void> updateStatus(
+      {required String productId, required String status}) async {
+    var uri = Api.updateProductStatus;
+    var response = await http.post(Uri.parse(uri), body: {
+      "product_id": productId,
+      "status": status,
+    });
+    notifyListeners();
+  }
+
   Future<dynamic> deleteProduct({required String productId}) async {}
   Future<Product> findById({required String productId}) async {
     Product product;
@@ -197,5 +230,16 @@ class Products with ChangeNotifier {
       checkNull = false;
     }
     return checkNull;
+  }
+
+  Future<void> resetField() async {
+    _productIdController = TextEditingController();
+    _storeIdController = TextEditingController();
+    _categoryIdController = TextEditingController();
+    _productNameController = TextEditingController();
+    _productDetailController = TextEditingController();
+    _statusController = TextEditingController();
+    _priceController = TextEditingController();
+    _unitController = TextEditingController();
   }
 }

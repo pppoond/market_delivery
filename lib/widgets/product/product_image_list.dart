@@ -27,7 +27,7 @@ class ProductImageList extends StatelessWidget {
                     return i == 0
                         ? Row(children: [
                             Container(
-                              margin: EdgeInsets.only(left: 7),
+                              margin: EdgeInsets.only(left: 16),
                               child: InkWell(
                                 onTap: () {
                                   showCupertinoDialog(
@@ -181,7 +181,7 @@ class ProductImageList extends StatelessWidget {
                   shrinkWrap: true,
                   itemCount: 1,
                   itemBuilder: (context, i) => Container(
-                    margin: EdgeInsets.only(left: 7),
+                    margin: EdgeInsets.only(left: 16),
                     child: InkWell(
                       onTap: () {
                         showCupertinoDialog(
