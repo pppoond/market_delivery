@@ -57,12 +57,20 @@ class CartList extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    "฿${cartPrice.toStringAsFixed(0)} x $cartQuantity",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  RichText(
+                    text: TextSpan(
+                        style: TextStyle(color: Colors.black),
+                        children: [
+                          TextSpan(
+                            text:
+                                "฿${cartPrice.toStringAsFixed(0)} x $cartQuantity = ",
+                          ),
+                          TextSpan(
+                              text: "฿${cartPrice * cartQuantity}",
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor,
+                                  fontWeight: FontWeight.bold)),
+                        ]),
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import 'package:market_delivery/screens/store/store_detail_screen.dart';
 
 import 'package:provider/provider.dart';
@@ -35,6 +36,7 @@ import './model/customer.dart';
 import './model/store.dart';
 import './model/product_image.dart';
 import './model/product.dart';
+import './model/order.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,6 +93,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => ProductImages(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Orders(),
         ),
       ],
       child: MaterialApp(

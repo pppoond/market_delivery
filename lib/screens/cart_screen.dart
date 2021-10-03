@@ -45,9 +45,16 @@ class CartScreen extends StatelessWidget {
                         itemBuilder: (context, i) {
                           return CartList(
                             id: cartItem.cart.keys.toList()[i],
-                            cartId: cartItem.cart.values.toList()[i].id,
-                            cartTitle: cartItem.cart.values.toList()[i].title,
-                            cartPrice: cartItem.cart.values.toList()[i].price,
+                            cartId: cartItem.cart.values
+                                .toList()[i]
+                                .product
+                                .productId,
+                            cartTitle: cartItem.cart.values
+                                .toList()[i]
+                                .product
+                                .productName,
+                            cartPrice: double.parse(
+                                cartItem.cart.values.toList()[i].product.price),
                             cartQuantity:
                                 cartItem.cart.values.toList()[i].quantity,
                           );
@@ -76,7 +83,7 @@ class CartScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Food",
+                              "สินค้า",
                               style: TextStyle(fontSize: 16),
                             ),
                             Text(
@@ -92,7 +99,7 @@ class CartScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Total : ",
+                              "ทั้งหมด : ",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -100,7 +107,7 @@ class CartScreen extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              "฿${cartItem.totalFood.toStringAsFixed(0)}",
+                              "฿${cartItem.totalFood.toStringAsFixed(0)} บาท",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -108,6 +115,32 @@ class CartScreen extends StatelessWidget {
                               ),
                             ),
                           ],
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(0),
+                          child: TextButton(
+                            onPressed: () async {},
+                            style: TextButton.styleFrom(
+                              primary: Colors.white,
+                              backgroundColor: Theme.of(context).accentColor,
+                              minimumSize: Size(
+                                double.infinity,
+                                50,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text(
+                              "ยืนยันออเดอร์",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),

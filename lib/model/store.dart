@@ -247,6 +247,7 @@ class Stores with ChangeNotifier {
       status: result['result'][0]['status'],
       timeReg: DateTime.parse(result['result'][0]['time_reg']),
     );
+    notifyListeners();
   }
 
   Future<Null> chooseImage(BuildContext ctx, ImageSource imageSource) async {

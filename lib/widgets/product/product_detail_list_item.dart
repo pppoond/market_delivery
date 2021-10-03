@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/cart.dart';
 import 'package:market_delivery/utils/api.dart';
+import 'package:provider/provider.dart';
 
 import '../../model/product.dart';
+import '../detail_list_modal.dart';
 
 class ProductDetailListItem extends StatelessWidget {
   Product product;
@@ -17,6 +20,10 @@ class ProductDetailListItem extends StatelessWidget {
       onTap: () {
         // DetailListModal.showModal(
         //     context, id, foodTitle, foodPrice, foodImage, restaurantTitle);
+        showModal(
+          context: context,
+          product: product,
+        );
       },
       child: Card(
         key: ValueKey(product.productId),
@@ -94,6 +101,162 @@ class ProductDetailListItem extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Future<dynamic> showModal(
+      {required BuildContext context, required Product product}) {
+    int _counter = 1;
+    double _calculatePrice = double.parse(product.price);
+
+    final cart = Provider.of<Cart>(context, listen: false);
+
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            void itemCount(value) {
+              setState(() {
+                if (value == "+") {
+                  if (_counter > 9) {
+                    return;
+                  }
+                  _counter = _counter + 1;
+                } else {
+                  if (_counter < 2) {
+                    return;
+                  }
+                  _counter = _counter - 1;
+                }
+                _calculatePrice = _counter * double.parse(product.price);
+                print(_calculatePrice);
+              });
+            }
+
+            Widget counterButton(String icon) {
+              return OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  shape: CircleBorder(),
+                ),
+                onPressed: () {
+                  itemCount(icon);
+                },
+                child: Container(
+                  width: 45,
+                  height: 45,
+                  padding: EdgeInsets.only(bottom: 4, left: 1),
+                  alignment: Alignment.center,
+                  child: Text(
+                    icon,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w200,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              );
+            }
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.8,
+              decoration: BoxDecoration(
+                color: Color(0xff757575),
+                border: Border(
+                  top: BorderSide(
+                    width: 0,
+                    color: Color(0xff757575),
+                  ),
+                ),
+              ),
+              child: Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
+                    )),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Image.network(Api.imageUrl +
+                            "products/" +
+                            product.productImages![0].proImgAddr),
+                        SizedBox(height: 10),
+                        RichText(
+                          text: TextSpan(
+                            children: [TextSpan(text: product.productName)],
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          "฿${_calculatePrice.toStringAsFixed(0)}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Theme.of(context).accentColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        counterButton("-"),
+                        Text(
+                          "$_counter",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        counterButton("+"),
+                      ],
+                    ),
+                    SafeArea(
+                      child: Container(
+                        height: 45,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Theme.of(context).accentColor,
+                          ),
+                          onPressed: () {
+                            cart.addProductToCart(
+                                product: product, quantity: _counter);
+                            Navigator.of(context).pop();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.shopping_cart),
+                              Text(
+                                "เพิ่มเข้าตะกร้า",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

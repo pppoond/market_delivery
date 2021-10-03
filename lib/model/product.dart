@@ -18,6 +18,7 @@ class Product {
     this.productDetail = "",
     this.status = "0",
     this.price = "0",
+    this.unit = "",
     required this.timeReg,
     this.productImages,
   });
@@ -29,6 +30,7 @@ class Product {
   String productDetail;
   String status;
   String price;
+  String unit;
   DateTime timeReg;
   List<ProductImage>? productImages;
 
@@ -40,6 +42,7 @@ class Product {
         productDetail: json["product_detail"],
         status: json["status"],
         price: json['price'],
+        unit: json['unit'],
         timeReg: DateTime.parse(json["time_reg"]),
         productImages: List<ProductImage>.from(
             json["product_images"].map((x) => ProductImage.fromJson(x))),
@@ -53,6 +56,7 @@ class Product {
         "product_detail": productDetail,
         "status": status,
         "price": price,
+        "unit": unit,
         "time_reg": timeReg.toIso8601String(),
         "product_images":
             List<dynamic>.from(productImages!.map((x) => x.toJson())),

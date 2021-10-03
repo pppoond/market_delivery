@@ -183,4 +183,8 @@ class StoreDetailScreen extends StatelessWidget {
     final resId = ModalRoute.of(context)!.settings.arguments as String;
     final stores = Provider.of<Stores>(context, listen: false);
   }
+
+  productModal() async {
+    // return
+  }
 }

@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/product.dart';
 
 class CartItem {
-  final String id;
-  final String title;
-  final double price;
-  final int quantity;
-  final String date;
+  Product product;
+  int quantity;
+  String date;
 
   CartItem({
-    required this.id,
-    required this.title,
-    required this.price,
+    required this.product,
     required this.quantity,
     required this.date,
   });
@@ -29,7 +26,7 @@ class Cart with ChangeNotifier {
   double get totalFood {
     double total = 0.0;
     _carts.forEach((key, cartItem) {
-      total += cartItem.price * cartItem.quantity;
+      total += double.parse(cartItem.product.price) * cartItem.quantity;
     });
     return total;
   }
@@ -39,33 +36,55 @@ class Cart with ChangeNotifier {
     notifyListeners();
   }
 
-  void addItemToCart({
-    required String menuId,
-    required String title,
-    required double price,
-    required int quantity,
-    required String restaurantTitle,
-  }) {
-    print([menuId, title, price, quantity, restaurantTitle]);
+  // void addItemToCart({
+  //   required String menuId,
+  //   required String title,
+  //   required double price,
+  //   required int quantity,
+  //   required String restaurantTitle,
+  // }) {
+  //   print([menuId, title, price, quantity, restaurantTitle]);
 
-    if (_carts.containsKey(menuId)) {
+  //   if (_carts.containsKey(menuId)) {
+  //     _carts.update(
+  //       menuId,
+  //       (existingCartItem) => CartItem(
+  //         id: existingCartItem.id,
+  //         title: existingCartItem.title,
+  //         price: existingCartItem.price,
+  //         quantity: existingCartItem.quantity + quantity,
+  //         date: DateTime.now().toString(),
+  //       ),
+  //     );
+  //   } else {
+  //     _carts.putIfAbsent(
+  //         menuId,
+  //         () => CartItem(
+  //             id: DateTime.now().toString(),
+  //             title: title,
+  //             price: price,
+  //             quantity: quantity,
+  //             date: DateTime.now().toString()));
+  //   }
+  //   notifyListeners();
+  // }
+
+  void addProductToCart(
+      {required Product product, required int quantity}) async {
+    if (_carts.containsKey(product.productId)) {
       _carts.update(
-        menuId,
+        product.productId,
         (existingCartItem) => CartItem(
-          id: existingCartItem.id,
-          title: existingCartItem.title,
-          price: existingCartItem.price,
+          product: product,
           quantity: existingCartItem.quantity + quantity,
           date: DateTime.now().toString(),
         ),
       );
     } else {
       _carts.putIfAbsent(
-          menuId,
+          product.productId,
           () => CartItem(
-              id: DateTime.now().toString(),
-              title: title,
-              price: price,
+              product: product,
               quantity: quantity,
               date: DateTime.now().toString()));
     }

@@ -134,14 +134,14 @@ class DetailListModal {
                             primary: Theme.of(ctx).accentColor,
                           ),
                           onPressed: () {
-                            cart.addItemToCart(
-                              menuId: id,
-                              title: title,
-                              price: price,
-                              quantity: _counter,
-                              restaurantTitle: restaurantTitle,
-                            );
-                            Navigator.of(ctx).pop();
+                            // cart.addItemToCart(
+                            //   menuId: id,
+                            //   title: title,
+                            //   price: price,
+                            //   quantity: _counter,
+                            //   restaurantTitle: restaurantTitle,
+                            // );
+                            // Navigator.of(ctx).pop();
                           },
                           child: Text(
                             "Add to Cart",
