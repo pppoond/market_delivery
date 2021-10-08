@@ -1,8 +1,11 @@
 class Api {
-  static String host = "http://192.168.1.102/restapi";
+  static String host = "http://192.168.0.102/restapi";
 
   static String loginRider = "$host/api/login_rider.php";
   static String updateRider = "$host/api/update_rider.php";
+  static String riders = "$host/api/riders.php";
+  static String updateCreditWalletRider =
+      "$host/api/update_credit_wallet_rider.php"; //post wallet and credit
 
   static String loginStore = "$host/api/login_store.php";
   static String stores = "$host/api/stores.php";

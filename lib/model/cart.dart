@@ -14,7 +14,20 @@ class CartItem {
 }
 
 class Cart with ChangeNotifier {
+  //--------------------variable-----------------------
+
+  List<Map<String, dynamic>> _paymentMethod = [
+    {
+      'cash_id': 1,
+      'cash_method': 'ชำระเงินปลายทาง',
+      'shipping_cost': '15',
+    },
+  ];
+
   Map<String, CartItem> _carts = {};
+
+  //--------------GetterSetter----------------
+
   Map<String, CartItem> get cart {
     return {..._carts};
   }
@@ -31,43 +44,17 @@ class Cart with ChangeNotifier {
     return total;
   }
 
+  List<Map<String, dynamic>> get paymentMethod => this._paymentMethod;
+
+  set paymentMethod(List<Map<String, dynamic>> value) =>
+      this._paymentMethod = value;
+
+  //---------------------Method----------------------
+
   void removeItem(String productId) {
     _carts.remove(productId);
     notifyListeners();
   }
-
-  // void addItemToCart({
-  //   required String menuId,
-  //   required String title,
-  //   required double price,
-  //   required int quantity,
-  //   required String restaurantTitle,
-  // }) {
-  //   print([menuId, title, price, quantity, restaurantTitle]);
-
-  //   if (_carts.containsKey(menuId)) {
-  //     _carts.update(
-  //       menuId,
-  //       (existingCartItem) => CartItem(
-  //         id: existingCartItem.id,
-  //         title: existingCartItem.title,
-  //         price: existingCartItem.price,
-  //         quantity: existingCartItem.quantity + quantity,
-  //         date: DateTime.now().toString(),
-  //       ),
-  //     );
-  //   } else {
-  //     _carts.putIfAbsent(
-  //         menuId,
-  //         () => CartItem(
-  //             id: DateTime.now().toString(),
-  //             title: title,
-  //             price: price,
-  //             quantity: quantity,
-  //             date: DateTime.now().toString()));
-  //   }
-  //   notifyListeners();
-  // }
 
   void addProductToCart(
       {required Product product, required int quantity}) async {

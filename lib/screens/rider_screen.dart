@@ -5,10 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:market_delivery/screens/order/rider_result_screen.dart';
-import 'package:market_delivery/widgets/order/rider_order_modal.dart';
+
+import 'package:provider/provider.dart';
 
 import '../widgets/drawer/rider_drawer.dart';
 import './stream_api_screen.dart';
+
+import 'package:market_delivery/widgets/order/rider_order_modal.dart';
+
+import '../model/rider.dart';
 
 class RiderScreen extends StatefulWidget {
   static const routeName = "/rider-screen";
@@ -27,6 +32,8 @@ class _RiderScreenState extends State<RiderScreen> {
   bool isShowLocation = false;
   @override
   Widget build(BuildContext context) {
+    final riderProvider = Provider.of<Riders>(context, listen: false);
+    riderProvider.findById();
     return Stack(
       children: [
         (inOrder)

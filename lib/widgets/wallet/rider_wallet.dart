@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../model/rider.dart';
 
 import '../../screens/wallet/rider_credit_screen.dart';
 import '../../screens/wallet/rider_money_screen.dart';
@@ -24,26 +26,33 @@ class RiderWallet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 7,
+    return SingleChildScrollView(
+      child: Consumer<Riders>(
+        builder: (context, riderData, child) => Container(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 7,
+              ),
+              drawerItem(
+                  leadingIcon: Icon(Icons.wallet_travel),
+                  title: "กระเป๋าเครดิต \n${riderData.riderModel!.credit} บาท",
+                  onTap: () {
+                    Navigator.of(context)
+                        .pushNamed(RiderCreditScreen.routeName);
+                  }),
+              Divider(),
+              drawerItem(
+                  leadingIcon: Icon(Icons.account_balance_wallet),
+                  title: "กระเป๋าเงิน \n${riderData.riderModel!.wallet} บาท",
+                  onTap: () {
+                    Navigator.of(context).pushNamed(RiderMoneyScreen.routeName);
+                  }),
+              Divider(),
+            ],
+          ),
         ),
-        drawerItem(
-            leadingIcon: Icon(Icons.wallet_travel),
-            title: "กระเป๋าเครดิต \n2500 บาท",
-            onTap: () {
-              Navigator.of(context).pushNamed(RiderCreditScreen.routeName);
-            }),
-        Divider(),
-        drawerItem(
-            leadingIcon: Icon(Icons.account_balance_wallet),
-            title: "กระเป๋าเงิน \n350 บาท",
-            onTap: () {
-              Navigator.of(context).pushNamed(RiderMoneyScreen.routeName);
-            }),
-        Divider(),
-      ],
+      ),
     );
   }
 }

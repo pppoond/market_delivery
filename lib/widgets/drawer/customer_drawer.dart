@@ -138,6 +138,13 @@ class CustomerDrawer extends StatelessWidget {
               Navigator.of(context).pushNamed(CartScreen.routeName);
             }),
         Divider(),
+        drawerItem(
+            leadingIcon: Icon(Icons.receipt_rounded),
+            title: "คำสั่งซื้อของฉัน",
+            onTap: () {
+              Navigator.of(context).pushNamed(CartScreen.routeName);
+            }),
+        Divider(),
         Spacer(),
         Divider(),
         drawerItem(

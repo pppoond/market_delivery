@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import '../../widgets/wallet/rider_credit_modal.dart';
 import '../../widgets/wallet/rider_fill_modal.dart';
+
+import '../../model/rider.dart';
 
 class RiderCredit extends StatelessWidget {
   Widget drawerItem({required String title, var leadingIcon, required onTap}) {
@@ -55,12 +59,14 @@ class RiderCredit extends StatelessWidget {
                         // )
                       ],
                     ),
-                    Text(
-                      "฿ 500",
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).accentColor),
+                    Consumer<Riders>(
+                      builder: (context, riderData, child) => Text(
+                        "฿ ${riderData.riderModel!.credit}",
+                        style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).accentColor),
+                      ),
                     )
                   ],
                 ),
@@ -75,7 +81,7 @@ class RiderCredit extends StatelessWidget {
             ),
             title: "เติมเครดิต",
             onTap: () {
-              RiderFillModal.showModal(ctx: context, orderId: "1");
+              RiderFillModal.showModal(context: context);
             }),
         Divider(),
         drawerItem(

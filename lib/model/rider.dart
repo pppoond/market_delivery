@@ -1,12 +1,97 @@
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/api.dart';
+import 'dart:io' as io;
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart' as dio;
+
+// To parse this JSON data, do
+//
+//     final rider = riderFromJson(jsonString);
+
+import 'dart:convert';
+
+// To parse this JSON data, do
+//
+//     final rider = riderFromJson(jsonString);
+
+import 'dart:convert';
+
+class Rider {
+  Rider({
+    required this.riderId,
+    required this.username,
+    required this.password,
+    required this.riderPhone,
+    required this.riderName,
+    this.sex = "1",
+    required this.riderStatus,
+    required this.credit,
+    required this.wallet,
+    this.profileImage = "",
+    required this.lat,
+    required this.lng,
+    required this.timeReg,
+  });
+
+  String riderId;
+  String username;
+  String password;
+  String riderPhone;
+  String riderName;
+  String sex;
+  String riderStatus;
+  String credit;
+  String wallet;
+  dynamic profileImage;
+  double lat;
+  double lng;
+  DateTime timeReg;
+
+  factory Rider.fromJson(Map<String, dynamic> json) => Rider(
+        riderId: json["rider_id"],
+        username: json["username"],
+        password: json["password"],
+        riderPhone: json["rider_phone"],
+        riderName: json["rider_name"],
+        sex: json["sex"],
+        riderStatus: json["rider_status"],
+        credit: json["credit"],
+        wallet: json["wallet"],
+        profileImage: json["profile_image"],
+        lat: json["lat"].toDouble(),
+        lng: json["lng"].toDouble(),
+        timeReg: DateTime.parse(json["time_reg"]),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "rider_id": riderId,
+        "username": username,
+        "password": password,
+        "rider_phone": riderPhone,
+        "rider_name": riderName,
+        "sex": sex,
+        "rider_status": riderStatus,
+        "credit": credit,
+        "wallet": wallet,
+        "profile_image": profileImage,
+        "lat": lat,
+        "lng": lng,
+        "time_reg": timeReg.toIso8601String(),
+      };
+}
 
 class Riders with ChangeNotifier {
+  final ImagePicker _picker = ImagePicker();
   //------------------Variable---------------------
+  List<Rider> _riders = [];
+  Rider? _riderModel;
+
   TextEditingController _riderIdController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
@@ -17,7 +102,19 @@ class Riders with ChangeNotifier {
   TextEditingController _creditController = TextEditingController();
   TextEditingController _walletController = TextEditingController();
 
+  TextEditingController _amountMoneyController = TextEditingController();
+
+  io.File? _file;
+
   //------------------GetterSetter---------------
+
+  List<Rider> get riders => this._riders;
+
+  set riders(List<Rider> value) => this._riders = value;
+
+  Rider? get riderModel => this._riderModel;
+
+  set riderModel(Rider? value) => this._riderModel = value;
 
   get riderIdController => this._riderIdController;
 
@@ -55,6 +152,14 @@ class Riders with ChangeNotifier {
 
   set walletController(value) => this._walletController = value;
 
+  get amountMoneyController => this._amountMoneyController;
+
+  set amountMoneyController(value) => this._amountMoneyController = value;
+
+  io.File? get file => this._file;
+
+  set file(io.File? value) => this._file = value;
+
   //-------------------Method---------------------
 
   Future<void> updateCreditRider() async {}
@@ -75,6 +180,21 @@ class Riders with ChangeNotifier {
     });
   }
 
+  Future<void> getRiders() async {
+    _riders.clear();
+    var uri = Api.riders + "?find_rider_status=active";
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+
+    var result = results['result'];
+    print(result.toString());
+    for (var item in result) {
+      _riders.add(Rider.fromJson(item));
+    }
+
+    notifyListeners();
+  }
+
   Future<bool> loginRider(
       {required String username, required String password}) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -83,20 +203,124 @@ class Riders with ChangeNotifier {
       'username': username,
       'password': password,
     });
-    print(response.body);
-    if (response.body != null) {
+    var results = jsonDecode(response.body);
+    print(results.toString());
+    var result = results['result'];
+    if (result['msg'] == 'success') {
       login = true;
+      sharedPreferences.setString("type", "rider");
+
+      await findByUsername(username: result['username']);
     } else {
       login = false;
     }
-    sharedPreferences.setString("type", "rider");
+
     notifyListeners();
     return login;
+  }
+
+  Future<void> findByUsername({required String username}) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var uri = Api.riders + '?find_username=$username';
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+    var result = results['result'];
+    if (result != null) {
+      _riderModel = Rider.fromJson(result[0]);
+      sharedPreferences.setString("rider_id", result[0]['rider_id'].toString());
+    }
+    notifyListeners();
+  }
+
+  Future<void> findById() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? riderId = await sharedPreferences.getString("rider_id");
+    var uri = Api.riders + '?findid=$riderId';
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+    var result = results['result'];
+    if (result != null) {
+      _riderModel = Rider.fromJson(result[0]);
+      sharedPreferences.setString("rider_id", result[0]['rider_id'].toString());
+    }
+    notifyListeners();
   }
 
   void logoutRider() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.remove("type");
+    notifyListeners();
+  }
+
+  Future<String> paymentCredit() async {
+    int wallet =
+        int.parse(_riderModel!.wallet) - int.parse(_amountMoneyController.text);
+    int credit =
+        int.parse(_riderModel!.credit) + int.parse(_amountMoneyController.text);
+    var uri = Api.updateCreditWalletRider;
+    var response = await http.post(Uri.parse(uri), body: {
+      'rider_id': _riderModel!.riderId,
+      'credit': credit.toString(),
+      'wallet': wallet.toString(),
+    });
+    var results = jsonDecode(response.body);
+    var result = results['result'];
+    debugPrint(result.toString());
+    if (results['msg'] == 'success') {
+      await findById();
+      return 'success';
+    } else {
+      return 'unsuccess';
+    }
+  }
+
+  Future<Null> chooseImage(BuildContext ctx, ImageSource imageSource) async {
+    try {
+      var object = await _picker.pickImage(
+        source: imageSource,
+        maxHeight: 800.0,
+        maxWidth: 800.0,
+      );
+
+      _file = io.File(object!.path);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<Null> uploadImage({required BuildContext context}) async {
+    Random random = Random();
+    int i = random.nextInt(1000000);
+    final DateFormat formatter = DateFormat('MMddyyyy');
+    String createDate = formatter.format(DateTime.now());
+    String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
+
+    Map<String, dynamic> map = Map();
+    map['file'] =
+        await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
+
+    dio.FormData formData = dio.FormData.fromMap(map);
+    await dio.Dio().post(Api.uploadImage, data: formData).then((value) {
+      debugPrint("Response ==>> $value");
+      debugPrint("name image");
+      debugPrint("$nameImage");
+      debugPrint("name image");
+      // updateCustomer(ctx: context, profile_image: nameImage);
+    });
+  }
+
+  Future<void> setTextField() async {
+    _riderIdController = TextEditingController(text: _riderModel!.riderId);
+    _usernameController = TextEditingController(text: _riderModel!.username);
+    _passwordController = TextEditingController(text: _riderModel!.password);
+    _riderPhoneController =
+        TextEditingController(text: _riderModel!.riderPhone);
+    _riderNameController = TextEditingController(text: _riderModel!.riderName);
+    _sexController = TextEditingController(text: _riderModel!.sex);
+    _riderStatusController =
+        TextEditingController(text: _riderModel!.riderStatus);
+    _creditController = TextEditingController(text: _riderModel!.credit);
+    _walletController = TextEditingController(text: _riderModel!.wallet);
     notifyListeners();
   }
 }

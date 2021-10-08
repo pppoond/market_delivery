@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/screens/rider/edit_rider_profile_screen.dart';
+import 'package:market_delivery/screens/rider/rider_work_screen.dart';
+import 'package:market_delivery/utils/api.dart';
 import 'package:provider/provider.dart';
 import '../../model/rider.dart';
 
@@ -30,56 +33,70 @@ class RiderDrawer extends StatelessWidget {
     final rider = Provider.of<Riders>(context, listen: false);
     return Column(
       children: [
-        DrawerHeader(
-          // decoration: BoxDecoration(color: Colors.orange),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundImage: NetworkImage(
-                    "https://asianwiki.com/images/3/31/Park_Seo-Joon-TCOE-GV.jpg"),
-                radius: 37,
-              ),
-              SizedBox(width: 15),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "สมหมาย",
-                    style: TextStyle(
-                      color: Theme.of(context).accentColor,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    style: ButtonStyle(
-                      overlayColor: MaterialStateProperty.all(
-                        Colors.transparent,
-                      ),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.zero,
-                      ),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: () {},
-                    child: Text(
-                      "แก้ไขข้อมูลส่วนตัว",
+        Consumer<Riders>(
+          builder: (context, riderData, child) => DrawerHeader(
+            // decoration: BoxDecoration(color: Colors.orange),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage: riderData.riderModel!.profileImage != null
+                      ? riderData.riderModel!.profileImage != ""
+                          ? NetworkImage(Api.imageUrl +
+                              'profiles/' +
+                              riderData.riderModel!.profileImage.toString())
+                          : AssetImage('assets/images/user.png')
+                              as ImageProvider
+                      : AssetImage('assets/images/user.png'),
+                  radius: 37,
+                ),
+                SizedBox(width: 15),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      riderData.riderModel!.riderName,
                       style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
+                        color: Theme.of(context).accentColor,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                    TextButton(
+                      style: ButtonStyle(
+                        overlayColor: MaterialStateProperty.all(
+                          Colors.transparent,
+                        ),
+                        padding: MaterialStateProperty.all<EdgeInsets>(
+                          EdgeInsets.zero,
+                        ),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () async {
+                        await riderData.findById();
+                        await riderData.setTextField();
+                        Navigator.of(context)
+                            .pushNamed(EditRiderProfileScreen.routeName);
+                      },
+                      child: Text(
+                        "แก้ไขข้อมูลส่วนตัว",
+                        style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         drawerItem(
             leadingIcon: Icon(Icons.account_balance_wallet),
             title: "กระเป๋าเงิน",
-            onTap: () {
+            onTap: () async {
+              await rider.findById();
               Navigator.of(context).pushNamed(RiderWalletScreen.routeName);
             }),
         Divider(),
@@ -88,6 +105,20 @@ class RiderDrawer extends StatelessWidget {
             title: "รายได้",
             onTap: () {
               Navigator.of(context).pushNamed(RiderIncomeScreen.routeName);
+            }),
+        // Divider(),
+        // drawerItem(
+        //     leadingIcon: Icon(Icons.shopping_cart),
+        //     title: "My Cart",
+        //     onTap: () {
+        //       Navigator.of(context).pushNamed(CartScreen.routeName);
+        //     }),
+        Divider(),
+        drawerItem(
+            leadingIcon: Icon(Icons.receipt),
+            title: "งานของฉัน",
+            onTap: () {
+              Navigator.of(context).pushNamed(RiderWorkScreen.routeName);
             }),
         // Divider(),
         // drawerItem(
