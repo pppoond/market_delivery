@@ -75,6 +75,7 @@ class RiderDrawer extends StatelessWidget {
                       onPressed: () async {
                         await riderData.findById();
                         await riderData.setTextField();
+                        await riderData.resetFile();
                         Navigator.of(context)
                             .pushNamed(EditRiderProfileScreen.routeName);
                       },

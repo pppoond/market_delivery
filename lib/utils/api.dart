@@ -6,6 +6,7 @@ class Api {
   static String riders = "$host/api/riders.php";
   static String updateCreditWalletRider =
       "$host/api/update_credit_wallet_rider.php"; //post wallet and credit
+  static String uploadRiderImage = "$host/api/upload_rider_image.php";
 
   static String loginStore = "$host/api/login_store.php";
   static String stores = "$host/api/stores.php";

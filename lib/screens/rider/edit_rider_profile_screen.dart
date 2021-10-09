@@ -1,4 +1,7 @@
+import 'package:cool_alert/cool_alert.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../utils/api.dart';
 
 import 'package:provider/provider.dart';
@@ -44,6 +47,7 @@ class EditRiderProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final riderProvider = Provider.of<Riders>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -121,13 +125,39 @@ class EditRiderProfileScreen extends StatelessWidget {
                                 child: GestureDetector(
                                   onTap: () {
                                     print("Select Image");
-                                    // showAlertImage(
-                                    //   title: "",
-                                    //   content: "",
-                                    //   context: context,
-                                    //   defaultActionText: "Camera",
-                                    //   cancelActionText: "Gallary",
-                                    // );
+                                    showCupertinoDialog(
+                                      barrierDismissible: true,
+                                      context: context,
+                                      builder: (context) =>
+                                          CupertinoAlertDialog(
+                                              // title: Text(title),
+                                              // content: Text(content),
+                                              actions: [
+                                            CupertinoDialogAction(
+                                                onPressed: () => riderData
+                                                    .chooseImage(context,
+                                                        ImageSource.camera)
+                                                    .then((value) =>
+                                                        Navigator.of(context)
+                                                            .pop()),
+                                                child: Text("กล้อง")),
+                                            CupertinoDialogAction(
+                                                onPressed: () => riderData
+                                                    .chooseImage(context,
+                                                        ImageSource.gallery)
+                                                    .then((value) =>
+                                                        Navigator.of(context)
+                                                            .pop()),
+                                                child: Text("รูปภาพ")),
+                                            CupertinoDialogAction(
+                                              onPressed: () =>
+                                                  Navigator.of(context).pop(),
+                                              child: Text("ยกเลิก"),
+                                              textStyle: TextStyle(
+                                                  color: Colors.redAccent),
+                                            ),
+                                          ]),
+                                    );
                                   },
                                   child: Icon(
                                     Icons.camera_alt,
@@ -195,6 +225,97 @@ class EditRiderProfileScreen extends StatelessWidget {
                                           controller:
                                               riderData.riderPhoneController,
                                         ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            print("object");
+                                            showCupertinoModalPopup<void>(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  CupertinoActionSheet(
+                                                title: const Text(
+                                                  'เพศ',
+                                                  style: TextStyle(
+                                                      fontSize: 17,
+                                                      fontWeight:
+                                                          FontWeight.normal),
+                                                ),
+                                                actions: <
+                                                    CupertinoActionSheetAction>[
+                                                  CupertinoActionSheetAction(
+                                                    child: const Text('ชาย'),
+                                                    onPressed: () async {
+                                                      riderData.sexController =
+                                                          TextEditingController(
+                                                              text: '1');
+                                                      riderData
+                                                          .notifyListeners();
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                  CupertinoActionSheetAction(
+                                                    child: const Text('หญิง'),
+                                                    onPressed: () async {
+                                                      riderData.sexController =
+                                                          TextEditingController(
+                                                              text: '2');
+                                                      riderData
+                                                          .notifyListeners();
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                  CupertinoActionSheetAction(
+                                                    child: const Text('อื่นๆ'),
+                                                    onPressed: () async {
+                                                      riderData.sexController =
+                                                          TextEditingController(
+                                                              text: '3');
+                                                      riderData
+                                                          .notifyListeners();
+                                                      Navigator.pop(context);
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              SizedBox(
+                                                width: 12,
+                                              ),
+                                              Text(
+                                                'เพศ',
+                                                style: TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 12,
+                                              ),
+                                              Text(
+                                                riderData.sexController.text ==
+                                                        '1'
+                                                    ? 'ชาย'
+                                                    : riderData.sexController
+                                                                .text ==
+                                                            '2'
+                                                        ? 'หญิง'
+                                                        : 'อื่นๆ',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 12,
+                                              ),
+                                              Icon(Icons.arrow_downward),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -214,7 +335,20 @@ class EditRiderProfileScreen extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        bool checkNull =
+                            await riderProvider.checkNullControll();
+                        if (checkNull == true) {
+                          CoolAlert.show(
+                              context: context, type: CoolAlertType.confirm);
+                        } else {
+                          CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.error,
+                              title: 'กรุณากรอกข้อมูลให้ครบ',
+                              confirmBtnText: 'ตกลง');
+                        }
+                      },
                       style: TextButton.styleFrom(
                         primary: Colors.white,
                         backgroundColor: Theme.of(context).accentColor,

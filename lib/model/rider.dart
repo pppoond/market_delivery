@@ -101,7 +101,7 @@ class Riders with ChangeNotifier {
   TextEditingController _riderStatusController = TextEditingController();
   TextEditingController _creditController = TextEditingController();
   TextEditingController _walletController = TextEditingController();
-
+  TextEditingController _profileImageController = TextEditingController();
   TextEditingController _amountMoneyController = TextEditingController();
 
   io.File? _file;
@@ -152,6 +152,12 @@ class Riders with ChangeNotifier {
 
   set walletController(value) => this._walletController = value;
 
+  TextEditingController get profileImageController =>
+      this._profileImageController;
+
+  set profileImageController(TextEditingController value) =>
+      this._profileImageController = value;
+
   get amountMoneyController => this._amountMoneyController;
 
   set amountMoneyController(value) => this._amountMoneyController = value;
@@ -167,6 +173,9 @@ class Riders with ChangeNotifier {
   Future<void> updateWalletRider() async {}
 
   Future<void> updateRider() async {
+    if (_file != null) {
+      uploadImage();
+    }
     var uri = Api.updateRider;
     var response = await http.post(Uri.parse(uri), body: {
       'rider_id': _riderIdController.text,
@@ -175,9 +184,10 @@ class Riders with ChangeNotifier {
       'rider_phone': _riderPhoneController.text,
       'rider_name': _riderNameController.text,
       'sex': _sexController.text,
-      'credit': _creditController.text,
-      'wallet': _walletController.text,
+      'profile_image': _profileImageController.text
     });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
   }
 
   Future<void> getRiders() async {
@@ -286,27 +296,34 @@ class Riders with ChangeNotifier {
     } catch (e) {
       debugPrint(e.toString());
     }
+    notifyListeners();
   }
 
-  Future<Null> uploadImage({required BuildContext context}) async {
+  Future<Null> uploadImage() async {
     Random random = Random();
     int i = random.nextInt(1000000);
     final DateFormat formatter = DateFormat('MMddyyyy');
     String createDate = formatter.format(DateTime.now());
-    String nameImage = 'product_image$i' + '_' + '$createDate.jpg';
+    String nameImage = 'profile$i' + '_' + '$createDate.jpg';
 
     Map<String, dynamic> map = Map();
     map['file'] =
         await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
 
     dio.FormData formData = dio.FormData.fromMap(map);
-    await dio.Dio().post(Api.uploadImage, data: formData).then((value) {
+    await dio.Dio().post(Api.uploadRiderImage, data: formData).then((value) {
       debugPrint("Response ==>> $value");
       debugPrint("name image");
       debugPrint("$nameImage");
       debugPrint("name image");
+      _profileImageController = TextEditingController(text: nameImage);
       // updateCustomer(ctx: context, profile_image: nameImage);
     });
+  }
+
+  Future<void> resetFile() async {
+    _file = null;
+    notifyListeners();
   }
 
   Future<void> setTextField() async {
@@ -321,6 +338,26 @@ class Riders with ChangeNotifier {
         TextEditingController(text: _riderModel!.riderStatus);
     _creditController = TextEditingController(text: _riderModel!.credit);
     _walletController = TextEditingController(text: _riderModel!.wallet);
+    _profileImageController =
+        TextEditingController(text: _riderModel!.profileImage);
     notifyListeners();
+  }
+
+  Future<bool> checkNullControll() async {
+    bool checkNull = false;
+    if (_riderIdController.text != '' &&
+        _usernameController.text != '' &&
+        _passwordController.text != '' &&
+        _riderPhoneController.text != '' &&
+        _riderNameController.text != '' &&
+        _sexController.text != '' &&
+        _riderStatusController.text != '' &&
+        _creditController.text != '' &&
+        _walletController.text != '') {
+      checkNull = true;
+    } else {
+      checkNull = false;
+    }
+    return checkNull;
   }
 }
