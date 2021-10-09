@@ -172,9 +172,9 @@ class Riders with ChangeNotifier {
 
   Future<void> updateWalletRider() async {}
 
-  Future<void> updateRider() async {
+  Future<String> updateRider() async {
     if (_file != null) {
-      uploadImage();
+      await uploadImage();
     }
     var uri = Api.updateRider;
     var response = await http.post(Uri.parse(uri), body: {
@@ -188,6 +188,8 @@ class Riders with ChangeNotifier {
     });
     var results = jsonDecode(response.body);
     debugPrint(results.toString());
+    await findById();
+    return results['msg'];
   }
 
   Future<void> getRiders() async {
@@ -235,7 +237,7 @@ class Riders with ChangeNotifier {
     var response = await http.get(Uri.parse(uri));
     var results = jsonDecode(response.body);
     var result = results['result'];
-    if (result != null) {
+    if (result.length > 0) {
       _riderModel = Rider.fromJson(result[0]);
       sharedPreferences.setString("rider_id", result[0]['rider_id'].toString());
     }
@@ -249,10 +251,10 @@ class Riders with ChangeNotifier {
     var response = await http.get(Uri.parse(uri));
     var results = jsonDecode(response.body);
     var result = results['result'];
-    if (result != null) {
+    if (result.length > 0) {
       _riderModel = Rider.fromJson(result[0]);
-      sharedPreferences.setString("rider_id", result[0]['rider_id'].toString());
     }
+    debugPrint(result.toString());
     notifyListeners();
   }
 

@@ -10,6 +10,10 @@ class Api {
 
   static String loginStore = "$host/api/login_store.php";
   static String stores = "$host/api/stores.php";
+  static String uploadStoreImage = "$host/api/upload_store_image.php";
+  static String updateStore = "$host/api/update_store.php";
+  static String updateStorePassword = "$host/api/update_store_password.php";
+  static String updateStoreLatLng = "$host/api/update_store_latlng.php";
 
   static String orders = "$host/api/orders.php";
 

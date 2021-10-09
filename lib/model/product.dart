@@ -163,17 +163,22 @@ class Products with ChangeNotifier {
     });
   }
 
-  Future<dynamic> addProduct(
-      {required String storeId,
-      required String categoryId,
-      required String productName,
-      required String productDetail}) async {
+  Future<dynamic> addProduct({
+    required String storeId,
+    required String categoryId,
+    required String productName,
+    required String productDetail,
+    required String price,
+    required String unit,
+  }) async {
     var uri = Api.products;
     var response = await http.post(Uri.parse(uri), body: {
       "store_id": storeId,
       "category_id": categoryId,
       "product_name": productName,
       "product_detail": productDetail,
+      "price": price,
+      "unit": unit,
     });
     var results = jsonDecode(response.body);
     return results;
@@ -222,8 +227,7 @@ class Products with ChangeNotifier {
 
   Future<bool> validateForm() async {
     bool checkNull = false;
-    if (_productIdController.text.isNotEmpty &&
-        _categoryIdController.text.isNotEmpty &&
+    if (_categoryIdController.text.isNotEmpty &&
         _productNameController.text.isNotEmpty &&
         _productDetailController.text.isNotEmpty &&
         _priceController.text.isNotEmpty &&

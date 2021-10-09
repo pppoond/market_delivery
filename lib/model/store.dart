@@ -6,7 +6,9 @@ import 'dart:io' as io;
 import 'package:dio/dio.dart' as dio;
 
 import 'package:flutter/cupertino.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/api.dart';
 import 'package:http/http.dart' as http;
@@ -91,9 +93,14 @@ class Stores with ChangeNotifier {
 
   List<Store> _allStores = [];
 
+  TextEditingController _storeIdTextController = TextEditingController();
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
+  TextEditingController _storePhoneTextController = TextEditingController();
   TextEditingController _storeNameTextController = TextEditingController();
+  TextEditingController _profileImageTextController = TextEditingController();
+  TextEditingController _latTextController = TextEditingController();
+  TextEditingController _lngTextController = TextEditingController();
 
   io.File? _file;
   //-------------------Getter_and_Setter----------------------------------------
@@ -106,6 +113,10 @@ class Stores with ChangeNotifier {
 
   set allStores(List<Store> value) => this._allStores = value;
 
+  get storeIdTextController => this._storeIdTextController;
+
+  set storeIdTextController(value) => this._storeIdTextController = value;
+
   get usernameTextController => this._usernameTextController;
 
   set usernameTextController(value) => this._usernameTextController = value;
@@ -114,9 +125,26 @@ class Stores with ChangeNotifier {
 
   set passwordTextController(value) => this._passwordTextController = value;
 
+  get storePhoneTextController => this._storePhoneTextController;
+
+  set storePhoneTextController(value) => this._storePhoneTextController = value;
+
   get storeNameTextController => this._storeNameTextController;
 
   set storeNameTextController(value) => this._storeNameTextController = value;
+
+  get profileImageTextController => this._profileImageTextController;
+
+  get latTextController => this._latTextController;
+
+  set latTextController(value) => this._latTextController = value;
+
+  get lngTextController => this._lngTextController;
+
+  set lngTextController(value) => this._lngTextController = value;
+
+  set profileImageTextController(value) =>
+      this._profileImageTextController = value;
 
   get file => this._file;
 
@@ -154,13 +182,66 @@ class Stores with ChangeNotifier {
     var result = results['result'];
     if (result['msg'] == 'success') {
       login = true;
+      await findStore(username: result['username']);
+      sharedPreferences.setString("type", "store");
     } else {
       login = false;
     }
-    await findStore(username: result['username']);
-    sharedPreferences.setString("type", "store");
+
     notifyListeners();
     return login;
+  }
+
+  Future<String> updateStore() async {
+    if (_file != null) {
+      await uploadImage();
+    }
+    var uri = Api.updateStore;
+    var response = await http.post(Uri.parse(uri), body: {
+      'store_id': _storeIdTextController.text,
+      'username': _usernameTextController.text,
+      'store_phone': _storePhoneTextController.text,
+      'store_name': _storeNameTextController.text,
+      'profile_image': _profileImageTextController.text
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    await findStoreById();
+    return results['msg'];
+  }
+
+  Future<String> updatePassword() async {
+    var uri = Api.updateStorePassword;
+    var response = await http.post(Uri.parse(uri), body: {
+      'store_id': _storeIdTextController.text,
+      'password': _passwordTextController.text
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    await findStoreById();
+    _passwordTextController = TextEditingController(text: '');
+    notifyListeners();
+    return results['msg'];
+  }
+
+  Future<String> updateLatLng() async {
+    print("Lattttt");
+    print(_latTextController.text);
+    print(_lngTextController.text);
+
+    print("Lattttt");
+    var uri = Api.updateStoreLatLng;
+    var response = await http.post(Uri.parse(uri), body: {
+      'store_id': _storeIdTextController.text,
+      'lat': _latTextController.text,
+      'lng': _lngTextController.text
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    await findStoreById();
+    _passwordTextController = TextEditingController(text: '');
+    notifyListeners();
+    return results['msg'];
   }
 
   void logoutStore() async {
@@ -213,21 +294,30 @@ class Stores with ChangeNotifier {
     var result = jsonDecode(response.body);
     debugPrint(result.toString());
     // storeModel = Store.fromJson(result['result'][0]);
-    _storeModel = Store(
-      storeId: result['result'][0]['store_id'],
-      username: result['result'][0]['username'],
-      password: result['result'][0]['password'],
-      storeName: result['result'][0]['store_name'],
-      storePhone: result['result'][0]['store_phone'],
-      status: result['result'][0]['status'],
-      timeReg: DateTime.parse(result['result'][0]['time_reg']),
-    );
+    _storeModel = Store.fromJson(result['result'][0]);
     sharedPreferences.setString(
-        "storeId", result['result'][0]['store_id'].toString());
+        "store_id", result['result'][0]['store_id'].toString());
 
     // debugPrint("catch error");
     // debugPrint(e.toString());
     // debugPrint("________________________");
+
+    notifyListeners();
+  }
+
+  Future<void> findStoreById() async {
+    debugPrint("Find Store By Id");
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? storeId = await sharedPreferences.getString("store_id");
+    var response = await http.get(Uri.parse(Api.stores + "?findid=${storeId}"));
+
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    if (result.length > 0) {
+      _storeModel = Store.fromJson(result[0]);
+    }
+    // storeModel = Store.fromJson(result['result'][0]);
 
     notifyListeners();
   }
@@ -262,27 +352,71 @@ class Stores with ChangeNotifier {
     } catch (e) {
       debugPrint(e.toString());
     }
+    notifyListeners();
   }
 
-  Future<Null> uploadImage({required BuildContext context}) async {
+  Future<Null> uploadImage() async {
     Random random = Random();
     int i = random.nextInt(1000000);
-    String nameImage = 'store$i.jpg';
-    try {
-      Map<String, dynamic> map = Map();
-      map['file'] =
-          await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
+    final DateFormat formatter = DateFormat('MMddyyyy');
+    String createDate = formatter.format(DateTime.now());
+    String nameImage = 'profile$i' + '_' + '$createDate.jpg';
 
-      dio.FormData formData = dio.FormData.fromMap(map);
-      await dio.Dio().post(Api.uploadImage, data: formData).then((value) {
-        debugPrint("Response ==>> $value");
-        debugPrint("name image");
-        debugPrint("$nameImage");
-        debugPrint("name image");
-        // updateCustomer(ctx: context, profile_image: nameImage);
-      });
-    } catch (e) {
-      debugPrint(e.toString());
+    Map<String, dynamic> map = Map();
+    map['file'] =
+        await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
+
+    dio.FormData formData = dio.FormData.fromMap(map);
+    await dio.Dio().post(Api.uploadStoreImage, data: formData).then((value) {
+      debugPrint("Response ==>> $value");
+      debugPrint("name image");
+      debugPrint("$nameImage");
+      debugPrint("name image");
+      _profileImageTextController = TextEditingController(text: nameImage);
+      // updateCustomer(ctx: context, profile_image: nameImage);
+    });
+  }
+
+  Future<void> setTextField() async {
+    _storeIdTextController = TextEditingController(text: _storeModel.storeId);
+    _usernameTextController = TextEditingController(text: _storeModel.username);
+    _passwordTextController = TextEditingController();
+    _storePhoneTextController =
+        TextEditingController(text: _storeModel.storePhone);
+    _storeNameTextController =
+        TextEditingController(text: _storeModel.storeName);
+    _profileImageTextController =
+        TextEditingController(text: _storeModel.profileImage);
+    notifyListeners();
+  }
+
+  Future<bool> checkNullControll() async {
+    bool checkNull = false;
+    if (_storeIdTextController.text != '' &&
+        _usernameTextController.text != '' &&
+        _passwordTextController.text != '' &&
+        _storePhoneTextController.text != '' &&
+        _storeNameTextController.text != '') {
+      checkNull = true;
+    } else {
+      checkNull = false;
     }
+    return checkNull;
+  }
+
+  Future<void> resetFile() async {
+    _file = null;
+    notifyListeners();
+  }
+
+  Future<Null> setLatLng(LatLng latLng) async {
+    _storeModel.lat = latLng.latitude;
+    _storeModel.lng = latLng.longitude;
+    _latTextController =
+        TextEditingController(text: latLng.latitude.toString());
+    _lngTextController =
+        TextEditingController(text: latLng.longitude.toString());
+    // moveCamera();
+    notifyListeners();
   }
 }

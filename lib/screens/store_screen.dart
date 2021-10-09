@@ -1,13 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/drawer/store_drawer.dart';
+
+import '../model/store.dart';
 
 class StoreScreen extends StatelessWidget {
   static const routeName = "/store-screen";
 
   @override
   Widget build(BuildContext context) {
+    final storeProvider = Provider.of<Stores>(context, listen: false);
+    storeProvider.findStoreById();
     return Scaffold(
       drawer: Drawer(
         child: StoreDrawer(),

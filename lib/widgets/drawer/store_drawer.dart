@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/screens/store/edit_store_profile_screen.dart';
+import 'package:market_delivery/utils/api.dart';
 
 import 'package:provider/provider.dart';
 
@@ -35,70 +37,83 @@ class StoreDrawer extends StatelessWidget {
     final store = Provider.of<Stores>(context, listen: false);
     return Column(
       children: [
-        DrawerHeader(
-          padding: EdgeInsets.all(0),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: NetworkImage(
-                  "https://cdn.chiangmainews.co.th/wp-content/uploads/2016/12/07143833/10-3.jpg"),
-              fit: BoxFit.cover,
+        Consumer<Stores>(
+          builder: (context, storeData, child) => DrawerHeader(
+            padding: EdgeInsets.all(0),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: storeData.storeModel.profileImage != null
+                    ? storeData.storeModel.profileImage != ""
+                        ? NetworkImage(Api.imageUrl +
+                            'profiles/' +
+                            storeData.storeModel.profileImage.toString())
+                        : AssetImage('assets/images/store.png') as ImageProvider
+                    : AssetImage('assets/images/store.png'),
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          // decoration: BoxDecoration(color: Colors.orange),
-          child: Stack(
-            fit: StackFit.passthrough,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [Colors.black87, Colors.transparent],
-                      begin: const FractionalOffset(0.0, 0.8),
-                      end: const FractionalOffset(0.0, 0.0),
-                      stops: [0.0, 1.0],
-                      tileMode: TileMode.clamp),
-                ),
-              ),
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Store Username",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextButton(
-                          style: ButtonStyle(
-                            overlayColor: MaterialStateProperty.all(
-                              Colors.transparent,
-                            ),
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                              EdgeInsets.zero,
-                            ),
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            "แก้ไขข้อมูลส่วนตัว",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+            // decoration: BoxDecoration(color: Colors.orange),
+            child: Stack(
+              fit: StackFit.passthrough,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [Colors.black87, Colors.transparent],
+                        begin: const FractionalOffset(0.0, 0.8),
+                        end: const FractionalOffset(0.0, 0.0),
+                        stops: [0.0, 1.0],
+                        tileMode: TileMode.clamp),
                   ),
-                ],
-              ),
-            ],
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            storeData.storeModel.storeName,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextButton(
+                            style: ButtonStyle(
+                              overlayColor: MaterialStateProperty.all(
+                                Colors.transparent,
+                              ),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                EdgeInsets.zero,
+                              ),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () async {
+                              await storeData.resetFile();
+                              await storeData.findStoreById();
+                              await storeData.setTextField();
+                              Navigator.of(context)
+                                  .pushNamed(EditStoreProfileScreen.routeName);
+                            },
+                            child: Text(
+                              "แก้ไขข้อมูลส่วนตัว",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
         drawerItem(
@@ -124,7 +139,7 @@ class StoreDrawer extends StatelessWidget {
             }),
         Divider(),
         drawerItem(
-            leadingIcon: Icon(Icons.wallet_travel),
+            leadingIcon: Icon(Icons.account_balance_wallet),
             title: "กระเป๋าเงิน",
             onTap: () {
               Navigator.of(context).pushNamed(StoreWalletScreen.routeName);

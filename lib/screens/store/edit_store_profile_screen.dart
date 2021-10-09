@@ -2,14 +2,15 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:market_delivery/screens/store/store_setting_screen.dart';
 import '../../utils/api.dart';
 
 import 'package:provider/provider.dart';
 
-import '../../model/rider.dart';
+import '../../model/store.dart';
 
-class EditRiderProfileScreen extends StatelessWidget {
-  static const routeName = "/edit-rider-profile-screen";
+class EditStoreProfileScreen extends StatelessWidget {
+  static const routeName = "/edit-store-profile-screen";
   Widget userInputField(
       {required BuildContext context,
       required String hintText,
@@ -47,7 +48,7 @@ class EditRiderProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final riderProvider = Provider.of<Riders>(context, listen: false);
+    final storeProvider = Provider.of<Stores>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -77,13 +78,21 @@ class EditRiderProfileScreen extends StatelessWidget {
                 elevation: 1,
                 centerTitle: true,
                 title: Text(
-                  'แก้ไขข้อมูลส่วนตัว',
+                  'แก้ไขข้อมูลร้าน',
                   style: TextStyle(color: Colors.white),
                 ),
+                actions: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed(StoreSettingScreen.routeName);
+                      },
+                      icon: Icon(Icons.settings)),
+                ],
               ),
               body: SafeArea(
-                child: Consumer<Riders>(
-                  builder: (context, riderData, child) => Center(
+                child: Consumer<Stores>(
+                  builder: (context, storeData, child) => Center(
                     child: Column(
                       children: [
                         SizedBox(
@@ -92,16 +101,16 @@ class EditRiderProfileScreen extends StatelessWidget {
                         CircleAvatar(
                           backgroundColor: Theme.of(context).accentColor,
                           radius: 50,
-                          backgroundImage: (riderData.file != null)
-                              ? FileImage(riderData.file!)
-                              : (riderData.riderModel?.profileImage != null)
-                                  ? (riderData.riderModel?.profileImage != "")
+                          backgroundImage: (storeData.file != null)
+                              ? FileImage(storeData.file!)
+                              : (storeData.storeModel.profileImage != null)
+                                  ? (storeData.storeModel.profileImage != "")
                                       ? NetworkImage(Api.imageUrl +
                                           'profiles/' +
-                                          riderData.riderModel!.profileImage)
-                                      : AssetImage("assets/images/user.png")
+                                          storeData.storeModel.profileImage)
+                                      : AssetImage("assets/images/store.png")
                                           as ImageProvider
-                                  : AssetImage("assets/images/user.png"),
+                                  : AssetImage("assets/images/store.png"),
                           child: Stack(
                             children: [
                               Container(
@@ -135,7 +144,7 @@ class EditRiderProfileScreen extends StatelessWidget {
                                               // content: Text(content),
                                               actions: [
                                             CupertinoDialogAction(
-                                                onPressed: () => riderData
+                                                onPressed: () => storeData
                                                     .chooseImage(context,
                                                         ImageSource.camera)
                                                     .then((value) =>
@@ -143,7 +152,7 @@ class EditRiderProfileScreen extends StatelessWidget {
                                                             .pop()),
                                                 child: Text("กล้อง")),
                                             CupertinoDialogAction(
-                                                onPressed: () => riderData
+                                                onPressed: () => storeData
                                                     .chooseImage(context,
                                                         ImageSource.gallery)
                                                     .then((value) =>
@@ -204,11 +213,11 @@ class EditRiderProfileScreen extends StatelessWidget {
                                         ),
                                         userInputField(
                                           context: context,
-                                          hintText: 'ชื่อ',
-                                          labelText: 'ชื่อ',
+                                          hintText: 'ชื่อร้าน',
+                                          labelText: 'ชื่อร้าน',
                                           obscureText: false,
                                           controller:
-                                              riderData.riderNameController,
+                                              storeData.storeNameTextController,
                                         ),
                                         userInputField(
                                           context: context,
@@ -216,107 +225,92 @@ class EditRiderProfileScreen extends StatelessWidget {
                                           labelText: 'Username',
                                           obscureText: false,
                                           controller:
-                                              riderData.usernameController,
+                                              storeData.usernameTextController,
                                         ),
                                         userInputField(
                                           context: context,
                                           hintText: 'Phone',
                                           labelText: 'Phone',
                                           obscureText: false,
-                                          controller:
-                                              riderData.riderPhoneController,
+                                          controller: storeData
+                                              .storePhoneTextController,
                                         ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            print("object");
-                                            showCupertinoModalPopup<void>(
-                                              context: context,
-                                              builder: (BuildContext context) =>
-                                                  CupertinoActionSheet(
-                                                title: const Text(
-                                                  'เพศ',
-                                                  style: TextStyle(
-                                                      fontSize: 17,
-                                                      fontWeight:
-                                                          FontWeight.normal),
-                                                ),
-                                                actions: <
-                                                    CupertinoActionSheetAction>[
-                                                  CupertinoActionSheetAction(
-                                                    child: const Text('ชาย'),
-                                                    onPressed: () async {
-                                                      riderData.sexController =
-                                                          TextEditingController(
-                                                              text: '1');
-                                                      riderData
-                                                          .notifyListeners();
-                                                      Navigator.pop(context);
-                                                    },
-                                                  ),
-                                                  CupertinoActionSheetAction(
-                                                    child: const Text('หญิง'),
-                                                    onPressed: () async {
-                                                      riderData.sexController =
-                                                          TextEditingController(
-                                                              text: '2');
-                                                      riderData
-                                                          .notifyListeners();
-                                                      Navigator.pop(context);
-                                                    },
-                                                  ),
-                                                  CupertinoActionSheetAction(
-                                                    child: const Text('อื่นๆ'),
-                                                    onPressed: () async {
-                                                      riderData.sexController =
-                                                          TextEditingController(
-                                                              text: '3');
-                                                      riderData
-                                                          .notifyListeners();
-                                                      Navigator.pop(context);
-                                                    },
-                                                  )
-                                                ],
-                                              ),
-                                            );
-                                          },
+                                        Container(
                                           child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: <Widget>[
+                                            children: [
                                               SizedBox(
                                                 width: 12,
                                               ),
-                                              Text(
-                                                'เพศ',
-                                                style: TextStyle(
-                                                  fontSize: 17,
-                                                  fontWeight: FontWeight.bold,
+                                              Expanded(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                          text: 'วอลเลต ',
+                                                          style: TextStyle(
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      TextSpan(
+                                                          text: storeData
+                                                              .storeModel.wallet
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black45,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal)),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                              SizedBox(
-                                                width: 12,
-                                              ),
-                                              Text(
-                                                riderData.sexController.text ==
-                                                        '1'
-                                                    ? 'ชาย'
-                                                    : riderData.sexController
-                                                                .text ==
-                                                            '2'
-                                                        ? 'หญิง'
-                                                        : 'อื่นๆ',
-                                                style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.normal,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 12,
-                                              ),
-                                              Icon(Icons.arrow_downward),
                                             ],
                                           ),
-                                        )
+                                        ),
+                                        SizedBox(
+                                          height: 7,
+                                        ),
+                                        Container(
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 12,
+                                              ),
+                                              Expanded(
+                                                child: RichText(
+                                                  text: TextSpan(
+                                                    style: TextStyle(
+                                                        color: Colors.black),
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                          text: 'วันลงทะเบียน ',
+                                                          style: TextStyle(
+                                                              fontSize: 17,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      TextSpan(
+                                                          text: storeData
+                                                              .storeModel
+                                                              .timeReg
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .black45,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .normal)),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -338,7 +332,7 @@ class EditRiderProfileScreen extends StatelessWidget {
                     child: TextButton(
                       onPressed: () async {
                         bool checkNull =
-                            await riderProvider.checkNullControll();
+                            await storeProvider.checkNullControll();
                         if (checkNull == true) {
                           CoolAlert.show(
                               context: context,
@@ -348,7 +342,7 @@ class EditRiderProfileScreen extends StatelessWidget {
                               cancelBtnText: 'ยกเลิก',
                               confirmBtnText: 'ยืนยัน',
                               onConfirmBtnTap: () async {
-                                var result = await riderProvider.updateRider();
+                                var result = await storeProvider.updateStore();
                                 if (result == 'success') {
                                   Navigator.of(context).pop();
                                   CoolAlert.show(

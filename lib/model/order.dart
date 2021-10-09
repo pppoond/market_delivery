@@ -9,6 +9,12 @@ import './rider.dart';
 
 import '../utils/api.dart';
 
+// To parse required required required this JSON data, do
+//
+//     final order = orderFromJson(jsonString);
+
+import 'dart:convert';
+
 // To parse required required this JSON data, do
 //
 //     final order = orderFromJson(jsonString);
@@ -21,9 +27,11 @@ import 'dart:convert';
 
 import 'dart:convert';
 
-Order orderFromJson(String str) => Order.fromJson(json.decode(str));
+List<Order> orderFromJson(String str) =>
+    List<Order>.from(json.decode(str).map((x) => Order.fromJson(x)));
 
-String orderToJson(Order data) => json.encode(data.toJson());
+String orderToJson(List<Order> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Order {
   Order({
@@ -188,7 +196,7 @@ class RiderId {
   String riderStatus;
   String credit;
   String wallet;
-  dynamic profileImage;
+  String profileImage;
   double lat;
   double lng;
   DateTime timeReg;
@@ -203,7 +211,8 @@ class RiderId {
         riderStatus: json["rider_status"],
         credit: json["credit"],
         wallet: json["wallet"],
-        profileImage: json["profile_image"],
+        profileImage:
+            json["profile_image"] == null ? null : json["profile_image"],
         lat: json["lat"].toDouble(),
         lng: json["lng"].toDouble(),
         timeReg: DateTime.parse(json["time_reg"]),
@@ -219,7 +228,7 @@ class RiderId {
         "rider_status": riderStatus,
         "credit": credit,
         "wallet": wallet,
-        "profile_image": profileImage,
+        "profile_image": profileImage == null ? null : profileImage,
         "lat": lat,
         "lng": lng,
         "time_reg": timeReg.toIso8601String(),
@@ -250,7 +259,7 @@ class StoreId {
   String wallet;
   double lat;
   double lng;
-  int status;
+  String status;
   DateTime timeReg;
 
   factory StoreId.fromJson(Map<String, dynamic> json) => StoreId(

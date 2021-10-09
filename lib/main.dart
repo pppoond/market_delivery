@@ -30,6 +30,11 @@ import './screens/store/product_management_screen.dart';
 import './screens/store/add_product.screen.dart';
 import './screens/rider/rider_work_screen.dart';
 import './screens/rider/edit_rider_profile_screen.dart';
+import './screens/store/edit_store_profile_screen.dart';
+import './screens/wallet/store_money_screen.dart';
+import './screens/store/store_setting_screen.dart';
+import './screens/store/store_password_screen.dart';
+import './screens/store/store_location_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -136,6 +141,11 @@ class MyApp extends StatelessWidget {
           StoreDetailScreen.routeName: (ctx) => StoreDetailScreen(),
           RiderWorkScreen.routeName: (ctx) => RiderWorkScreen(),
           EditRiderProfileScreen.routeName: (ctx) => EditRiderProfileScreen(),
+          EditStoreProfileScreen.routeName: (ctx) => EditStoreProfileScreen(),
+          StoreMoneyScreen.routeName: (ctx) => StoreMoneyScreen(),
+          StoreSettingScreen.routeName: (ctx) => StoreSettingScreen(),
+          StorePasswordScreen.routeName: (ctx) => StorePasswordScreen(),
+          StoreLocationScreen.routeName: (ctx) => StoreLocationScreen(),
         },
       ),
     );

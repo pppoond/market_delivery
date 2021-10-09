@@ -18,7 +18,7 @@ class ProductManagementScreen extends StatelessWidget {
     final productImageProvider =
         Provider.of<ProductImages>(context, listen: false);
     // products.getProduct(storeId: storeProvider.storeModel.storeId.toString());
-    products.getProduct(storeId: "1");
+    products.getProduct(storeId: storeProvider.storeModel.storeId);
     print(storeProvider.storeModel.storeId.toString());
     return Scaffold(
       appBar: AppBar(

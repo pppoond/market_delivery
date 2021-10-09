@@ -211,7 +211,7 @@ class AddProductScreen extends StatelessWidget {
                                   context: context,
                                   hintText: "หน่วย กรัม กีโลกรัม อื่นๆ...",
                                   obscureText: false,
-                                  controller: productProvider.priceController)
+                                  controller: productProvider.unitController)
                             ],
                           ),
                         ),
@@ -242,14 +242,15 @@ class AddProductScreen extends StatelessWidget {
                       text: "ต้องการเพิ่มสินค้าหรือไม่?",
                       onConfirmBtnTap: () async {
                         var addProduct = await productProvider.addProduct(
-                            storeId:
-                                storeProvider.storeModel.storeId.toString(),
-                            categoryId:
-                                productProvider.categoryIdController.text,
-                            productName:
-                                productProvider.productNameController.text,
-                            productDetail:
-                                productProvider.productDetailController.text);
+                          storeId: storeProvider.storeModel.storeId.toString(),
+                          categoryId: productProvider.categoryIdController.text,
+                          productName:
+                              productProvider.productNameController.text,
+                          productDetail:
+                              productProvider.productDetailController.text,
+                          price: productProvider.priceController.text,
+                          unit: productProvider.unitController.text,
+                        );
 
                         var addProductImage =
                             await productImageProvider.uploadImage(
@@ -258,12 +259,18 @@ class AddProductScreen extends StatelessWidget {
                         );
 
                         if (addProduct['msg'] == 'success') {
+                          Navigator.of(context).pop();
+                          productProvider.getProduct(
+                              storeId: storeProvider.storeModel.storeId);
                           CoolAlert.show(
                                   context: context, type: CoolAlertType.success)
                               .then((value) {
                             Navigator.of(context).pop();
                           });
                         } else {
+                          Navigator.of(context).pop();
+                          productProvider.getProduct(
+                              storeId: storeProvider.storeModel.storeId);
                           CoolAlert.show(
                                   context: context, type: CoolAlertType.error)
                               .then((value) {
