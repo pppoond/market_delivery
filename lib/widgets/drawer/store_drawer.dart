@@ -141,7 +141,8 @@ class StoreDrawer extends StatelessWidget {
         drawerItem(
             leadingIcon: Icon(Icons.account_balance_wallet),
             title: "กระเป๋าเงิน",
-            onTap: () {
+            onTap: () async {
+              await store.findStoreById();
               Navigator.of(context).pushNamed(StoreWalletScreen.routeName);
             }),
         Divider(),

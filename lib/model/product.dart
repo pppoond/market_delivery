@@ -89,6 +89,9 @@ class Products with ChangeNotifier {
 
   List<Product> get allProducts => this._allProducts;
 
+  List<Product> get allOnlineProducts =>
+      [...this._allProducts.where((element) => element.status == '1')];
+
   set allProducts(List<Product> value) => this._allProducts = value;
 
   TextEditingController get productIdController => this._productIdController;
@@ -212,7 +215,16 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<dynamic> deleteProduct({required String productId}) async {}
+  Future<String> deleteProduct({required String productId}) async {
+    String uri = Api.deleteProduct;
+    var response = await http.post(Uri.parse(uri), body: {
+      'product_id': productId,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    return results['msg'];
+  }
+
   Future<Product> findById({required String productId}) async {
     Product product;
     var response =

@@ -111,6 +111,9 @@ class Stores with ChangeNotifier {
 
   List<Store> get allStores => this._allStores;
 
+  List<Store> get getOnlineStore =>
+      [...this._allStores.where((element) => element.status == 1).toList()];
+
   set allStores(List<Store> value) => this._allStores = value;
 
   get storeIdTextController => this._storeIdTextController;
@@ -220,6 +223,19 @@ class Stores with ChangeNotifier {
     debugPrint(results.toString());
     await findStoreById();
     _passwordTextController = TextEditingController(text: '');
+    notifyListeners();
+    return results['msg'];
+  }
+
+  Future<String> updateStatus() async {
+    var uri = Api.updateStoreStatus;
+    var response = await http.post(Uri.parse(uri), body: {
+      'store_id': _storeModel.storeId,
+      'store_status': _storeModel.status.toString(),
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    await findStoreById();
     notifyListeners();
     return results['msg'];
   }

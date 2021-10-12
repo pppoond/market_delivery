@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:market_delivery/utils/calculate_distance.dart';
+import 'package:provider/provider.dart';
 import '../../screens/store/store_detail_screen.dart';
 import 'package:market_delivery/utils/api.dart';
 
 import '../../model/store.dart';
+import '../../model/customer.dart';
 
 class StoreListItem extends StatelessWidget {
   Store store;
@@ -13,6 +16,7 @@ class StoreListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _deviceSize = MediaQuery.of(context).size;
+    final customerProvider = Provider.of<Customers>(context, listen: false);
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(
@@ -29,14 +33,14 @@ class StoreListItem extends StatelessWidget {
           children: [
             Container(
               width: _deviceSize.width * 0.42,
-              height: _deviceSize.width * 0.15,
+              height: double.infinity,
               child: ClipRRect(
                 child: store.profileImage != null
                     ? store.profileImage != ''
                         ? FittedBox(
                             fit: BoxFit.cover,
                             child: Image.network(
-                              Api.imageUrl + "stores/" + store.profileImage,
+                              Api.imageUrl + "profiles/" + store.profileImage,
                               fit: BoxFit.cover,
                               alignment: Alignment.center,
                             ),
@@ -55,29 +59,38 @@ class StoreListItem extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
-              width: _deviceSize.width * 0.42,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    store.storeName,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    "1.3 km",
-                    style: TextStyle(
+            Consumer<Customers>(builder: (context, customerData, child) {
+              return Container(
+                padding: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
+                width: _deviceSize.width * 0.42,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      store.storeName,
+                      style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    customerProvider.lat == null
+                        ? SizedBox()
+                        : Text(
+                            CalculateDistance.calDistanceLatLng(
+                                    lat1: customerProvider.lat!,
+                                    lng1: customerProvider.lng!,
+                                    lat2: store.lat,
+                                    lng2: store.lng)
+                                .toString(),
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey),
+                          ),
+                  ],
+                ),
+              );
+            }),
           ],
         ),
       ),

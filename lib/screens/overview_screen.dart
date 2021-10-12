@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:provider/provider.dart';
 
@@ -26,6 +29,7 @@ class OverViewScreen extends StatelessWidget {
     final customer = Provider.of<Customers>(context, listen: false);
     customer.loginCheck();
     customer.findCustomer();
+    customer.getCurrentLocation();
     return Scaffold(
       drawer: AppDrawer(),
       floatingActionButton: Container(
@@ -114,5 +118,21 @@ class OverViewScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<LocationData?> getCurrentLocation() async {
+    Location location = Location();
+    try {
+      var status = await Permission.location.status;
+      if (status.isDenied) {
+        await Permission.location.request();
+      }
+      return await location.getLocation();
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        // Permission denied
+      }
+      return null;
+    }
   }
 }

@@ -1,6 +1,8 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:market_delivery/model/store.dart';
 import 'package:provider/provider.dart';
 
 import 'package:provider/src/provider.dart';
@@ -134,7 +136,48 @@ class ProductListItem extends StatelessWidget {
                                 },
                                 child: Text("แก้ไข")),
                             CupertinoActionSheetAction(
-                                onPressed: () {}, child: Text("ลบ")),
+                                onPressed: () async {
+                                  CoolAlert.show(
+                                      context: context,
+                                      type: CoolAlertType.confirm,
+                                      cancelBtnText: 'ยกเลิก',
+                                      confirmBtnText: 'ยืนยัน',
+                                      title: 'ยืนยันเพื่อลบสินค้า',
+                                      onConfirmBtnTap: () async {
+                                        String success =
+                                            await Provider.of<Products>(context,
+                                                    listen: false)
+                                                .deleteProduct(
+                                                    productId:
+                                                        product.productId);
+
+                                        if (success == 'success') {
+                                          Navigator.of(context).pop();
+                                          await CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.success,
+                                            confirmBtnText: 'ตกลง',
+                                          );
+                                          await Provider.of<Products>(context,
+                                                  listen: false)
+                                              .getProduct(
+                                                  storeId: Provider.of<Stores>(
+                                                          context,
+                                                          listen: false)
+                                                      .storeModel
+                                                      .storeId);
+                                        } else {
+                                          Navigator.of(context).pop();
+                                          await CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.error,
+                                            confirmBtnText: 'ตกลง',
+                                          );
+                                        }
+                                        Navigator.of(context).pop();
+                                      });
+                                },
+                                child: Text("ลบ")),
                             CupertinoActionSheetAction(
                                 onPressed: () {
                                   Navigator.of(context).pop();

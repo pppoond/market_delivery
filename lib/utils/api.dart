@@ -14,6 +14,9 @@ class Api {
   static String updateStore = "$host/api/update_store.php";
   static String updateStorePassword = "$host/api/update_store_password.php";
   static String updateStoreLatLng = "$host/api/update_store_latlng.php";
+  static String updateStoreStatus = "$host/api/update_store_status.php";
+
+  static String withdrawStore = "$host/api/withdraw_stores.php";
 
   static String orders = "$host/api/orders.php";
 
@@ -32,6 +35,7 @@ class Api {
   static String updateProduct = "$host/api/update_product.php"; //update product
   static String updateProductStatus =
       "$host/api/update_product_status.php"; //update status product
+  static String deleteProduct = "$host/api/delete_product.php";
 
   static String productImages = "$host/api/product_images.php";
   static String uploadProductImage = "$host/api/upload_product_image.php";

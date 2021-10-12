@@ -44,11 +44,11 @@ class ProductList extends StatelessWidget {
             child: Consumer<Products>(
               builder: (context, productData, child) => ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: productData.allProducts.length > 0
-                      ? productData.allProducts.length
+                  itemCount: productData.allOnlineProducts.length > 0
+                      ? productData.allOnlineProducts.length
                       : 0,
-                  itemBuilder: (context, i) =>
-                      ProductListItem(product: productData.allProducts[i])),
+                  itemBuilder: (context, i) => ProductListItem(
+                      product: productData.allOnlineProducts[i])),
             ),
           )
         ],

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './store.dart';
 import './customer.dart';
@@ -212,7 +213,7 @@ class RiderId {
         credit: json["credit"],
         wallet: json["wallet"],
         profileImage:
-            json["profile_image"] == null ? null : json["profile_image"],
+            json["profile_image"] == null ? '' : json["profile_image"],
         lat: json["lat"].toDouble(),
         lng: json["lng"].toDouble(),
         timeReg: DateTime.parse(json["time_reg"]),
@@ -228,7 +229,7 @@ class RiderId {
         "rider_status": riderStatus,
         "credit": credit,
         "wallet": wallet,
-        "profile_image": profileImage == null ? null : profileImage,
+        "profile_image": profileImage == null ? '' : profileImage,
         "lat": lat,
         "lng": lng,
         "time_reg": timeReg.toIso8601String(),
@@ -295,11 +296,51 @@ class Orders with ChangeNotifier {
   //------------variable-----------------------
 
   Order? _order;
+  List<Order> _orderByStoreId = [];
 
   //------------GetterSetter-------------------
+  List<Order> get countOrderStatus0 {
+    var listOrderByStatusOne =
+        _orderByStoreId.where((element) => element.status == '0').toList();
+
+    return [...listOrderByStatusOne];
+  }
+
+  List<Order> get countOrderStatus2 {
+    var listOrderByStatusOne =
+        _orderByStoreId.where((element) => element.status == '2').toList();
+
+    return [...listOrderByStatusOne];
+  }
+
+  List<Order> get countOrderStatus3 {
+    var listOrderByStatusOne =
+        _orderByStoreId.where((element) => element.status == '3').toList();
+
+    return [...listOrderByStatusOne];
+  }
+
+  List<Order> get countOrderStatus4 {
+    var listOrderByStatusOne =
+        _orderByStoreId.where((element) => element.status == '4').toList();
+
+    return [...listOrderByStatusOne];
+  }
+
+  List<Order> get countOrderStatus5 {
+    var listOrderByStatusOne =
+        _orderByStoreId.where((element) => element.status == '5').toList();
+
+    return [...listOrderByStatusOne];
+  }
+
   Order? get order => this._order;
 
   set order(Order? value) => this._order = value;
+
+  List<Order> get orderByStoreId => this._orderByStoreId;
+
+  set orderByStoreId(List<Order> value) => this._orderByStoreId = value;
 
   //---------------method--------------------------
 
@@ -328,5 +369,20 @@ class Orders with ChangeNotifier {
     });
     var results = jsonDecode(response.body);
     debugPrint(results.toString());
+  }
+
+  Future<void> getOrderByStoreId() async {
+    _orderByStoreId.clear();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? storeId = await sharedPreferences.getString('store_id');
+    String uri = Api.orders + "?store_id=$storeId";
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    for (var item in result) {
+      _orderByStoreId.add(Order.fromJson(item));
+    }
+    notifyListeners();
   }
 }

@@ -7,6 +7,7 @@ import 'dart:convert';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:market_delivery/model/address_model.dart';
@@ -454,6 +455,24 @@ class Customers with ChangeNotifier {
       return result;
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<void> getCurrentLocation() async {
+    Location location = Location();
+    try {
+      var status = await Permission.location.status;
+      if (status.isDenied) {
+        await Permission.location.request();
+      }
+      LocationData getLocation = await location.getLocation();
+      _lat = getLocation.latitude;
+      _lng = getLocation.longitude;
+      notifyListeners();
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        // Permission denied
+      }
     }
   }
 }

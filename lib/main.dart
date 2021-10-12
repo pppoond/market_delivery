@@ -35,6 +35,7 @@ import './screens/wallet/store_money_screen.dart';
 import './screens/store/store_setting_screen.dart';
 import './screens/store/store_password_screen.dart';
 import './screens/store/store_location_screen.dart';
+import './screens/wallet/store_withdraw_history_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -44,6 +45,7 @@ import './model/store.dart';
 import './model/product_image.dart';
 import './model/product.dart';
 import './model/order.dart';
+import './model/withdraw_store.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -104,6 +106,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => Orders(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => WithdrawStores(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -146,6 +151,8 @@ class MyApp extends StatelessWidget {
           StoreSettingScreen.routeName: (ctx) => StoreSettingScreen(),
           StorePasswordScreen.routeName: (ctx) => StorePasswordScreen(),
           StoreLocationScreen.routeName: (ctx) => StoreLocationScreen(),
+          StoreWithdrawHistoryScreen.routeName: (ctx) =>
+              StoreWithdrawHistoryScreen(),
         },
       ),
     );

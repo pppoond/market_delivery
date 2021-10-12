@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:market_delivery/widgets/custom_switch_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/drawer/store_drawer.dart';
 
 import '../model/store.dart';
+import '../model/order.dart';
 
 class StoreScreen extends StatelessWidget {
   static const routeName = "/store-screen";
@@ -12,115 +14,262 @@ class StoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeProvider = Provider.of<Stores>(context, listen: false);
+    final orderProvider = Provider.of<Orders>(context, listen: false);
     storeProvider.findStoreById();
+    orderProvider.getOrderByStoreId();
     return Scaffold(
-      drawer: Drawer(
-        child: StoreDrawer(),
-      ),
-      appBar: AppBar(
-        centerTitle: true,
-        toolbarHeight: 45,
-        elevation: 1,
-        title: Text("จัดการร้าน"),
-        actions: [
-          // IconButton(onPressed: () {}, icon: Icon(Icons.favorite_border)),
-        ],
-      ),
-      body: SafeArea(
-          child: ListView(
+      body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-                        width: 0.5,
-                        color: Theme.of(context).accentColor,
-                        style: BorderStyle.solid))),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "คำสั่งซื้อกำลังดำเนินการ",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green.shade500),
-                ),
-                Divider(),
-                ListView.builder(
-                    itemCount: 1,
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                          color: Colors.grey.shade300,
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Text("คำสั่งซื้อ TL123"),
-                            Spacer(),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 17,
-                            )
-                          ],
-                        ),
-                      );
-                    })
-              ],
+              gradient: LinearGradient(
+                  colors: [
+                    Theme.of(context).accentColor,
+                    const Color(0xFF00CCFF),
+                  ],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(0.0, 1.0),
+                  stops: [0.0, 1.0],
+                  tileMode: TileMode.clamp),
             ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-                        width: 0.5,
-                        color: Theme.of(context).accentColor,
-                        style: BorderStyle.solid))),
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "สำเร็จ",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade500),
+            child: Scaffold(
+              extendBodyBehindAppBar: true,
+              backgroundColor: Colors.transparent,
+              drawer: Drawer(
+                child: StoreDrawer(),
+              ),
+              appBar: AppBar(
+                iconTheme: IconThemeData(
+                  color: Colors.white, //change your color here
                 ),
-                Divider(),
-                ListView.builder(
-                    itemCount: 1,
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return Container(
+                centerTitle: true,
+                toolbarHeight: 45,
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                title: Text(
+                  "จัดการร้าน",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                actions: [
+                  Consumer<Stores>(
+                    builder: (context, storeData, child) => CustomSwitchWidget(
+                      onToggle: (value) {
+                        if (value == true) {
+                          storeData.storeModel.status = 1;
+                          final snackBar = SnackBar(
+                            backgroundColor: Colors.green,
+                            content: const Text('ออนไลน์'),
+                            // action: SnackBarAction(
+                            //   label: 'ตกลง',
+                            //   textColor: Colors.white,
+                            //   onPressed: () {
+                            //     // Some code to undo the change.
+                            //   },
+                            // ),
+                          );
+
+                          // Find the ScaffoldMessenger in the widget tree
+                          // and use it to show a SnackBar.
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        } else {
+                          storeData.storeModel.status = 0;
+                          final snackBar = SnackBar(
+                            content: const Text('ออฟไลน์'),
+                            // action: SnackBarAction(
+                            //   label: 'ตกลง',
+                            //   onPressed: () {
+                            //     // Some code to undo the change.
+                            //   },
+                            // ),
+                          );
+
+                          // Find the ScaffoldMessenger in the widget tree
+                          // and use it to show a SnackBar.
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                        print(value);
+                        storeData.updateStatus();
+                        storeData.notifyListeners();
+                      },
+                      isActive: storeData.storeModel.status == 1 ? true : false,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  )
+                  // IconButton(onPressed: () {}, icon: Icon(Icons.favorite_border)),
+                ],
+              ),
+              body: SafeArea(
+                  child: Center(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                          color: Colors.grey.shade300,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                topRight: Radius.circular(12)),
+                            color: Colors.white),
+                        child: Consumer<Orders>(
+                          builder: (context, orderData, child) => ListView(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            children: [
+                              SizedBox(
+                                height: 16,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.blue.shade100,
+                                    borderRadius: BorderRadius.circular(12)),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 16),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.receipt_sharp,
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                    SizedBox(
+                                      width: 12,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'ยอดขายวันนี้',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .accentColor,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 7,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      orderData.orderByStoreId.length
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 7,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.greenAccent.shade100,
+                                    borderRadius: BorderRadius.circular(12)),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 16),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle,
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                    SizedBox(
+                                      width: 12,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'สำเร็จ',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .accentColor,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 7,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      orderData.countOrderStatus4.length
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 7,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(12)),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 16),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.cancel,
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                    SizedBox(
+                                      width: 12,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'ยกเลิก',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .accentColor,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          SizedBox(
+                                            height: 7,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      orderData.countOrderStatus5.length
+                                          .toString(),
+                                      style: TextStyle(
+                                          fontSize: 17,
+                                          fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        padding: EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            Text("คำสั่งซื้อ TL321"),
-                            Spacer(),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              size: 17,
-                            )
-                          ],
-                        ),
-                      );
-                    })
-              ],
+                      ),
+                    ),
+                  ],
+                ),
+              )),
             ),
           ),
         ],
-      )),
+      ),
     );
   }
 }

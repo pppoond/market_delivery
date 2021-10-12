@@ -46,11 +46,11 @@ class StoreList extends StatelessWidget {
             child: Consumer<Stores>(
               builder: (context, storeData, child) => ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: storeData.allStores.length > 0
-                      ? storeData.allStores.length
+                  itemCount: storeData.getOnlineStore.length > 0
+                      ? storeData.getOnlineStore.length
                       : 0,
                   itemBuilder: (context, i) =>
-                      StoreListItem(store: storeData.allStores[i])),
+                      StoreListItem(store: storeData.getOnlineStore[i])),
             ),
           )
         ],
