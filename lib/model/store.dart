@@ -92,6 +92,7 @@ class Stores with ChangeNotifier {
       timeReg: DateTime.now());
 
   List<Store> _allStores = [];
+  List<Store> _listStoreOnline = [];
 
   TextEditingController _storeIdTextController = TextEditingController();
   TextEditingController _usernameTextController = TextEditingController();
@@ -111,8 +112,9 @@ class Stores with ChangeNotifier {
 
   List<Store> get allStores => this._allStores;
 
-  List<Store> get getOnlineStore =>
-      [...this._allStores.where((element) => element.status == 1).toList()];
+  List<Store> get getOnlineStore {
+    return this._listStoreOnline;
+  }
 
   set allStores(List<Store> value) => this._allStores = value;
 
@@ -160,7 +162,7 @@ class Stores with ChangeNotifier {
 
   Future<void> getAllStores() async {
     _allStores.clear();
-    await http.get(Uri.parse(Api.stores)).then((value) {
+    await http.get(Uri.parse(Api.stores)).then((value) async {
       var results = jsonDecode(value.body);
       var result = results['result'];
       debugPrint(result.toString());
@@ -168,8 +170,18 @@ class Stores with ChangeNotifier {
         _allStores.add(Store.fromJson(item));
       }
       debugPrint(_allStores.length.toString());
+      await getStoreOnline();
       notifyListeners();
     });
+  }
+
+  Future<void> getStoreOnline() async {
+    _listStoreOnline.clear();
+    for (var item in _allStores) {
+      if (item.status == 1) {
+        _listStoreOnline.add(item);
+      }
+    }
   }
 
   Future<bool> loginStore(
@@ -343,16 +355,16 @@ class Stores with ChangeNotifier {
 
     var result = jsonDecode(response.body);
     debugPrint(result.toString());
-    // storeModel = Store.fromJson(result['result'][0]);
-    _storeModel = Store(
-      storeId: result['result'][0]['store_id'],
-      username: result['result'][0]['username'],
-      password: result['result'][0]['password'],
-      storeName: result['result'][0]['store_name'],
-      storePhone: result['result'][0]['store_phone'],
-      status: result['result'][0]['status'],
-      timeReg: DateTime.parse(result['result'][0]['time_reg']),
-    );
+    storeModel = Store.fromJson(result['result'][0]);
+    // _storeModel = Store(
+    //   storeId: result['result'][0]['store_id'],
+    //   username: result['result'][0]['username'],
+    //   password: result['result'][0]['password'],
+    //   storeName: result['result'][0]['store_name'],
+    //   storePhone: result['result'][0]['store_phone'],
+    //   status: result['result'][0]['status'],
+    //   timeReg: DateTime.parse(result['result'][0]['time_reg']),
+    // );
     notifyListeners();
   }
 
@@ -410,7 +422,6 @@ class Stores with ChangeNotifier {
     bool checkNull = false;
     if (_storeIdTextController.text != '' &&
         _usernameTextController.text != '' &&
-        _passwordTextController.text != '' &&
         _storePhoneTextController.text != '' &&
         _storeNameTextController.text != '') {
       checkNull = true;

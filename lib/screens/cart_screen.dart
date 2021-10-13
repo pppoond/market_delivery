@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -400,79 +401,129 @@ class CartScreen extends StatelessWidget {
                               padding: EdgeInsets.all(0),
                               child: TextButton(
                                 onPressed: () async {
-                                  List<Map<String, dynamic>> _listMapCal = [];
-                                  Map _mapCal = {};
-                                  //----------------------------------NOT FINISH-----------------------------
-                                  await riderProvider.getRiders();
-                                  riderProvider.riders;
-                                  for (var item in riderProvider.riders) {
-                                    double distance =
-                                        CalculateDistance.calDistanceLatLng(
-                                            lat1: storeProvider.allStores
-                                                .firstWhere((element) =>
-                                                    element.storeId ==
-                                                    cartItem.cart.values
-                                                        .toList()[0]
-                                                        .product
-                                                        .storeId)
-                                                .lat,
-                                            lng1: storeProvider.allStores
-                                                .firstWhere((element) =>
-                                                    element.storeId ==
-                                                    cartItem.cart.values
-                                                        .toList()[0]
-                                                        .product
-                                                        .storeId)
-                                                .lng,
-                                            lat2: item.lat,
-                                            lng2: item.lng);
+                                  CoolAlert.show(
+                                    context: context,
+                                    type: CoolAlertType.confirm,
+                                    confirmBtnText: 'ยืนยัน',
+                                    cancelBtnText: 'ยกเลิก',
+                                    title: 'ยืนยันคำสั่งซื้อ',
+                                    onConfirmBtnTap: () async {
+                                      List<Map<String, dynamic>> _listMapCal =
+                                          [];
+                                      Map _mapCal = {};
 
-                                    _listMapCal.add({
-                                      'rider_id': item.riderId,
-                                      'distance': distance,
-                                    });
+                                      await riderProvider.getRiders();
+                                      riderProvider.riders;
+                                      for (var item in riderProvider.riders) {
+                                        double distance =
+                                            CalculateDistance.calDistanceLatLng(
+                                                lat1: storeProvider.allStores
+                                                    .firstWhere((element) =>
+                                                        element.storeId ==
+                                                        cartItem.cart.values
+                                                            .toList()[0]
+                                                            .product
+                                                            .storeId)
+                                                    .lat,
+                                                lng1: storeProvider.allStores
+                                                    .firstWhere((element) =>
+                                                        element.storeId ==
+                                                        cartItem.cart.values
+                                                            .toList()[0]
+                                                            .product
+                                                            .storeId)
+                                                    .lng,
+                                                lat2: item.lat,
+                                                lng2: item.lng);
 
-                                    _mapCal[item.riderId] = distance;
-                                  }
-                                  debugPrint(_listMapCal.toList().toString());
-                                  debugPrint(_mapCal.toString());
+                                        _listMapCal.add({
+                                          'rider_id': item.riderId,
+                                          'distance': distance,
+                                        });
 
-                                  var mapEntries = _mapCal.entries.toList()
-                                    ..sort(
-                                        (a, b) => a.value.compareTo(b.value));
+                                        _mapCal[item.riderId] = distance;
+                                      }
+                                      debugPrint(
+                                          _listMapCal.toList().toString());
+                                      debugPrint(_mapCal.toString());
 
-                                  _mapCal
-                                    ..clear()
-                                    ..addEntries(mapEntries);
+                                      var mapEntries = _mapCal.entries.toList()
+                                        ..sort((a, b) =>
+                                            a.value.compareTo(b.value));
 
-                                  debugPrint(_mapCal.toString());
-                                  debugPrint(
-                                      _mapCal.keys.toList().first.toString());
-                                  debugPrint(
-                                      _mapCal.values.toList().first.toString());
-                                  debugPrint(customerProvider
-                                      .customerModel!.customerId
-                                      .toString());
+                                      _mapCal
+                                        ..clear()
+                                        ..addEntries(mapEntries);
 
-                                  var now = new DateTime.now();
-                                  var formatter = new DateFormat('yyyy-MM-dd');
-                                  String formattedDate = formatter.format(now);
-
-                                  orderProvider.addOrder(
-                                      storeId: cartItem.cart.values
-                                          .toList()[0]
-                                          .product
-                                          .storeId,
-                                      riderId: _mapCal.keys
+                                      debugPrint(_mapCal.toString());
+                                      debugPrint(_mapCal.keys
                                           .toList()
                                           .first
-                                          .toString(),
-                                      customerId: customerProvider
+                                          .toString());
+                                      debugPrint(_mapCal.values
+                                          .toList()
+                                          .first
+                                          .toString());
+                                      debugPrint(customerProvider
                                           .customerModel!.customerId
-                                          .toString(),
-                                      orderDate: formattedDate,
-                                      cashMethod: "1",
-                                      total: cartItem.cart.length.toString());
+                                          .toString());
+
+                                      var now = new DateTime.now();
+                                      var formatter =
+                                          new DateFormat('yyyy-MM-dd');
+                                      String formattedDate =
+                                          formatter.format(now);
+
+                                      String success = await orderProvider
+                                          .addOrder(
+                                              storeId:
+                                                  cartItem
+                                                      .cart.values
+                                                      .toList()[0]
+                                                      .product
+                                                      .storeId,
+                                              riderId:
+                                                  _mapCal
+                                                      .keys
+                                                      .toList()
+                                                      .first
+                                                      .toString(),
+                                              customerId:
+                                                  customerProvider
+                                                      .customerModel!.customerId
+                                                      .toString(),
+                                              addressId: customerProvider
+                                                  .listAddressModel
+                                                  .firstWhere((element) =>
+                                                      element.addrStatus == "1")
+                                                  .addressId
+                                                  .toString(),
+                                              orderDate: formattedDate,
+                                              cashMethod: "1",
+                                              total: cartItem.cart.length
+                                                  .toString());
+
+                                      if (success == 'success') {
+                                        Navigator.of(context).pop();
+                                        await CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.success,
+                                            confirmBtnText: 'ตกลง');
+                                        cartItem.cart = {};
+                                        cartItem.notifyListeners();
+                                        Navigator.of(context).pop();
+                                      } else {
+                                        Navigator.of(context).pop();
+                                        await CoolAlert.show(
+                                            context: context,
+                                            type: CoolAlertType.error,
+                                            confirmBtnText: 'ตกลง');
+                                        cartItem.cart = {};
+                                        cartItem.notifyListeners();
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                  );
                                 },
                                 style: TextButton.styleFrom(
                                   primary: Colors.white,

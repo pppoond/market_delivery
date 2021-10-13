@@ -1,41 +1,58 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
-import './store.dart';
-import './customer.dart';
-import './rider.dart';
-
-import '../utils/api.dart';
-
-// To parse required required required this JSON data, do
+// To parse this JSON data, do
 //
-//     final order = orderFromJson(jsonString);
+//     final orderDetail = orderDetailFromJson(jsonString);
+
+import 'dart:convert';
+// To parse this JSON data, do
+//
+//     final orderDetail = orderDetailFromJson(jsonString);
 
 import 'dart:convert';
 
-// To parse required required this JSON data, do
-//
-//     final order = orderFromJson(jsonString);
+import 'package:market_delivery/utils/api.dart';
 
-import 'dart:convert';
+OrderDetail orderDetailFromJson(String str) =>
+    OrderDetail.fromJson(json.decode(str));
 
-// To parse required this JSON data, do
-//
-//     final order = orderFromJson(jsonString);
+String orderDetailToJson(OrderDetail data) => json.encode(data.toJson());
 
-import 'dart:convert';
+class OrderDetail {
+  OrderDetail({
+    required this.orderDetailId,
+    required this.orderId,
+    required this.productId,
+    required this.quantity,
+    required this.timeReg,
+  });
 
-List<Order> orderFromJson(String str) =>
-    List<Order>.from(json.decode(str).map((x) => Order.fromJson(x)));
+  String orderDetailId;
+  OrderId orderId;
+  ProductId productId;
+  String quantity;
+  DateTime timeReg;
 
-String orderToJson(List<Order> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+  factory OrderDetail.fromJson(Map<String, dynamic> json) => OrderDetail(
+        orderDetailId: json["order_detail_id"],
+        orderId: OrderId.fromJson(json["order_id"]),
+        productId: ProductId.fromJson(json["product_id"]),
+        quantity: json["quantity"],
+        timeReg: DateTime.parse(json["time_reg"]),
+      );
 
-class Order {
-  Order({
+  Map<String, dynamic> toJson() => {
+        "order_detail_id": orderDetailId,
+        "order_id": orderId.toJson(),
+        "product_id": productId.toJson(),
+        "quantity": quantity,
+        "time_reg": timeReg.toIso8601String(),
+      };
+}
+
+class OrderId {
+  OrderId({
     required this.orderId,
     required this.storeId,
     required this.riderId,
@@ -59,7 +76,7 @@ class Order {
   String status;
   DateTime timeReg;
 
-  factory Order.fromJson(Map<String, dynamic> json) => Order(
+  factory OrderId.fromJson(Map<String, dynamic> json) => OrderId(
         orderId: json["order_id"],
         storeId: StoreId.fromJson(json["store_id"]),
         riderId: RiderId.fromJson(json["rider_id"]),
@@ -212,8 +229,7 @@ class RiderId {
         riderStatus: json["rider_status"],
         credit: json["credit"],
         wallet: json["wallet"],
-        profileImage:
-            json["profile_image"] == null ? '' : json["profile_image"],
+        profileImage: json["profile_image"],
         lat: json["lat"].toDouble(),
         lng: json["lng"].toDouble(),
         timeReg: DateTime.parse(json["time_reg"]),
@@ -229,7 +245,7 @@ class RiderId {
         "rider_status": riderStatus,
         "credit": credit,
         "wallet": wallet,
-        "profile_image": profileImage == null ? '' : profileImage,
+        "profile_image": profileImage,
         "lat": lat,
         "lng": lng,
         "time_reg": timeReg.toIso8601String(),
@@ -256,7 +272,7 @@ class StoreId {
   String password;
   String storeName;
   String storePhone;
-  dynamic profileImage;
+  String profileImage;
   String wallet;
   double lat;
   double lng;
@@ -292,127 +308,82 @@ class StoreId {
       };
 }
 
-class Orders with ChangeNotifier {
-  //------------variable-----------------------
+class ProductId {
+  ProductId({
+    required this.productId,
+    required this.storeId,
+    required this.categoryId,
+    required this.productName,
+    this.productDetail = "",
+    this.status = "0",
+    this.price = "0",
+    this.unit = "",
+    required this.timeReg,
+  });
 
-  Order? _order;
-  List<Order> _orderByStoreId = [];
-  List<Order> _orderByCustomerId = [];
+  String productId;
+  String storeId;
+  String categoryId;
+  String productName;
+  String productDetail;
+  String status;
+  String price;
+  String unit;
+  DateTime timeReg;
 
-  //------------GetterSetter-------------------
-  List<Order> get countOrderStoreStatus0 {
-    var listOrderByStatusOne =
-        _orderByStoreId.where((element) => element.status == '0').toList();
+  factory ProductId.fromJson(Map<String, dynamic> json) => ProductId(
+        productId: json["product_id"],
+        storeId: json["store_id"],
+        categoryId: json["category_id"],
+        productName: json["product_name"],
+        productDetail: json["product_detail"],
+        status: json["status"],
+        price: json['price'],
+        unit: json['unit'],
+        timeReg: DateTime.parse(json["time_reg"]),
+      );
 
-    return [...listOrderByStatusOne];
-  }
+  Map<String, dynamic> toJson() => {
+        "product_id": productId,
+        "store_id": storeId,
+        "category_id": categoryId,
+        "product_name": productName,
+        "product_detail": productDetail,
+        "status": status,
+        "price": price,
+        "unit": unit,
+        "time_reg": timeReg.toIso8601String(),
+      };
+}
 
-  List<Order> get countOrderStoreStatus2 {
-    var listOrderByStatusOne =
-        _orderByStoreId.where((element) => element.status == '2').toList();
+class OrderDetails with ChangeNotifier {
+  //-----------------variable--------------------
 
-    return [...listOrderByStatusOne];
-  }
+  List<OrderDetail> _orderDetailList = [];
 
-  List<Order> get countOrderStoreStatus3 {
-    var listOrderByStatusOne =
-        _orderByStoreId.where((element) => element.status == '3').toList();
+  //-----------------GetterSetter----------------
 
-    return [...listOrderByStatusOne];
-  }
+  List<OrderDetail> get orderDetailList => this._orderDetailList;
 
-  List<Order> get countOrderStoreStatus4 {
-    var listOrderByStatusOne =
-        _orderByStoreId.where((element) => element.status == '4').toList();
+  set orderDetailList(value) => this._orderDetailList = value;
 
-    return [...listOrderByStatusOne];
-  }
+  //----------------Method-----------------------
 
-  List<Order> get countOrderStoreStatus5 {
-    var listOrderByStatusOne =
-        _orderByStoreId.where((element) => element.status == '5').toList();
-
-    return [...listOrderByStatusOne];
-  }
-
-  Order? get order => this._order;
-
-  set order(Order? value) => this._order = value;
-
-  List<Order> get orderByStoreId => this._orderByStoreId;
-
-  set orderByStoreId(List<Order> value) => this._orderByStoreId = value;
-
-  List<Order> get orderByCustomerId => this._orderByCustomerId;
-
-  set orderByCustomerId(List<Order> value) => this._orderByCustomerId = value;
-
-  //---------------method--------------------------
-
-  Future<void> getOrder() async {
-    print("Get Orders");
-  }
-
-  Future<String> addOrder(
-      {required String storeId,
-      required String riderId,
-      required String customerId,
-      required String addressId,
-      required String orderDate,
-      required String cashMethod,
-      required String total}) async {
-    debugPrint('Add Order');
-    debugPrint('$storeId $riderId $customerId $orderDate $cashMethod $total');
-    var uri = Api.orders;
-    var response = await http.post(Uri.parse(uri), body: {
-      'store_id': storeId,
-      'rider_id': riderId,
-      'customer_id': customerId,
-      'address_id': addressId,
-      'order_date': orderDate,
-      'total': total,
-      'cash_method': cashMethod,
-      'order_status': "0"
-    });
-    var results = jsonDecode(response.body);
-    debugPrint(results.toString());
-    return results['result']['order_id'];
-  }
-
-  Future<void> getOrderByStoreId() async {
-    _orderByStoreId.clear();
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? storeId = await sharedPreferences.getString('store_id');
-    String uri = Api.orders + "?store_id=$storeId";
+  Future<void> getOrderDetailByOrderId({required String orderId}) async {
+    _orderDetailList.clear();
+    String uri = Api.orderDetails + "?order_id=$orderId";
     var response = await http.get(Uri.parse(uri));
     var results = jsonDecode(response.body);
     debugPrint(results.toString());
     var result = results['result'];
     for (var item in result) {
-      _orderByStoreId.add(Order.fromJson(item));
+      _orderDetailList.add(OrderDetail.fromJson(item));
     }
     notifyListeners();
   }
 
-  Future<void> getOrderByCustomerId() async {
-    _orderByCustomerId.clear();
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? customerId = await sharedPreferences.getString('customerId');
-    String uri = Api.orders + "?customer_id=$customerId";
-    var response = await http.get(Uri.parse(uri));
-    var results = jsonDecode(response.body);
-    debugPrint(results.toString());
-    var result = results['result'];
-    for (var item in result) {
-      _orderByCustomerId.add(Order.fromJson(item));
-    }
-    notifyListeners();
-  }
-
-  Future<void> resetStateOrder() async {
-    _orderByCustomerId.clear();
-    _orderByStoreId.clear();
-    _order = null;
+  Future<void> resetStateOrderDetails() async {
+    _orderDetailList.clear();
     notifyListeners();
   }
 }

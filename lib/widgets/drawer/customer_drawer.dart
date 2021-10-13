@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/cart.dart';
+import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/screens/account_screen.dart';
 
 import 'package:provider/provider.dart';
@@ -33,6 +35,8 @@ class CustomerDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final customer = Provider.of<Customers>(context, listen: false);
+    final cart = Provider.of<Cart>(context, listen: false);
+    final order = Provider.of<Orders>(context, listen: false);
     return Column(
       children: [
         DrawerHeader(
@@ -149,8 +153,10 @@ class CustomerDrawer extends StatelessWidget {
         Divider(),
         drawerItem(
             title: "ออกจากระบบ",
-            onTap: () {
+            onTap: () async {
               customer.logoutCustomer();
+              cart.resetStateCart();
+              order.resetStateOrder();
               print("Log Out");
               Navigator.of(context).pushNamedAndRemoveUntil(
                   OverViewScreen.routeName, (route) => false);

@@ -89,8 +89,11 @@ class Products with ChangeNotifier {
 
   List<Product> get allProducts => this._allProducts;
 
-  List<Product> get allOnlineProducts =>
-      [...this._allProducts.where((element) => element.status == '1')];
+  List<Product> get allOnlineProducts {
+    List<Product> _listShuffle =
+        this._allProducts.where((element) => element.status == '1').toList();
+    return [..._listShuffle];
+  }
 
   set allProducts(List<Product> value) => this._allProducts = value;
 

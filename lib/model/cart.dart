@@ -32,6 +32,8 @@ class Cart with ChangeNotifier {
     return {..._carts};
   }
 
+  set cart(Map<String, CartItem> value) => this._carts = value;
+
   int get itemCount {
     return _carts.length;
   }
@@ -75,6 +77,11 @@ class Cart with ChangeNotifier {
               quantity: quantity,
               date: DateTime.now().toString()));
     }
+    notifyListeners();
+  }
+
+  void resetStateCart() async {
+    _carts = {};
     notifyListeners();
   }
 }

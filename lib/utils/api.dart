@@ -20,6 +20,8 @@ class Api {
 
   static String orders = "$host/api/orders.php";
 
+  static String orderDetails = "$host/api/order_details.php";
+
   static String loginCustomer = "$host/api/login_customer.php";
   static String customer = "$host/api/customers.php";
   static String registerCustomer = "$host/api/add_customer.php";

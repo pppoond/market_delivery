@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/customer.dart';
 import 'package:market_delivery/model/product.dart';
 import 'package:market_delivery/utils/api.dart';
+import 'package:market_delivery/utils/calculate_distance.dart';
 import 'package:market_delivery/widgets/product/product_detail_list_item.dart';
 import 'package:market_delivery/widgets/product/product_list_item.dart';
 import '../../model/store.dart';
@@ -25,6 +27,7 @@ class StoreDetailScreen extends StatelessWidget {
 
     final stores = Provider.of<Stores>(context, listen: false);
     final products = Provider.of<Products>(context, listen: false);
+    final customerProvider = Provider.of<Customers>(context, listen: false);
 
     stores.findById(storeId: storeId);
     products.getProduct(storeId: storeId);
@@ -95,7 +98,7 @@ class StoreDetailScreen extends StatelessWidget {
                                         storeData.storeModel.profileImage != ''
                                     ? Image.network(
                                         Api.imageUrl +
-                                            "stores/" +
+                                            "profiles/" +
                                             storeData.storeModel.profileImage,
                                         fit: BoxFit.cover,
                                         alignment: Alignment.center,
@@ -117,7 +120,12 @@ class StoreDetailScreen extends StatelessWidget {
                                   width: 4,
                                 ),
                                 Text(
-                                  "Distance 3.2 km",
+                                  CalculateDistance.calDistanceLatLng(
+                                          lat1: customerProvider.lat!,
+                                          lng1: customerProvider.lng!,
+                                          lat2: storeData.storeModel.lat,
+                                          lng2: storeData.storeModel.lng)
+                                      .toString(),
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w300,

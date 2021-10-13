@@ -233,6 +233,8 @@ class Customers with ChangeNotifier {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     sharedPreferences.remove("type");
     sharedPreferences.remove("customerId");
+    _customerModel = null;
+    _customerId = null;
     _loginStatus = false;
     notifyListeners();
   }

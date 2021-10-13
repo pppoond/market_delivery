@@ -202,7 +202,7 @@ class StoreScreen extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      orderData.countOrderStatus4.length
+                                      orderData.countOrderStoreStatus4.length
                                           .toString(),
                                       style: TextStyle(
                                           fontSize: 17,
@@ -249,7 +249,7 @@ class StoreScreen extends StatelessWidget {
                                       ),
                                     ),
                                     Text(
-                                      orderData.countOrderStatus5.length
+                                      orderData.countOrderStoreStatus5.length
                                           .toString(),
                                       style: TextStyle(
                                           fontSize: 17,
