@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:market_delivery/model/order_detail.dart';
 
 import 'package:provider/provider.dart';
 
@@ -30,7 +31,8 @@ class CartScreen extends StatelessWidget {
     final storeProvider = Provider.of<Stores>(context, listen: false);
     final orderProvider = Provider.of<Orders>(context, listen: false);
     final riderProvider = Provider.of<Riders>(context, listen: false);
-
+    final orderDetailProvider =
+        Provider.of<OrderDetails>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -502,8 +504,17 @@ class CartScreen extends StatelessWidget {
                                               cashMethod: "1",
                                               total: cartItem.cart.length
                                                   .toString());
+                                      for (var item
+                                          in cartItem.cart.values.toList()) {
+                                        await orderDetailProvider
+                                            .addOrderDetail(
+                                          orderId: success,
+                                          productId: item.product.productId,
+                                          quantity: item.quantity.toString(),
+                                        );
+                                      }
 
-                                      if (success == 'success') {
+                                      if (success == '0') {
                                         Navigator.of(context).pop();
                                         await CoolAlert.show(
                                             context: context,

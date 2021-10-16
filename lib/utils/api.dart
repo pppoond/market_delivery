@@ -19,6 +19,7 @@ class Api {
   static String withdrawStore = "$host/api/withdraw_stores.php";
 
   static String orders = "$host/api/orders.php";
+  static String updateOrderStatus = "$host/api/update_order_status.php";
 
   static String orderDetails = "$host/api/order_details.php";
 

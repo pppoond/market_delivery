@@ -409,6 +409,19 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateOrderStatus(
+      {required String orderId, required String orderStatus}) async {
+    String uri = Api.updateOrderStatus;
+    var response = await http.post(Uri.parse(uri), body: {
+      'order_id': orderId,
+      'order_status': orderStatus,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    notifyListeners();
+  }
+
   Future<void> resetStateOrder() async {
     _orderByCustomerId.clear();
     _orderByStoreId.clear();

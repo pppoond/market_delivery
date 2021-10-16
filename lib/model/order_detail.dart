@@ -367,6 +367,25 @@ class OrderDetails with ChangeNotifier {
 
   set orderDetailList(value) => this._orderDetailList = value;
 
+  double get totalMoney {
+    double total = 0.0;
+    _orderDetailList.forEach((element) {
+      total += double.parse(element.productId.price) *
+          double.parse(element.quantity);
+    });
+    return total;
+  }
+
+  double get totalPayment {
+    double total = 0.0;
+    _orderDetailList.forEach((element) {
+      total += double.parse(element.productId.price) *
+          double.parse(element.quantity);
+    });
+    total += 15;
+    return total;
+  }
+
   //----------------Method-----------------------
 
   Future<void> getOrderDetailByOrderId({required String orderId}) async {
@@ -380,6 +399,21 @@ class OrderDetails with ChangeNotifier {
       _orderDetailList.add(OrderDetail.fromJson(item));
     }
     notifyListeners();
+  }
+
+  Future<void> addOrderDetail({
+    required String orderId,
+    required String productId,
+    required String quantity,
+  }) async {
+    String uri = Api.orderDetails;
+    var response = await http.post(Uri.parse(uri), body: {
+      'order_id': orderId,
+      'product_id': productId,
+      'quantity': quantity,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results['msg']);
   }
 
   Future<void> resetStateOrderDetails() async {

@@ -38,6 +38,10 @@ import './screens/store/store_location_screen.dart';
 import './screens/wallet/store_withdraw_history_screen.dart';
 import './screens/customer/customer_order_screen.dart';
 import './screens/customer/order_detail_screen.dart';
+import './screens/rider/rider_inorder_screen.dart';
+import './screens/rider/rider_order_detail_screen.dart';
+import './screens/rider/rider_confirm_order_status_screen.dart';
+import './screens/rider/rider_delivery_point_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -161,6 +165,12 @@ class MyApp extends StatelessWidget {
               StoreWithdrawHistoryScreen(),
           CustomerOrderScreen.routeName: (ctx) => CustomerOrderScreen(),
           OrderDetailScreen.routeName: (ctx) => OrderDetailScreen(),
+          RiderInorderScreen.routeName: (ctx) => RiderInorderScreen(),
+          RiderOrderDetailScreen.routeName: (ctx) => RiderOrderDetailScreen(),
+          RiderConfirmStatusScreen.routeName: (ctx) =>
+              RiderConfirmStatusScreen(),
+          RiderDeliveryPointScreen.routeName: (ctx) =>
+              RiderDeliveryPointScreen(),
         },
       ),
     );

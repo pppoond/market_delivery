@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../../model/store.dart';
 
-class OrderDetailScreen extends StatelessWidget {
-  static const routeName = "/order-detail-screen";
+class RiderOrderDetailScreen extends StatelessWidget {
+  static const routeName = "/rider-order-detail-screen";
   Widget userInputField(
       {required BuildContext context,
       required String hintText,
@@ -105,83 +105,13 @@ class OrderDetailScreen extends StatelessWidget {
                                         SizedBox(
                                           height: 16,
                                         ),
-                                        Row(
-                                          children: [
-                                            detailData.orderDetailList[0]
-                                                        .orderId.status ==
-                                                    '0'
-                                                ? Text(
-                                                    'รอยืนยันคำสั่งซื้อ',
-                                                    style: TextStyle(
-                                                        color: Colors.red,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  )
-                                                : detailData.orderDetailList[0]
-                                                            .orderId.status ==
-                                                        '1'
-                                                    ? Text(
-                                                        'ร้านกำลังเตรียมสินค้า',
-                                                        style: TextStyle(
-                                                            color: Colors
-                                                                .amber.shade900,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      )
-                                                    : detailData
-                                                                .orderDetailList[
-                                                                    0]
-                                                                .orderId
-                                                                .status ==
-                                                            '2'
-                                                        ? Text(
-                                                            'กำลังส่ง',
-                                                            style: TextStyle(
-                                                                color: Colors
-                                                                    .amber
-                                                                    .shade900,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
-                                                          )
-                                                        : detailData
-                                                                    .orderDetailList[
-                                                                        0]
-                                                                    .orderId
-                                                                    .status ==
-                                                                '3'
-                                                            ? Text(
-                                                                'ถึงแล้ว',
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .blue
-                                                                        .shade900,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                              )
-                                                            : detailData
-                                                                        .orderDetailList[
-                                                                            0]
-                                                                        .orderId
-                                                                        .status ==
-                                                                    '4'
-                                                                ? Text(
-                                                                    'รับสินค้าแล้ว',
-                                                                    style: TextStyle(
-                                                                        color: Colors
-                                                                            .green,
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  )
-                                                                : Text(
-                                                                    'ยกเลิก',
-                                                                    style: TextStyle(
-                                                                        fontWeight:
-                                                                            FontWeight.bold),
-                                                                  ),
-                                          ],
+                                        Text(
+                                          'คำสั่งซื้อที่ ${detailData.orderDetailList[0].orderId.orderId}',
+                                          style: TextStyle(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold),
                                         ),
                                         SizedBox(
                                           height: 16,
