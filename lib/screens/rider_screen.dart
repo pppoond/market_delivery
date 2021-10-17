@@ -978,6 +978,7 @@ import 'package:market_delivery/screens/order/rider_result_screen.dart';
 import 'package:market_delivery/screens/rider/rider_inorder_screen.dart';
 import 'package:market_delivery/utils/api.dart';
 import 'package:market_delivery/utils/calculate_distance.dart';
+import 'package:market_delivery/widgets/custom_switch_widget.dart';
 
 import 'package:provider/provider.dart';
 
@@ -1014,16 +1015,73 @@ class RiderScreen extends StatelessWidget {
         elevation: 1,
         title: Text("หน้าหลัก"),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.notifications_none),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => StreamApiScreen()));
-            },
-            icon: Icon(Icons.notifications_none),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: Icon(Icons.notifications_none),
+          // ),
+          // IconButton(
+          //   onPressed: () {
+          //     Navigator.of(context).push(
+          //         MaterialPageRoute(builder: (context) => StreamApiScreen()));
+          //   },
+          //   icon: Icon(Icons.notifications_none),
+          // ),
+          Consumer<Riders>(
+            builder: (context, riderData, child) => Row(
+              children: [
+                CustomSwitchWidget(
+                  onToggle: (value) async {
+                    if (value == true) {
+                      riderData.riderModel!.riderStatus = 'active';
+                      final snackBar = SnackBar(
+                        backgroundColor: Colors.green,
+                        content: const Text('ออนไลน์'),
+                        // action: SnackBarAction(
+                        //   label: 'ตกลง',
+                        //   textColor: Colors.white,
+                        //   onPressed: () {
+                        //     // Some code to undo the change.
+                        //   },
+                        // ),
+                      );
+
+                      // Find the ScaffoldMessenger in the widget tree
+                      // and use it to show a SnackBar.
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    } else {
+                      riderData.riderModel!.riderStatus = 'offline';
+                      final snackBar = SnackBar(
+                        content: const Text('ออฟไลน์'),
+                        // action: SnackBarAction(
+                        //   label: 'ตกลง',
+                        //   onPressed: () {
+                        //     // Some code to undo the change.
+                        //   },
+                        // ),
+                      );
+
+                      // Find the ScaffoldMessenger in the widget tree
+                      // and use it to show a SnackBar.
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                    print(value);
+                    await riderData.updateStatus();
+                    riderData.notifyListeners();
+                  },
+                  isActive: riderData.riderModel!.riderStatus == 'active'
+                      ? true
+                      : false,
+                ),
+                IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.online_prediction,
+                      color: riderData.riderModel!.riderStatus == 'active'
+                          ? Colors.green
+                          : Colors.grey,
+                    )),
+              ],
+            ),
           ),
         ],
       ),
@@ -1372,14 +1430,13 @@ class RiderScreen extends StatelessWidget {
                                   ),
                                 ),
                               );
-                            case '1':
-                              return Center(child: Text("STATUS 1"));
+                            // case '1':
+                            //   return Center(child: Text("STATUS 1"));
                             default:
-                              return Center(
-                                  child: Text("${snapshot.data!.body}"));
+                              return Center(child: showMap());
                           }
                         } else {
-                          return Center(child: Text("${snapshot.data!.body}"));
+                          return Center(child: showMap());
                         }
                       } else {
                         return Center(
@@ -1399,6 +1456,26 @@ class RiderScreen extends StatelessWidget {
           );
         }
       }),
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.all(16),
+        child: Consumer<Riders>(
+          builder: (context, riderData, child) => Row(
+            children: [
+              riderData.riderModel!.riderStatus == 'active'
+                  ? Text(
+                      'ออนไลน์',
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.bold),
+                    )
+                  : Text(
+                      'ออฟไลน์',
+                      style: TextStyle(
+                          color: Colors.grey, fontWeight: FontWeight.bold),
+                    ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -1463,6 +1540,8 @@ class RiderScreen extends StatelessWidget {
       child: GoogleMap(
         initialCameraPosition: cameraPosition,
         mapType: MapType.normal,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
         zoomControlsEnabled: false,
         onMapCreated: (controller) {},
       ),

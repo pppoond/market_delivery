@@ -4,6 +4,7 @@ import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/model/order_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:map_launcher/map_launcher.dart';
 
 import '../../model/store.dart';
 
@@ -119,9 +120,36 @@ class RiderDeliveryPointScreen extends StatelessWidget {
                                                   Icons.call,
                                                   color: Colors.red,
                                                 ),
-                                                onPressed: () {
-                                                  launch(
-                                                      'tel:${order.storeId.storePhone}');
+                                                onPressed: () async {
+                                                  String url =
+                                                      'tel:${order.storeId.storePhone}';
+                                                  if (await canLaunch(url)) {
+                                                    launch(url);
+                                                  } else {
+                                                    throw 'Cannot Lau';
+                                                  }
+                                                },
+                                              ),
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.map_sharp,
+                                                  color: Colors.red,
+                                                ),
+                                                onPressed: () async {
+                                                  final availableMaps =
+                                                      await MapLauncher
+                                                          .installedMaps;
+                                                  if (availableMaps
+                                                      .isNotEmpty) {
+                                                    await MapLauncher
+                                                        .showMarker(
+                                                      title: 'Map Google',
+                                                      mapType: MapType.google,
+                                                      coords: Coords(
+                                                          order.storeId.lat,
+                                                          order.storeId.lng),
+                                                    );
+                                                  }
                                                 },
                                               ),
                                             ],
@@ -176,7 +204,45 @@ class RiderDeliveryPointScreen extends StatelessWidget {
                                                     ],
                                                   )
                                                 ],
-                                              )
+                                              ),
+                                              Spacer(),
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.call,
+                                                  color: Colors.green,
+                                                ),
+                                                onPressed: () async {
+                                                  String url =
+                                                      'tel:${order.customerId.customerPhone}';
+                                                  if (await canLaunch(url)) {
+                                                    launch(url);
+                                                  } else {
+                                                    throw 'Cannot Lau';
+                                                  }
+                                                },
+                                              ),
+                                              IconButton(
+                                                icon: Icon(
+                                                  Icons.map_sharp,
+                                                  color: Colors.green,
+                                                ),
+                                                onPressed: () async {
+                                                  final availableMaps =
+                                                      await MapLauncher
+                                                          .installedMaps;
+                                                  if (availableMaps
+                                                      .isNotEmpty) {
+                                                    await MapLauncher
+                                                        .showMarker(
+                                                      title: 'Map Google',
+                                                      mapType: MapType.google,
+                                                      coords: Coords(
+                                                          order.addressId.lat,
+                                                          order.addressId.lng),
+                                                    );
+                                                  }
+                                                },
+                                              ),
                                             ],
                                           ),
                                         ),

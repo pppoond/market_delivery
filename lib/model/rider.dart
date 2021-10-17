@@ -172,6 +172,17 @@ class Riders with ChangeNotifier {
 
   Future<void> updateWalletRider() async {}
 
+  Future<void> updateStatus() async {
+    // notifyListeners();
+    var uri = Api.updateRiderStatus;
+    var response = await http.post(Uri.parse(uri), body: {
+      'rider_id': _riderModel!.riderId,
+      'rider_status': _riderModel!.riderStatus,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+  }
+
   Future<String> updateRider() async {
     if (_file != null) {
       await uploadImage();

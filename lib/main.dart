@@ -42,6 +42,7 @@ import './screens/rider/rider_inorder_screen.dart';
 import './screens/rider/rider_order_detail_screen.dart';
 import './screens/rider/rider_confirm_order_status_screen.dart';
 import './screens/rider/rider_delivery_point_screen.dart';
+import './screens/rider/rider_confirm_customer_order_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -171,6 +172,8 @@ class MyApp extends StatelessWidget {
               RiderConfirmStatusScreen(),
           RiderDeliveryPointScreen.routeName: (ctx) =>
               RiderDeliveryPointScreen(),
+          RiderConfirmCustomerOrderScreen.routeName: (ctx) =>
+              RiderConfirmCustomerOrderScreen(),
         },
       ),
     );

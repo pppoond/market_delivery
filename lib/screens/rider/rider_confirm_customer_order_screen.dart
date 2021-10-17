@@ -2,12 +2,13 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/model/order_detail.dart';
+import 'package:market_delivery/screens/rider_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/store.dart';
 
-class RiderConfirmStatusScreen extends StatelessWidget {
-  static const routeName = "/rider-confirm-status-screen";
+class RiderConfirmCustomerOrderScreen extends StatelessWidget {
+  static const routeName = "/rider-confirm-customer-order-screen";
   Widget userInputField(
       {required BuildContext context,
       required String hintText,
@@ -300,18 +301,25 @@ class RiderConfirmStatusScreen extends StatelessWidget {
                       await CoolAlert.show(
                           context: context,
                           type: CoolAlertType.confirm,
-                          title: 'คุณตรวจสอบสินค้าแล้วหรือไม่?',
+                          title: 'ยืนยัน',
+                          text: 'ลูกค้ารับสินค้าและชำระเงินแล้วหรือไม่?',
                           confirmBtnText: 'ยืนยัน',
                           cancelBtnText: 'ยกเลิก',
                           onConfirmBtnTap: () async {
                             await orders.updateOrderStatus(
-                                orderId: orderId, orderStatus: '2');
+                                orderId: orderId, orderStatus: '4');
                             Navigator.of(context).pop();
+                            await CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.success,
+                                confirmBtnText: 'ตกลง');
+
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                                RiderScreen.routeName, (route) => false);
                             // await orders.updateOrderStatus(
                             //     orderId: orderId,
                             //     orderStatus: '2');
                           });
-                      Navigator.of(context).pop();
                     },
                     style: TextButton.styleFrom(
                       primary: Colors.white,
@@ -325,7 +333,7 @@ class RiderConfirmStatusScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      "รับสินค้า",
+                      "ส่งสินค้า",
                       style: TextStyle(
                         fontSize: 18,
                       ),
