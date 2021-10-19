@@ -170,7 +170,16 @@ class Riders with ChangeNotifier {
 
   Future<void> updateCreditRider() async {}
 
-  Future<void> updateWalletRider() async {}
+  Future<void> updateWalletRider({required String wallet}) async {
+    var uri = Api.updateRiderWallet;
+    var response = await http.post(Uri.parse(uri), body: {
+      'rider_id': _riderModel!.riderId,
+      'wallet': wallet,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    findById();
+  }
 
   Future<void> updateStatus() async {
     // notifyListeners();

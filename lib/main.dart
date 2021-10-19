@@ -36,6 +36,7 @@ import './screens/store/store_setting_screen.dart';
 import './screens/store/store_password_screen.dart';
 import './screens/store/store_location_screen.dart';
 import './screens/wallet/store_withdraw_history_screen.dart';
+import './screens/wallet/rider_withdraw_history_screen.dart';
 import './screens/customer/customer_order_screen.dart';
 import './screens/customer/order_detail_screen.dart';
 import './screens/rider/rider_inorder_screen.dart';
@@ -54,6 +55,8 @@ import './model/product.dart';
 import './model/order.dart';
 import './model/withdraw_store.dart';
 import './model/order_detail.dart';
+import './model/withdraw_rider.dart';
+import './model/admin.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -120,6 +123,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => OrderDetails(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => WithdrawRiders(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Admins(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -164,6 +173,8 @@ class MyApp extends StatelessWidget {
           StoreLocationScreen.routeName: (ctx) => StoreLocationScreen(),
           StoreWithdrawHistoryScreen.routeName: (ctx) =>
               StoreWithdrawHistoryScreen(),
+          RiderWithdrawHistoryScreen.routeName: (ctx) =>
+              RiderWithdrawHistoryScreen(),
           CustomerOrderScreen.routeName: (ctx) => CustomerOrderScreen(),
           OrderDetailScreen.routeName: (ctx) => OrderDetailScreen(),
           RiderInorderScreen.routeName: (ctx) => RiderInorderScreen(),

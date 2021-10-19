@@ -1,6 +1,8 @@
 class Api {
   static String host = "http://192.168.0.102/restapi";
 
+  static String admins = "$host/api/admins.php";
+
   static String loginRider = "$host/api/login_rider.php";
   static String updateRider = "$host/api/update_rider.php";
   static String updateRiderStatus = "$host/api/update_rider_status.php";
@@ -8,6 +10,7 @@ class Api {
   static String updateCreditWalletRider =
       "$host/api/update_credit_wallet_rider.php"; //post wallet and credit
   static String uploadRiderImage = "$host/api/upload_rider_image.php";
+  static String updateRiderWallet = "$host/api/update_rider_wallet.php";
 
   static String loginStore = "$host/api/login_store.php";
   static String stores = "$host/api/stores.php";
@@ -18,6 +21,10 @@ class Api {
   static String updateStoreStatus = "$host/api/update_store_status.php";
 
   static String withdrawStore = "$host/api/withdraw_stores.php";
+
+  static String withdrawRiders = "$host/api/withdraw_riders.php";
+  static String updateWithdrawRiderStatus =
+      "$host/api/update_withdraw_rider_status.php";
 
   static String orders = "$host/api/orders.php";
   static String updateOrderStatus = "$host/api/update_order_status.php";
