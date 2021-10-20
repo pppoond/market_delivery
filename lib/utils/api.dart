@@ -26,6 +26,9 @@ class Api {
   static String updateWithdrawRiderStatus =
       "$host/api/update_withdraw_rider_status.php";
 
+  static String paymentRiders = "$host/api/payment_riders.php";
+  static String uploadSlipPaymentRider = "$host/api/upload_payment_slip.php";
+
   static String orders = "$host/api/orders.php";
   static String updateOrderStatus = "$host/api/update_order_status.php";
 

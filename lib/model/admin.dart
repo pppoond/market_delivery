@@ -2,11 +2,16 @@
 //
 //     final admin = adminFromJson(jsonString);
 
+import 'dart:math';
+import 'dart:io' as io;
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart' as dio;
 
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:market_delivery/utils/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -65,15 +70,22 @@ class Admin {
 }
 
 class Admins with ChangeNotifier {
+  final ImagePicker _picker = ImagePicker();
   //--------------variable-----------------------------
 
   List<Admin> _adminsList = [];
+
+  io.File? _file;
 
   //----------------GetterSetter-----------------------
 
   List<Admin> get adminsList => this._adminsList;
 
   set adminsList(value) => this._adminsList = value;
+
+  get file => this._file;
+
+  set file(value) => this._file = value;
 
   //--------------Method-------------------------------
 
@@ -86,6 +98,48 @@ class Admins with ChangeNotifier {
       _adminsList.add(Admin.fromJson(item));
     }
     debugPrint(result.toString());
+    notifyListeners();
+  }
+
+  Future<Null> chooseImage(BuildContext ctx, ImageSource imageSource) async {
+    try {
+      var object = await _picker.pickImage(
+        source: imageSource,
+        maxHeight: 800.0,
+        maxWidth: 800.0,
+      );
+
+      _file = io.File(object!.path);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    notifyListeners();
+  }
+
+  Future<Null> uploadImage() async {
+    Random random = Random();
+    int i = random.nextInt(1000000);
+    final DateFormat formatter = DateFormat('MMddyyyy');
+    String createDate = formatter.format(DateTime.now());
+    String nameImage = 'slip$i' + '_' + '$createDate.jpg';
+
+    Map<String, dynamic> map = Map();
+    map['file'] =
+        await dio.MultipartFile.fromFile(_file!.path, filename: nameImage);
+
+    dio.FormData formData = dio.FormData.fromMap(map);
+    await dio.Dio().post(Api.uploadRiderImage, data: formData).then((value) {
+      debugPrint("Response ==>> $value");
+      debugPrint("name image");
+      debugPrint("$nameImage");
+      debugPrint("name image");
+      // _profileImageController = TextEditingController(text: nameImage);
+      // updateCustomer(ctx: context, profile_image: nameImage);
+    });
+  }
+
+  Future<void> resetFile() async {
+    _file = null;
     notifyListeners();
   }
 }

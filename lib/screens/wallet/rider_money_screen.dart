@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/payment_rider.dart';
 import 'package:market_delivery/model/rider.dart';
 import 'package:market_delivery/model/withdraw_rider.dart';
+import 'package:market_delivery/screens/wallet/rider_payment_history_screen.dart';
 import 'package:market_delivery/screens/wallet/rider_withdraw_history_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +29,16 @@ class RiderMoneyScreen extends StatelessWidget {
                       .pushNamed(RiderWithdrawHistoryScreen.routeName);
                 },
                 icon: Icon(Icons.history)),
+          ),
+          Consumer<PaymentRiders>(
+            builder: (context, paymentData, child) => IconButton(
+                onPressed: () async {
+                  await paymentData.findPaymentByRiderId(
+                      riderId: riderProvider.riderModel!.riderId);
+                  Navigator.of(context)
+                      .pushNamed(RiderPaymentHistoryScreen.routeName);
+                },
+                icon: Icon(Icons.payment)),
           ),
         ],
       ),

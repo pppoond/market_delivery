@@ -44,6 +44,7 @@ import './screens/rider/rider_order_detail_screen.dart';
 import './screens/rider/rider_confirm_order_status_screen.dart';
 import './screens/rider/rider_delivery_point_screen.dart';
 import './screens/rider/rider_confirm_customer_order_screen.dart';
+import './screens/wallet/rider_payment_history_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -57,6 +58,7 @@ import './model/withdraw_store.dart';
 import './model/order_detail.dart';
 import './model/withdraw_rider.dart';
 import './model/admin.dart';
+import './model/payment_rider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -129,6 +131,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => Admins(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => PaymentRiders(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -185,6 +190,8 @@ class MyApp extends StatelessWidget {
               RiderDeliveryPointScreen(),
           RiderConfirmCustomerOrderScreen.routeName: (ctx) =>
               RiderConfirmCustomerOrderScreen(),
+          RiderPaymentHistoryScreen.routeName: (ctx) =>
+              RiderPaymentHistoryScreen(),
         },
       ),
     );

@@ -37,7 +37,8 @@ class RiderWallet extends StatelessWidget {
               drawerItem(
                   leadingIcon: Icon(Icons.wallet_travel),
                   title: "กระเป๋าเครดิต \n${riderData.riderModel!.credit} บาท",
-                  onTap: () {
+                  onTap: () async {
+                    await riderData.findById();
                     Navigator.of(context)
                         .pushNamed(RiderCreditScreen.routeName);
                   }),

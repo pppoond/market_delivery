@@ -1,11 +1,12 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/payment_rider.dart';
 import 'package:market_delivery/model/rider.dart';
 import 'package:market_delivery/model/withdraw_rider.dart';
 import 'package:provider/provider.dart';
 
-class RiderWithdrawHistoryScreen extends StatelessWidget {
-  static const routeName = "/rider-withdraw-history-screen";
+class RiderPaymentHistoryScreen extends StatelessWidget {
+  static const routeName = "/rider-payment-history-screen";
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +39,13 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                 elevation: 1,
                 centerTitle: true,
                 title: Text(
-                  'ประวัติการถอน',
+                  'ประวัติการฝาก',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
               body: SafeArea(
-                child: Consumer<WithdrawRiders>(
-                  builder: (context, withdrawRiderData, child) => Center(
+                child: Consumer<PaymentRiders>(
+                  builder: (context, paymentRiderData, child) => Center(
                     child: Column(
                       children: [
                         Expanded(
@@ -70,16 +71,15 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                         ListView.builder(
                                             physics: ScrollPhysics(),
                                             shrinkWrap: true,
-                                            itemCount: withdrawRiderData
-                                                .withdrawRiders.length,
+                                            itemCount: paymentRiderData
+                                                .paymentRiderList.length,
                                             itemBuilder: (context, i) {
                                               return InkWell(
                                                 onTap: () {
                                                   showModal(
                                                       ctx: context,
-                                                      withdrawRider:
-                                                          withdrawRiderData
-                                                              .withdrawRiders[i]);
+                                                      paymentRider: paymentRiderData
+                                                          .paymentRiderList[i]);
                                                 },
                                                 child: Container(
                                                   // padding: EdgeInsets.symmetric(
@@ -102,16 +102,16 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                                                       text:
                                                                           ' '),
                                                                   TextSpan(
-                                                                      text: withdrawRiderData
-                                                                          .withdrawRiders[
+                                                                      text: paymentRiderData
+                                                                          .paymentRiderList[
                                                                               i]
                                                                           .bankName),
                                                                   TextSpan(
                                                                       text:
                                                                           ' '),
                                                                   TextSpan(
-                                                                      text: withdrawRiderData
-                                                                          .withdrawRiders[
+                                                                      text: paymentRiderData
+                                                                          .paymentRiderList[
                                                                               i]
                                                                           .noBankAccount),
                                                                 ]),
@@ -123,8 +123,8 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                                                     color: Colors
                                                                         .black),
                                                                 children: [
-                                                                  withdrawRiderData
-                                                                              .withdrawRiders[
+                                                                  paymentRiderData
+                                                                              .paymentRiderList[
                                                                                   i]
                                                                               .payStatus ==
                                                                           '0'
@@ -136,11 +136,11 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                                                                   .bold),
                                                                           text:
                                                                               "กำลังดำเนินการ")
-                                                                      : withdrawRiderData.withdrawRiders[i].payStatus ==
+                                                                      : paymentRiderData.paymentRiderList[i].payStatus ==
                                                                               '1'
                                                                           ? TextSpan(
                                                                               style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                                                                              text: "โอนสำเร็จ")
+                                                                              text: "ฝากสำเร็จ")
                                                                           : TextSpan(style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold), text: "ยกเลิก"),
                                                                 ]),
                                                           ),
@@ -174,7 +174,7 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
 
   showModal({
     required BuildContext ctx,
-    required WithdrawRider withdrawRider,
+    required PaymentRider paymentRider,
   }) {
     return showModalBottomSheet(
         barrierColor: Colors.black.withOpacity(0.55),
@@ -203,7 +203,7 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "รายการถอนเงิน",
+                          "รายการฝากเงิน",
                           style: TextStyle(
                               fontSize: 22, fontWeight: FontWeight.bold),
                         ),
@@ -216,7 +216,7 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                               fontSize: 17, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          withdrawRider.wdRiderId,
+                          paymentRider.payRiderId,
                           style: TextStyle(color: Theme.of(ctx).accentColor),
                         ),
                         SizedBox(
@@ -230,7 +230,7 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                   text: 'ชื่อ ',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              TextSpan(text: withdrawRider.riderId.riderName),
+                              TextSpan(text: paymentRider.riderId.riderName),
                             ])),
                         SizedBox(
                           height: 16,
@@ -243,7 +243,7 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                   text: 'ชื่อธนาคาร ',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              TextSpan(text: withdrawRider.bankName),
+                              TextSpan(text: paymentRider.bankName),
                             ])),
                         SizedBox(
                           height: 16,
@@ -256,7 +256,7 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                   text: 'เลขบัญชี ',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              TextSpan(text: withdrawRider.noBankAccount),
+                              TextSpan(text: paymentRider.noBankAccount),
                             ])),
                         SizedBox(
                           height: 16,
@@ -269,7 +269,7 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                                   text: 'จำนวนเงิน ',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              TextSpan(text: withdrawRider.total),
+                              TextSpan(text: paymentRider.total),
                             ])),
                         SizedBox(
                           height: 16,
@@ -278,13 +278,13 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                           text: TextSpan(
                               style: TextStyle(color: Colors.black),
                               children: [
-                                withdrawRider.payStatus == '0'
+                                paymentRider.payStatus == '0'
                                     ? TextSpan(
                                         style: TextStyle(
                                             color: Colors.red,
                                             fontWeight: FontWeight.bold),
                                         text: "กำลังดำเนินการ")
-                                    : withdrawRider.payStatus == '1'
+                                    : paymentRider.payStatus == '1'
                                         ? TextSpan(
                                             style: TextStyle(
                                                 color: Colors.green,
@@ -299,83 +299,6 @@ class RiderWithdrawHistoryScreen extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            withdrawRider.payStatus == '2' ||
-                                    withdrawRider.payStatus == '1'
-                                ? SizedBox()
-                                : Expanded(
-                                    child: TextButton(
-                                      onPressed: () async {
-                                        CoolAlert.show(
-                                            context: ctx,
-                                            type: CoolAlertType.confirm,
-                                            confirmBtnText: 'ยืนยัน',
-                                            cancelBtnText: 'ยกเลิก',
-                                            title: 'ยืนยัน',
-                                            text: 'ยืนยันเพื่อยกเลิกรายการ',
-                                            onConfirmBtnTap: () async {
-                                              String success =
-                                                  await withdrawRiderProvider
-                                                      .updateWithdrawStatus(
-                                                          wdRiderId:
-                                                              withdrawRider
-                                                                  .wdRiderId,
-                                                          payStatus: '2');
-
-                                              await withdrawRiderProvider
-                                                  .findWithdrawByRiderId(
-                                                      riderId: riderData
-                                                          .riderModel!.riderId);
-                                              withdrawRiderProvider
-                                                  .notifyListeners();
-
-                                              if (success == 'success') {
-                                                var wallet = double.parse(
-                                                        riderData.riderModel!
-                                                            .wallet) +
-                                                    double.parse(
-                                                        withdrawRider.total);
-                                                await riderData
-                                                    .updateWalletRider(
-                                                        wallet:
-                                                            wallet.toString());
-                                                Navigator.of(ctx).pop();
-                                                await CoolAlert.show(
-                                                    context: ctx,
-                                                    type: CoolAlertType.success,
-                                                    confirmBtnText: 'ตกลง');
-
-                                                Navigator.of(ctx).pop();
-                                              } else {
-                                                Navigator.of(ctx).pop();
-                                                await CoolAlert.show(
-                                                    context: ctx,
-                                                    type: CoolAlertType.error,
-                                                    confirmBtnText: 'ตกลง');
-
-                                                Navigator.of(ctx).pop();
-                                              }
-                                            });
-                                        // print(dropdownValue);
-                                      },
-                                      style: TextButton.styleFrom(
-                                        primary: Colors.white,
-                                        backgroundColor: Colors.redAccent,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        "ยกเลิกรายการ",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                            SizedBox(
-                              width: 7,
-                            ),
                             Expanded(
                               child: TextButton(
                                 onPressed: () async {

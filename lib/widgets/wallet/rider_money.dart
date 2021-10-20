@@ -1,7 +1,9 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:market_delivery/model/admin.dart';
+import 'package:market_delivery/model/payment_rider.dart';
 import 'package:market_delivery/model/rider.dart';
 import 'package:market_delivery/model/withdraw_rider.dart';
 import 'package:market_delivery/widgets/wallet/rider_money_modal.dart';
@@ -103,6 +105,7 @@ class RiderMoney extends StatelessWidget {
     required String orderId,
   }) {
     final riderProvider = Provider.of<Riders>(ctx, listen: false);
+    final paymentRiderProvider = Provider.of<PaymentRiders>(ctx, listen: false);
     Widget userInputField(
         {required BuildContext ctx,
         required String hintText,
@@ -238,15 +241,198 @@ class RiderMoney extends StatelessWidget {
                                 SizedBox(
                                   height: 7,
                                 ),
+                                Consumer<PaymentRiders>(
+                                  builder: (ctx, paymentRiderData, child) =>
+                                      Row(
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          children: [
+                                            paymentRiderData.file != null
+                                                ? Container(
+                                                    height: MediaQuery.of(ctx)
+                                                            .size
+                                                            .height *
+                                                        0.3,
+                                                    margin: EdgeInsets.only(
+                                                        left: 7),
+                                                    child: InkWell(
+                                                      onTap: () {},
+                                                      child: Container(
+                                                        decoration: BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        7),
+                                                            color: Colors
+                                                                .grey.shade300),
+                                                        child: Stack(
+                                                          children: [
+                                                            ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            7),
+                                                                child: Image.file(
+                                                                    paymentRiderData
+                                                                        .file)),
+                                                            Positioned(
+                                                                right: 0,
+                                                                left: 0,
+                                                                top: 0,
+                                                                bottom: 0,
+                                                                child: Icon(
+                                                                  Icons.edit,
+                                                                  size: 25,
+                                                                  color: Colors
+                                                                      .white
+                                                                      .withOpacity(
+                                                                          0.7),
+                                                                ))
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                : SizedBox(),
+                                            Container(
+                                              margin: EdgeInsets.only(left: 16),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  showCupertinoDialog(
+                                                      barrierDismissible: true,
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return CupertinoAlertDialog(
+                                                          actions: [
+                                                            CupertinoActionSheetAction(
+                                                                onPressed:
+                                                                    () async {
+                                                                  await (context)
+                                                                      .read<
+                                                                          PaymentRiders>()
+                                                                      .chooseImage(
+                                                                          context,
+                                                                          ImageSource
+                                                                              .camera)
+                                                                      .then((value) =>
+                                                                          Navigator.of(context)
+                                                                              .pop());
+                                                                },
+                                                                child: Text(
+                                                                    "กล้อง")),
+                                                            CupertinoActionSheetAction(
+                                                                onPressed:
+                                                                    () async {
+                                                                  await (context)
+                                                                      .read<
+                                                                          PaymentRiders>()
+                                                                      .chooseImage(
+                                                                          context,
+                                                                          ImageSource
+                                                                              .gallery)
+                                                                      .then((value) =>
+                                                                          Navigator.of(context)
+                                                                              .pop());
+                                                                },
+                                                                child: Text(
+                                                                    "แกลเลอรี่")),
+                                                            CupertinoActionSheetAction(
+                                                                onPressed: () {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .pop();
+                                                                },
+                                                                child: Text(
+                                                                  "ยกเลิก",
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .red),
+                                                                )),
+                                                          ],
+                                                        );
+                                                      });
+                                                },
+                                                child: Stack(
+                                                  children: [
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(16),
+                                                          color: Colors.white),
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          Icon(Icons
+                                                              .photo_camera),
+                                                          Text(
+                                                              "เพิ่มหลักฐานการชำระเงิน")
+                                                        ],
+                                                      ),
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.2,
+                                                      // height: _deviceSize.width * 0.2,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            userInputField(
+                                                ctx: ctx,
+                                                hintText: 'ชื่อธนาคาร',
+                                                labelText: 'ชื่อธนาคาร',
+                                                obscureText: false,
+                                                controller: paymentRiderData
+                                                    .bankNameController),
+                                            userInputField(
+                                                ctx: ctx,
+                                                hintText: 'ชื่อบัญชี',
+                                                labelText: 'ชื่อบัญชี',
+                                                obscureText: false,
+                                                controller: paymentRiderData
+                                                    .accountNameController),
+                                            userInputField(
+                                                ctx: ctx,
+                                                hintText: 'เลขที่บัญชี',
+                                                labelText: 'เลขที่บัญชี',
+                                                obscureText: false,
+                                                controller: paymentRiderData
+                                                    .noBankAccountController),
+                                            userInputField(
+                                                ctx: ctx,
+                                                hintText: 'จำนวนเงิน',
+                                                labelText: 'จำนวนเงิน',
+                                                obscureText: false,
+                                                controller: paymentRiderData
+                                                    .totalController),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
                           ),
                         ),
                         TextButton(
                           onPressed: () async {
-                            if (double.parse(
-                                    withdrawRider.totalTextController.text) <=
-                                double.parse(riderData.riderModel!.wallet)) {
+                            if (paymentRiderProvider.file != null &&
+                                paymentRiderProvider.accountNameController.text !=
+                                    '' &&
+                                paymentRiderProvider.totalController.text !=
+                                    '' &&
+                                paymentRiderProvider
+                                        .noBankAccountController.text !=
+                                    '' &&
+                                paymentRiderProvider.bankNameController.text !=
+                                    '') {
                               CoolAlert.show(
                                   context: ctx,
                                   type: CoolAlertType.confirm,
@@ -254,20 +440,14 @@ class RiderMoney extends StatelessWidget {
                                   cancelBtnText: 'ยกเลิก',
                                   title: 'ยืนยัน',
                                   text:
-                                      'ตรวจสอบจำนวนเงินและเลขบัญชีเนียบร้อยแล้วหรือไม่',
+                                      'คุณได้ทำการตรวจสอบเรียบร้อยแล้วหรือไม่?',
                                   onConfirmBtnTap: () async {
                                     String success =
-                                        await withdrawRider.addWithdraw(
+                                        await paymentRiderProvider.addPayment(
                                             riderId:
                                                 riderData.riderModel!.riderId);
 
                                     if (success == 'success') {
-                                      var wallet = double.parse(riderProvider
-                                              .riderModel!.wallet) -
-                                          double.parse(withdrawRider
-                                              .totalTextController.text);
-                                      await riderProvider.updateWalletRider(
-                                          wallet: wallet.toString());
                                       Navigator.of(ctx).pop();
                                       await CoolAlert.show(
                                           context: ctx,
@@ -288,7 +468,7 @@ class RiderMoney extends StatelessWidget {
                             } else {
                               await CoolAlert.show(
                                   context: ctx,
-                                  title: 'จำนวนเงินไม่เพียงพอ',
+                                  title: 'กรุณากรอกข้อมูลให้ครบ',
                                   type: CoolAlertType.error,
                                   confirmBtnText: 'ตกลง');
                             }
@@ -312,6 +492,9 @@ class RiderMoney extends StatelessWidget {
                               fontSize: 18,
                             ),
                           ),
+                        ),
+                        SizedBox(
+                          height: 12,
                         ),
                       ],
                     ),
