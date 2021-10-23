@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/screens/menu_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/product.dart';
@@ -21,8 +22,9 @@ class ProductList extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               GestureDetector(
-                onTap: () {
-                  // Navigator.of(context).pushNamed(MenuScreen.routeName);
+                onTap: () async {
+                  await products.getAllProduct();
+                  Navigator.of(context).pushNamed(MenuScreen.routeName);
                 },
                 child: Padding(
                   padding: EdgeInsets.only(right: 10),

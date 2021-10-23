@@ -1,6 +1,7 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/category.dart';
 import 'package:market_delivery/model/product_image.dart';
 
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ class AddProductScreen extends StatelessWidget {
         Provider.of<ProductImages>(context, listen: false);
     final _deviceSize = MediaQuery.of(context).size;
     final paddingGlobal = EdgeInsets.symmetric(horizontal: 16);
+    String cateName = '';
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 45,
@@ -65,11 +67,73 @@ class AddProductScreen extends StatelessWidget {
                         SizedBox(
                           height: 7,
                         ),
-                        userInputField(
-                            context: context,
-                            hintText: "ประเภทสินค้า...",
-                            controller: productProvider.categoryIdController,
-                            obscureText: false)
+                        Consumer<Categorys>(
+                          builder: (context, categoryData, child) => Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: InkWell(
+                                  onTap: () async {
+                                    await categoryData.getCategory();
+                                    showCupertinoModalPopup(
+                                        context: context,
+                                        builder: (_) => Container(
+                                              // width: 300,
+                                              height: 250,
+                                              child: CupertinoPicker(
+                                                backgroundColor: Colors.white,
+                                                itemExtent: 30,
+                                                scrollController:
+                                                    FixedExtentScrollController(
+                                                        initialItem:
+                                                            categoryData
+                                                                .listCategory
+                                                                .length),
+                                                children: [
+                                                  for (var item in categoryData
+                                                      .listCategory)
+                                                    Text(item.categoryName),
+                                                ],
+                                                onSelectedItemChanged: (value) {
+                                                  int index = value;
+                                                  Category model = categoryData
+                                                      .listCategory[index];
+                                                  productProvider
+                                                          .categoryIdController =
+                                                      TextEditingController(
+                                                          text:
+                                                              model.categoryId);
+                                                  cateName = model.categoryName;
+                                                  categoryData
+                                                      .notifyListeners();
+                                                },
+                                              ),
+                                            ));
+                                  },
+                                  child: userInputField(
+                                      icon: Icon(Icons.arrow_downward),
+                                      enabled: false,
+                                      context: context,
+                                      hintText: "ประเภทสินค้า",
+                                      obscureText: false,
+                                      controller:
+                                          productProvider.categoryIdController),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 12,
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  cateName,
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -208,10 +272,11 @@ class AddProductScreen extends StatelessWidget {
                                 height: 7,
                               ),
                               userInputField(
+                                  // icon: Icon(Icons.),
                                   context: context,
                                   hintText: "หน่วย กรัม กีโลกรัม อื่นๆ...",
                                   obscureText: false,
-                                  controller: productProvider.unitController)
+                                  controller: productProvider.unitController),
                             ],
                           ),
                         ),
@@ -315,11 +380,13 @@ class AddProductScreen extends StatelessWidget {
       required String hintText,
       var icon,
       TextEditingController? controller,
+      var enabled,
       required bool obscureText,
       Function(String)? onChanged}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
+        enabled: enabled != null ? enabled : true,
         onChanged: onChanged,
         controller: controller,
         obscureText: obscureText,

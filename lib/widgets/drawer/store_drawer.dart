@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/screens/store/edit_store_profile_screen.dart';
+import 'package:market_delivery/screens/store/store_order_screen.dart';
+import 'package:market_delivery/screens/store/store_report_screen.dart';
 import 'package:market_delivery/utils/api.dart';
 
 import 'package:provider/provider.dart';
@@ -35,6 +38,7 @@ class StoreDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final store = Provider.of<Stores>(context, listen: false);
+    final order = Provider.of<Orders>(context, listen: false);
     return Column(
       children: [
         Consumer<Stores>(
@@ -118,18 +122,19 @@ class StoreDrawer extends StatelessWidget {
         ),
         drawerItem(
             leadingIcon: Icon(Icons.list_sharp),
-            title: "คำสั่งซื้อ",
-            onTap: () {
-              // Navigator.of(context).pushNamed(FavoriteScreen.routeName);
+            title: "จัดการคำสั่งซื้อ",
+            onTap: () async {
+              await order.getOrderByStoreId();
+              Navigator.of(context).pushNamed(StoreOrderScreen.routeName);
             }),
         Divider(),
-        drawerItem(
-            leadingIcon: Icon(Icons.money),
-            title: "รายได้",
-            onTap: () {
-              // Navigator.of(context).pushNamed(FavoriteScreen.routeName);
-            }),
-        Divider(),
+        // drawerItem(
+        //     leadingIcon: Icon(Icons.money),
+        //     title: "รายได้",
+        //     onTap: () {
+        //       // Navigator.of(context).pushNamed(FavoriteScreen.routeName);
+        //     }),
+        // Divider(),
         drawerItem(
             leadingIcon: Icon(Icons.production_quantity_limits_outlined),
             title: "จัดการสินค้า",
@@ -144,6 +149,14 @@ class StoreDrawer extends StatelessWidget {
             onTap: () async {
               await store.findStoreById();
               Navigator.of(context).pushNamed(StoreWalletScreen.routeName);
+            }),
+        Divider(),
+        drawerItem(
+            leadingIcon: Icon(Icons.data_saver_off),
+            title: "รายงาน",
+            onTap: () async {
+              // await store.findStoreById();
+              Navigator.of(context).pushNamed(StoreReportScreen.routeName);
             }),
         Divider(),
         Spacer(),

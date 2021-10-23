@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/product.dart';
 
 import 'package:provider/provider.dart';
 
@@ -11,7 +12,7 @@ import '../screens/menu_screen.dart';
 class MenuList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final menu = Provider.of<Restaurants>(context, listen: false).menuItem;
+    final menu = Provider.of<Products>(context, listen: false);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -46,14 +47,11 @@ class MenuList extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.355,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: menu.length,
+              itemCount: menu.allOnlineProducts.length >= 10
+                  ? 10
+                  : menu.allOnlineProducts.length,
               itemBuilder: (context, i) => MenuListItem(
-                menuId: menu[i].id,
-                menuTitle: menu[i].title,
-                menuImage: menu[i].image,
-                menuPrice: menu[i].price,
-                menuRestaurantId: menu[i].restaurantId,
-                menuRestaurantTitle: menu[i].restaurantTitle,
+                product: menu.allOnlineProducts[i],
               ),
             ),
           )

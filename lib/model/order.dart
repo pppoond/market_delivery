@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './store.dart';
@@ -298,8 +299,25 @@ class Orders with ChangeNotifier {
   Order? _order;
   List<Order> _orderByStoreId = [];
   List<Order> _orderByCustomerId = [];
+  List<Order> _orderByStoreDate = [];
 
   //------------GetterSetter-------------------
+
+  List<Order> get orderByStoreDate => this._orderByStoreDate;
+
+  set orderByStoreDate(value) => this._orderByStoreDate = value;
+
+  int get countOrderStoreDateTodayS4 {
+    int counter = 0;
+    for (var item in _orderByStoreDate) {
+      if (item.status == '4') {
+        counter++;
+      }
+    }
+
+    return counter;
+  }
+
   List<Order> get countOrderStoreStatus0 {
     var listOrderByStatusOne =
         _orderByStoreId.where((element) => element.status == '0').toList();
@@ -390,6 +408,24 @@ class Orders with ChangeNotifier {
     var result = results['result'];
     for (var item in result) {
       _orderByStoreId.add(Order.fromJson(item));
+    }
+    notifyListeners();
+  }
+
+  Future<void> getOrderByStoreDateToday() async {
+    var now = new DateTime.now();
+    var formatter = new DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(now);
+    _orderByStoreDate.clear();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? storeId = await sharedPreferences.getString('store_id');
+    String uri = Api.orders + "?store_id=$storeId&order_date=$formattedDate";
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    for (var item in result) {
+      _orderByStoreDate.add(Order.fromJson(item));
     }
     notifyListeners();
   }

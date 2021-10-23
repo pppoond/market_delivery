@@ -24,9 +24,9 @@ class StoreListItem extends StatelessWidget {
           arguments: store.storeId,
         );
       },
-      child: Card(
+      child: Container(
+        margin: EdgeInsets.only(right: 7),
         key: ValueKey(store.storeId),
-        elevation: 0.0,
         // shadowColor: Colors.grey.shade200,
         // color: Colors.transparent,
         child: Stack(
@@ -61,6 +61,18 @@ class StoreListItem extends StatelessWidget {
             ),
             Consumer<Customers>(builder: (context, customerData, child) {
               return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.7),
+                        Colors.transparent,
+                      ],
+                      begin: const FractionalOffset(0.0, 0.0),
+                      end: const FractionalOffset(0.0, 1.0),
+                      stops: [0.0, 1.0],
+                      tileMode: TileMode.clamp),
+                ),
                 padding: EdgeInsets.symmetric(horizontal: 7, vertical: 7),
                 width: _deviceSize.width * 0.42,
                 child: Column(
@@ -69,6 +81,7 @@ class StoreListItem extends StatelessWidget {
                     Text(
                       store.storeName,
                       style: TextStyle(
+                        color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -76,16 +89,17 @@ class StoreListItem extends StatelessWidget {
                     customerProvider.lat == null
                         ? SizedBox()
                         : Text(
-                            CalculateDistance.calDistanceLatLng(
-                                    lat1: customerProvider.lat!,
-                                    lng1: customerProvider.lng!,
-                                    lat2: store.lat,
-                                    lng2: store.lng)
-                                .toString(),
+                            'ระยะทาง ' +
+                                CalculateDistance.calDistanceLatLng(
+                                        lat1: customerProvider.lat!,
+                                        lng1: customerProvider.lng!,
+                                        lat2: store.lat,
+                                        lng2: store.lng)
+                                    .toString() +
+                                ' Km',
                             style: TextStyle(
-                                fontSize: 16,
                                 fontWeight: FontWeight.normal,
-                                color: Colors.grey),
+                                color: Colors.grey.shade100),
                           ),
                   ],
                 ),

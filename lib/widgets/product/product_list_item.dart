@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:market_delivery/screens/store/store_detail_screen.dart';
 import '../../utils/api.dart';
 import '../../model/product.dart';
 
@@ -18,8 +19,10 @@ class ProductListItem extends StatelessWidget {
     // double _discount = (menuPrice * 150) / 100;
     return InkWell(
       onTap: () {
-        // Navigator.of(context)
-        //     .pushNamed(DetailScreen.routeName, arguments: product.productId);
+        Navigator.of(context).pushNamed(
+          StoreDetailScreen.routeName,
+          arguments: product.storeId,
+        );
       },
       child: Container(
         width: _deviceSize.width * 0.45,
@@ -83,7 +86,7 @@ class ProductListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   children: [
                     Text(
-                      "฿ ${double.parse(product.price).toStringAsFixed(0)}",
+                      "฿ ${double.parse(product.price).toStringAsFixed(0)}/",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -92,6 +95,13 @@ class ProductListItem extends StatelessWidget {
                     ),
                     SizedBox(
                       width: 5,
+                    ),
+                    Text(
+                      "${product.unit}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: Theme.of(context).accentColor,
+                      ),
                     ),
                     // Text(
                     //   "฿ ${_discount.toStringAsFixed(0)}",

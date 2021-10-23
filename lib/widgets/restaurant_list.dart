@@ -38,18 +38,18 @@ class RestaurantList extends StatelessWidget {
           SizedBox(
             height: 14,
           ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.20,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: res.length,
-              itemBuilder: (context, i) => RestaurantListItem(
-                resId: res[i].id,
-                resImage: res[i].image,
-                resTitle: res[i].title,
-              ),
-            ),
-          )
+          // Container(
+          //   height: MediaQuery.of(context).size.height * 0.20,
+          //   child: ListView.builder(
+          //     scrollDirection: Axis.horizontal,
+          //     itemCount: res.length,
+          //     itemBuilder: (context, i) => RestaurantListItem(
+          //       resId: res[i].id,
+          //       resImage: res[i].image,
+          //       resTitle: res[i].title,
+          //     ),
+          //   ),
+          // )
         ],
       ),
     );

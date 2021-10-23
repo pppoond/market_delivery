@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/screens/restaurant_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../widgets/store/store_list_item.dart';
@@ -23,8 +24,9 @@ class StoreList extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               GestureDetector(
-                onTap: () {
-                  // Navigator.of(context).pushNamed(MenuScreen.routeName);
+                onTap: () async {
+                  await stores.getAllStores();
+                  Navigator.of(context).pushNamed(RestaurantScreen.routeName);
                 },
                 child: Padding(
                   padding: EdgeInsets.only(right: 10),

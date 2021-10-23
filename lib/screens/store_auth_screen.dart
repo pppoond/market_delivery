@@ -1,3 +1,4 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,26 +16,44 @@ class StoreAuthScreen extends StatefulWidget {
 
 class _StoreAuthScreenState extends State<StoreAuthScreen> {
   bool isLogin = true;
-  bool isRider = true;
+  bool isstore = true;
+  bool? _usernameNull;
   TextEditingController usernameTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
   Widget userInputField(
-      {required String hintText,
+      {required BuildContext context,
+      required String hintText,
+      required String labelText,
       var icon,
+      var usernameNull,
+      Function(String)? onChanged,
       TextEditingController? controller,
       required bool obscureText}) {
     return Padding(
       padding: EdgeInsets.only(bottom: 10.0),
       child: TextFormField(
+        onChanged: onChanged,
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
+          labelText: labelText,
           isDense: true,
           filled: true,
           fillColor: Colors.grey.shade100,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
               borderSide: BorderSide.none),
+          suffix: (usernameNull != null)
+              ? (usernameNull)
+                  ? Text(
+                      "ใช้งานได้",
+                      style: TextStyle(color: Colors.green.shade500),
+                    )
+                  : Text(
+                      "มีผู้ใช้งานแล้ว",
+                      style: TextStyle(color: Colors.red.shade500),
+                    )
+              : null,
           prefixIcon: (icon == null) ? null : icon,
           // icon: (icon == null) ? null : icon,
           hintText: hintText,
@@ -80,12 +99,16 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
                     height: 10,
                   ),
                   userInputField(
-                      controller: usernameTextController,
+                      context: context,
+                      labelText: "Username",
+                      controller: store.usernameTextController,
                       obscureText: false,
                       hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
-                      controller: passwordTextController,
+                      context: context,
+                      labelText: "Password",
+                      controller: store.passwordTextController,
                       obscureText: true,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
@@ -128,8 +151,8 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
             child: TextButton(
               onPressed: () async {
                 bool? checkLogin = await store.loginStore(
-                    username: usernameTextController.text,
-                    password: passwordTextController.text);
+                    username: store.usernameTextController.text,
+                    password: store.passwordTextController.text);
                 if (checkLogin) {
                   print("login success");
                   Navigator.of(context).pushNamedAndRemoveUntil(
@@ -188,19 +211,51 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
                     height: 10,
                   ),
                   userInputField(
+                      controller: store.storeNameTextController,
+                      context: context,
+                      labelText: "ชื่อร้าน",
+                      obscureText: false,
+                      hintText: "ชื่อร้าน",
+                      icon: Icon(Icons.label, color: Colors.grey)),
+                  userInputField(
+                      onChanged: (value) async {
+                        print(value);
+                        _usernameNull =
+                            await store.findUsername(username: value);
+                        print("-------------");
+                        print(_usernameNull);
+                        print("-------------");
+                        if (value == "") {
+                          _usernameNull = null;
+                        }
+                        setState(() {});
+                      },
+                      usernameNull: _usernameNull,
+                      controller: store.usernameTextController,
+                      context: context,
+                      labelText: 'Username',
                       obscureText: false,
                       hintText: "Username",
                       icon: Icon(Icons.person, color: Colors.grey)),
                   userInputField(
+                      controller: store.emailTextController,
+                      context: context,
+                      labelText: "Email",
                       obscureText: false,
                       hintText: "Email",
                       icon: Icon(Icons.email, color: Colors.grey)),
                   userInputField(
+                      controller: store.storePhoneTextController,
+                      context: context,
+                      labelText: "Phone",
                       obscureText: false,
                       hintText: "Phone",
                       icon: Icon(Icons.phone, color: Colors.grey)),
                   userInputField(
-                      obscureText: false,
+                      controller: store.passwordTextController,
+                      context: context,
+                      labelText: "Password",
+                      obscureText: true,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(
@@ -240,7 +295,49 @@ class _StoreAuthScreenState extends State<StoreAuthScreen> {
           child: Padding(
             padding: EdgeInsets.all(20.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: (_usernameNull != null &&
+                      _usernameNull != false &&
+                      store.usernameTextController.text != "" &&
+                      store.passwordTextController.text != "" &&
+                      store.storePhoneTextController.text != "" &&
+                      store.storeNameTextController.text != "")
+                  ? () async {
+                      if (store.usernameTextController.text != "") {
+                        String success = await store.register();
+                        if (success == 'success') {
+                          await CoolAlert.show(
+                            context: context,
+                            title: "สำเร็จ",
+                            type: CoolAlertType.success,
+                            text: "สมัครสมาชิกสำเร็จ",
+                          );
+                          store.storePhoneTextController =
+                              TextEditingController();
+                          store.emailTextController = TextEditingController();
+                          store.storeNameTextController =
+                              TextEditingController();
+
+                          setState(() {
+                            isLogin = !isLogin;
+                          });
+                        } else {
+                          CoolAlert.show(
+                            context: context,
+                            title: "ผิดพลาด",
+                            type: CoolAlertType.error,
+                            text: "ข้อมูลไม่ถูกต้อง",
+                          );
+                        }
+                      } else {
+                        CoolAlert.show(
+                          context: context,
+                          title: "คำเตือน",
+                          type: CoolAlertType.warning,
+                          text: "กรุณากรอกข้อมูลให้ครบ",
+                        );
+                      }
+                    }
+                  : null,
               style: TextButton.styleFrom(
                 primary: Colors.white,
                 backgroundColor: Theme.of(context).accentColor,

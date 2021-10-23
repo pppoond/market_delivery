@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/customer.dart';
+import 'package:market_delivery/model/store.dart';
+import 'package:market_delivery/screens/store/store_detail_screen.dart';
+import 'package:market_delivery/utils/api.dart';
+import 'package:market_delivery/utils/calculate_distance.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/detail_screen.dart';
 
 class RestaurantListItem extends StatelessWidget {
-  final String resId;
-  final String resImage;
-  final String resTitle;
+  Store store;
 
   RestaurantListItem({
-    required this.resId,
-    required this.resImage,
-    required this.resTitle,
+    required this.store,
   });
 
   @override
   Widget build(BuildContext context) {
     final _deviceSize = MediaQuery.of(context).size;
+    final customerProvider = Provider.of<Customers>(context, listen: false);
     return InkWell(
       onTap: () {
         Navigator.of(context).pushNamed(
-          DetailScreen.routeName,
-          arguments: resId,
+          StoreDetailScreen.routeName,
+          arguments: store.storeId,
         );
       },
       child: Card(
-        key: ValueKey(resId),
+        key: ValueKey(store.storeId),
         elevation: 0.5,
         shadowColor: Colors.grey.shade200,
         child: Column(
@@ -32,7 +35,7 @@ class RestaurantListItem extends StatelessWidget {
             Container(
               child: ClipRRect(
                 child: Image.network(
-                  resImage,
+                  Api.imageUrl + 'profiles/' + store.profileImage,
                   fit: BoxFit.cover,
                   alignment: Alignment.center,
                 ),
@@ -51,12 +54,27 @@ class RestaurantListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    resTitle,
+                    store.storeName,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  customerProvider.lat == null
+                      ? SizedBox()
+                      : Text(
+                          'ระยะห่าง ' +
+                              CalculateDistance.calDistanceLatLng(
+                                      lat1: customerProvider.lat!,
+                                      lng1: customerProvider.lng!,
+                                      lat2: store.lat,
+                                      lng2: store.lng)
+                                  .toString() +
+                              ' Km',
+                          style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
                 ],
               ),
             ),

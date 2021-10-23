@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/product.dart';
 
 import 'package:provider/provider.dart';
 
@@ -15,7 +16,7 @@ class MenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final menu = Provider.of<Restaurants>(context, listen: false).menuItem;
+    final menu = Provider.of<Products>(context, listen: false);
     return Scaffold(
       floatingActionButton: Container(
         child: Consumer<Cart>(
@@ -104,19 +105,14 @@ class MenuScreen extends StatelessWidget {
             GridView.builder(
               physics: ScrollPhysics(),
               shrinkWrap: true,
-              itemCount: menu.length,
+              itemCount: menu.allOnlineProducts.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 1 / 1.5,
               ),
               itemBuilder: (context, i) {
                 return MenuListItem(
-                  menuId: menu[i].id,
-                  menuTitle: menu[i].title,
-                  menuImage: menu[i].image,
-                  menuPrice: menu[i].price,
-                  menuRestaurantId: menu[i].restaurantId,
-                  menuRestaurantTitle: menu[i].restaurantTitle,
+                  product: menu.allProducts[i],
                 );
               },
             ),

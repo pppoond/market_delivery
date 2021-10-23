@@ -45,6 +45,9 @@ dependencies:
   flutter_latlong: ^1.0.3
   url_launcher: any
   map_launcher: ^2.1.1
+  d_chart: ^0.0.2
+  syncfusion_flutter_charts: ^19.3.46
+  flutter_image_slideshow: ^0.1.2
 
 dev_dependencies:
   flutter_test:

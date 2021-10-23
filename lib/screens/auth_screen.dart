@@ -234,7 +234,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       icon: Icon(Icons.phone, color: Colors.grey)),
                   userInputField(
                       controller: passwordTextController,
-                      obscureText: false,
+                      obscureText: true,
                       hintText: "Password",
                       icon: Icon(Icons.lock, color: Colors.grey)),
                   SizedBox(
@@ -287,12 +287,17 @@ class _AuthScreenState extends State<AuthScreen> {
                           customerPhone: customerPhoneTextController.text,
                         );
                         if (register) {
-                          CoolAlert.show(
+                          await CoolAlert.show(
                             context: context,
                             title: "สำเร็จ",
                             type: CoolAlertType.success,
                             text: "สมัครสมาชิกสำเร็จ",
                           );
+                          customerNameTextController = TextEditingController();
+                          customerPhoneTextController = TextEditingController();
+                          setState(() {
+                            isLogin = !isLogin;
+                          });
                         } else {
                           CoolAlert.show(
                             context: context,

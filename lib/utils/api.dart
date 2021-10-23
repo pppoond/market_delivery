@@ -3,6 +3,8 @@ class Api {
 
   static String admins = "$host/api/admins.php";
 
+  static String categorys = "$host/api/categorys.php";
+
   static String loginRider = "$host/api/login_rider.php";
   static String updateRider = "$host/api/update_rider.php";
   static String updateRiderStatus = "$host/api/update_rider_status.php";
@@ -33,6 +35,10 @@ class Api {
   static String updateOrderStatus = "$host/api/update_order_status.php";
 
   static String orderDetails = "$host/api/order_details.php";
+
+  static String posts = "$host/api/posts.php";
+  static String deletePost = "$host/api/delete_post.php";
+  static String uploadPostImage = "$host/api/upload_post_image.php";
 
   static String loginCustomer = "$host/api/login_customer.php";
   static String customer = "$host/api/customers.php";

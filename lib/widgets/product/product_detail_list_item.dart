@@ -1,5 +1,7 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:market_delivery/model/cart.dart';
+import 'package:market_delivery/model/customer.dart';
 import 'package:market_delivery/utils/api.dart';
 import 'package:provider/provider.dart';
 
@@ -15,11 +17,13 @@ class ProductDetailListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print(foodImage);
+    final customerProvider = Provider.of<Customers>(context, listen: false);
     final _deviceSize = MediaQuery.of(context).size;
     return InkWell(
       onTap: () {
         // DetailListModal.showModal(
         //     context, id, foodTitle, foodPrice, foodImage, restaurantTitle);
+
         showModal(
           context: context,
           product: product,
@@ -63,9 +67,18 @@ class ProductDetailListItem extends StatelessWidget {
                       height: 5,
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "฿${double.parse(product.price).toStringAsFixed(0)}",
+                          "฿${double.parse(product.price).toStringAsFixed(0)}/",
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).accentColor,
+                          ),
+                        ),
+                        Text(
+                          "${product.unit}",
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -110,6 +123,7 @@ class ProductDetailListItem extends StatelessWidget {
     double _calculatePrice = double.parse(product.price);
 
     final cart = Provider.of<Cart>(context, listen: false);
+    final customerProvider = Provider.of<Customers>(context, listen: false);
 
     return showModalBottomSheet(
       isScrollControlled: true,
@@ -183,31 +197,47 @@ class ProductDetailListItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Image.network(Api.imageUrl +
-                            "products/" +
-                            product.productImages![0].proImgAddr),
-                        SizedBox(height: 10),
-                        RichText(
-                          text: TextSpan(
-                            children: [TextSpan(text: product.productName)],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                    Text(
+                      "฿${_calculatePrice.toStringAsFixed(0)}",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Theme.of(context).accentColor,
+                      ),
+                    ),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Image.network(Api.imageUrl +
+                                "products/" +
+                                product.productImages![0].proImgAddr),
+                            SizedBox(height: 10),
+                            RichText(
+                              text: TextSpan(
+                                children: [TextSpan(text: product.productName)],
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
                             ),
-                          ),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(text: product.productDetail)
+                                ],
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          "฿${_calculatePrice.toStringAsFixed(0)}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Theme.of(context).accentColor,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -231,9 +261,17 @@ class ProductDetailListItem extends StatelessWidget {
                             primary: Theme.of(context).accentColor,
                           ),
                           onPressed: () {
-                            cart.addProductToCart(
-                                product: product, quantity: _counter);
-                            Navigator.of(context).pop();
+                            if (customerProvider.customerModel != null) {
+                              cart.addProductToCart(
+                                  product: product, quantity: _counter);
+                              Navigator.of(context).pop();
+                            } else {
+                              CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.error,
+                                  title: 'กรุณาเข้าสู่ระบบ',
+                                  confirmBtnText: 'ตกลง');
+                            }
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,

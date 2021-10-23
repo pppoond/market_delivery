@@ -45,6 +45,12 @@ import './screens/rider/rider_confirm_order_status_screen.dart';
 import './screens/rider/rider_delivery_point_screen.dart';
 import './screens/rider/rider_confirm_customer_order_screen.dart';
 import './screens/wallet/rider_payment_history_screen.dart';
+import './screens/store/store_order_screen.dart';
+import './screens/store/store_order_today_screen.dart';
+import './screens/store/store_order_today_success_screen.dart';
+import './screens/store/store_order_today_cancel_screen.dart';
+import './screens/store/store_report_screen.dart';
+import './screens/store/edit_post_screen.dart';
 
 import './model/restaurants.dart';
 import './model/cart.dart';
@@ -59,6 +65,8 @@ import './model/order_detail.dart';
 import './model/withdraw_rider.dart';
 import './model/admin.dart';
 import './model/payment_rider.dart';
+import './model/category.dart';
+import './model/post.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -134,6 +142,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => PaymentRiders(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => Categorys(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Posts(),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -192,6 +206,14 @@ class MyApp extends StatelessWidget {
               RiderConfirmCustomerOrderScreen(),
           RiderPaymentHistoryScreen.routeName: (ctx) =>
               RiderPaymentHistoryScreen(),
+          StoreOrderScreen.routeName: (ctx) => StoreOrderScreen(),
+          StoreOrderTodayScreen.routeName: (ctx) => StoreOrderTodayScreen(),
+          StoreOrderTodaySuccessScreen.routeName: (ctx) =>
+              StoreOrderTodaySuccessScreen(),
+          StoreOrderTodayCancelScreen.routeName: (ctx) =>
+              StoreOrderTodayCancelScreen(),
+          StoreReportScreen.routeName: (ctx) => StoreReportScreen(),
+          EditPostScreen.routeName: (ctx) => EditPostScreen(),
         },
       ),
     );

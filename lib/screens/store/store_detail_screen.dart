@@ -120,12 +120,14 @@ class StoreDetailScreen extends StatelessWidget {
                                   width: 4,
                                 ),
                                 Text(
-                                  CalculateDistance.calDistanceLatLng(
-                                          lat1: customerProvider.lat!,
-                                          lng1: customerProvider.lng!,
-                                          lat2: storeData.storeModel.lat,
-                                          lng2: storeData.storeModel.lng)
-                                      .toString(),
+                                  'ระยะห่าง ' +
+                                      CalculateDistance.calDistanceLatLng(
+                                              lat1: customerProvider.lat!,
+                                              lng1: customerProvider.lng!,
+                                              lat2: storeData.storeModel.lat,
+                                              lng2: storeData.storeModel.lng)
+                                          .toString() +
+                                      ' Km',
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w300,

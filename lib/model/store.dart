@@ -23,27 +23,37 @@ Store StoreFromJson(String str) => Store.fromJson(json.decode(str));
 
 String StoreToJson(Store data) => json.encode(data.toJson());
 
+// To parse this JSON data, do
+//
+//     final store = storeFromJson(jsonString);
+
+Store storeFromJson(String str) => Store.fromJson(json.decode(str));
+
+String storeToJson(Store data) => json.encode(data.toJson());
+
 class Store {
   Store({
     required this.storeId,
+    required this.email,
     required this.username,
     required this.password,
     required this.storeName,
     required this.storePhone,
-    this.profileImage = "",
-    this.wallet = "",
-    this.lat = 0,
-    this.lng = 0,
+    required this.profileImage,
+    required this.wallet,
+    required this.lat,
+    required this.lng,
     required this.status,
     required this.timeReg,
   });
 
   String storeId;
+  String email;
   String username;
   String password;
   String storeName;
   String storePhone;
-  dynamic profileImage;
+  String profileImage;
   String wallet;
   double lat;
   double lng;
@@ -52,6 +62,7 @@ class Store {
 
   factory Store.fromJson(Map<String, dynamic> json) => Store(
         storeId: json["store_id"],
+        email: json["email"],
         username: json["username"],
         password: json["password"],
         storeName: json["store_name"],
@@ -60,12 +71,13 @@ class Store {
         wallet: json["wallet"],
         lat: json["lat"].toDouble(),
         lng: json["lng"].toDouble(),
-        status: json['status'],
+        status: json["status"],
         timeReg: DateTime.parse(json["time_reg"]),
       );
 
   Map<String, dynamic> toJson() => {
         "store_id": storeId,
+        "email": email,
         "username": username,
         "password": password,
         "store_name": storeName,
@@ -89,12 +101,19 @@ class Stores with ChangeNotifier {
       storeName: "",
       storePhone: "",
       status: 0,
-      timeReg: DateTime.now());
+      timeReg: DateTime.now(),
+      email: '',
+      lat: 0,
+      lng: 0,
+      profileImage: '404.png',
+      wallet: '0');
 
   List<Store> _allStores = [];
   List<Store> _listStoreOnline = [];
 
   TextEditingController _storeIdTextController = TextEditingController();
+  TextEditingController _emailTextController = TextEditingController();
+
   TextEditingController _usernameTextController = TextEditingController();
   TextEditingController _passwordTextController = TextEditingController();
   TextEditingController _storePhoneTextController = TextEditingController();
@@ -121,6 +140,10 @@ class Stores with ChangeNotifier {
   get storeIdTextController => this._storeIdTextController;
 
   set storeIdTextController(value) => this._storeIdTextController = value;
+
+  get emailTextController => this._emailTextController;
+
+  set emailTextController(value) => this._emailTextController = value;
 
   get usernameTextController => this._usernameTextController;
 
@@ -278,29 +301,19 @@ class Stores with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> register(
-      {required String username,
-      required String password,
-      required String customerName,
-      required String customerPhone}) async {
-    bool register;
-    var response = await http.post(Uri.parse(Api.registerCustomer), body: {
-      'username': username,
-      'password': password,
-      'customer_name': customerName,
-      'customer_phone': customerPhone,
+  Future<String> register() async {
+    var response = await http.post(Uri.parse(Api.stores), body: {
+      'email': _emailTextController.text,
+      'username': _usernameTextController.text,
+      'password': _passwordTextController.text,
+      'store_phone': _storePhoneTextController.text,
+      'store_name': _storeNameTextController.text,
     });
-
     var results = jsonDecode(response.body);
-    debugPrint(results['msg']);
-    var result = results['result'];
-    if (results['msg'] == "success") {
-      register = true;
-    } else {
-      register = false;
-    }
+    print(results.toString());
+    var result = results;
     notifyListeners();
-    return register;
+    return result['msg'];
   }
 
   Future<dynamic> addProduct() async {
@@ -348,6 +361,24 @@ class Stores with ChangeNotifier {
     // storeModel = Store.fromJson(result['result'][0]);
 
     notifyListeners();
+  }
+
+  Future<bool> findUsername({var username}) async {
+    var response =
+        await http.get(Uri.parse(Api.stores + "?find_username=${username}"));
+
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    if (result.length > 0) {
+      _storeModel = Store.fromJson(result[0]);
+      notifyListeners();
+      return false;
+    } else {
+      notifyListeners();
+      return true;
+    }
+    // storeModel = Store.fromJson(result['result'][0]);
   }
 
   Future<void> findById({required String storeId}) async {

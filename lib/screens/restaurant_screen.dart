@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/store.dart';
 
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ class RestaurantScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final restaurant =
         Provider.of<Restaurants>(context, listen: false).restaurants;
+    final store = Provider.of<Stores>(context, listen: false);
     return Scaffold(
       floatingActionButton: Container(
         child: Consumer<Cart>(
@@ -52,7 +54,7 @@ class RestaurantScreen extends StatelessWidget {
         toolbarHeight: 45,
         elevation: 1,
         title: Text(
-          "ร้านอาหาร",
+          "ร้าน",
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -94,7 +96,7 @@ class RestaurantScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(left: 4, bottom: 10, top: 14),
               child: Text(
-                "ร้านอาหารทั้งหมด",
+                "ร้านทั้งหมด",
                 style: TextStyle(
                   color: Colors.black87,
                   fontWeight: FontWeight.bold,
@@ -105,16 +107,14 @@ class RestaurantScreen extends StatelessWidget {
             GridView.builder(
               physics: ScrollPhysics(),
               shrinkWrap: true,
-              itemCount: restaurant.length,
+              itemCount: store.getOnlineStore.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 2 / 1.7,
               ),
               itemBuilder: (context, i) {
                 return RestaurantListItem(
-                  resId: restaurant[i].id,
-                  resImage: restaurant[i].image,
-                  resTitle: restaurant[i].title,
+                  store: store.getOnlineStore[i],
                 );
               },
             ),

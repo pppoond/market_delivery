@@ -22,24 +22,36 @@ import 'dart:convert';
 
 import 'dart:convert';
 
+// To parse this JSON data, do
+//
+//     final rider = riderFromJson(jsonString);
+
+import 'dart:convert';
+
+Rider riderFromJson(String str) => Rider.fromJson(json.decode(str));
+
+String riderToJson(Rider data) => json.encode(data.toJson());
+
 class Rider {
   Rider({
     required this.riderId,
+    required this.email,
     required this.username,
     required this.password,
     required this.riderPhone,
     required this.riderName,
-    this.sex = "1",
+    required this.sex,
     required this.riderStatus,
     required this.credit,
     required this.wallet,
-    this.profileImage = "",
+    required this.profileImage,
     required this.lat,
     required this.lng,
     required this.timeReg,
   });
 
   String riderId;
+  String email;
   String username;
   String password;
   String riderPhone;
@@ -48,13 +60,14 @@ class Rider {
   String riderStatus;
   String credit;
   String wallet;
-  dynamic profileImage;
+  String profileImage;
   double lat;
   double lng;
   DateTime timeReg;
 
   factory Rider.fromJson(Map<String, dynamic> json) => Rider(
         riderId: json["rider_id"],
+        email: json["email"],
         username: json["username"],
         password: json["password"],
         riderPhone: json["rider_phone"],
@@ -71,6 +84,7 @@ class Rider {
 
   Map<String, dynamic> toJson() => {
         "rider_id": riderId,
+        "email": email,
         "username": username,
         "password": password,
         "rider_phone": riderPhone,
@@ -96,6 +110,8 @@ class Riders with ChangeNotifier {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _riderPhoneController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+
   TextEditingController _riderNameController = TextEditingController();
   TextEditingController _sexController = TextEditingController();
   TextEditingController _riderStatusController = TextEditingController();
@@ -115,6 +131,11 @@ class Riders with ChangeNotifier {
   Rider? get riderModel => this._riderModel;
 
   set riderModel(Rider? value) => this._riderModel = value;
+
+  TextEditingController get emailController => this._emailController;
+
+  set emailController(TextEditingController value) =>
+      this._emailController = value;
 
   get riderIdController => this._riderIdController;
 
@@ -271,7 +292,22 @@ class Riders with ChangeNotifier {
     return login;
   }
 
-  Future<void> findByUsername({required String username}) async {
+  Future<String> register() async {
+    var response = await http.post(Uri.parse(Api.riders), body: {
+      'email': _emailController.text,
+      'username': _usernameController.text,
+      'password': _passwordController.text,
+      'rider_phone': _riderPhoneController.text,
+      'rider_name': _riderNameController.text,
+    });
+    var results = jsonDecode(response.body);
+    print(results.toString());
+    var result = results;
+    notifyListeners();
+    return result['msg'];
+  }
+
+  Future<bool> findByUsername({required String username}) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var uri = Api.riders + '?find_username=$username';
     var response = await http.get(Uri.parse(uri));
@@ -280,8 +316,12 @@ class Riders with ChangeNotifier {
     if (result.length > 0) {
       _riderModel = Rider.fromJson(result[0]);
       sharedPreferences.setString("rider_id", result[0]['rider_id'].toString());
+      notifyListeners();
+      return false;
+    } else {
+      notifyListeners();
+      return true;
     }
-    notifyListeners();
   }
 
   Future<void> findById() async {
