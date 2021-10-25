@@ -5,6 +5,7 @@ class Api {
 
   static String categorys = "$host/api/categorys.php";
 
+  static String updateRiderLatLng = "$host/api/update_rider_latlng.php";
   static String loginRider = "$host/api/login_rider.php";
   static String updateRider = "$host/api/update_rider.php";
   static String updateRiderStatus = "$host/api/update_rider_status.php";
@@ -33,6 +34,7 @@ class Api {
 
   static String orders = "$host/api/orders.php";
   static String updateOrderStatus = "$host/api/update_order_status.php";
+  static String updateOrderFindRider = "$host/api/update_order_rider.php";
 
   static String orderDetails = "$host/api/order_details.php";
 

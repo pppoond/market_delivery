@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -296,12 +297,56 @@ class StoreId {
 class Orders with ChangeNotifier {
   //------------variable-----------------------
 
+  double _todayIncome = 0;
+
   Order? _order;
   List<Order> _orderByStoreId = [];
+  List<Order> _orderByRiderId = [];
+  List<Order> _orderByRiderIdAll = [];
+
   List<Order> _orderByCustomerId = [];
+
   List<Order> _orderByStoreDate = [];
 
+  static const maxSecond = 20;
+  int _second = maxSecond;
+
+  Timer? timer;
+  bool stopTimerStatus = false;
+
   //------------GetterSetter-------------------
+
+  List<Order> get orderByRiderIdAll => this._orderByRiderIdAll;
+
+  set orderByRiderIdAll(value) => this._orderByRiderIdAll = value;
+
+  double get totalRiderIncomeAll {
+    double total = 0.0;
+    for (var item in _orderByRiderIdAll) {
+      total += double.parse(item.total);
+    }
+    return total;
+  }
+
+  double get totalTodayIncome {
+    double total = 0.0;
+    for (var item in _orderByRiderId) {
+      total += double.parse(item.total);
+    }
+    return total;
+  }
+
+  get todayIncome => this._todayIncome;
+
+  set todayIncome(value) => this._todayIncome = value;
+
+  List<Order> get orderByRiderId => this._orderByRiderId;
+
+  set orderByRiderId(value) => this._orderByRiderId = value;
+
+  get second => this._second;
+
+  set second(value) => this._second = value;
 
   List<Order> get orderByStoreDate => this._orderByStoreDate;
 
@@ -367,6 +412,37 @@ class Orders with ChangeNotifier {
 
   //---------------method--------------------------
 
+  void startTimer() {
+    if (timer != null) {
+      if (timer!.isActive) {
+      } else {
+        timer = Timer.periodic(Duration(seconds: 1), (_) {
+          if (_second <= 0) {
+            stopTimer();
+          } else {
+            _second--;
+          }
+
+          notifyListeners();
+        });
+      }
+    } else {
+      timer = Timer.periodic(Duration(seconds: 1), (_) {
+        if (_second <= 0) {
+          stopTimer();
+        } else {
+          _second--;
+        }
+        notifyListeners();
+      });
+    }
+  }
+
+  void stopTimer() {
+    timer!.cancel();
+    notifyListeners();
+  }
+
   Future<void> getOrder() async {
     print("Get Orders");
   }
@@ -397,6 +473,19 @@ class Orders with ChangeNotifier {
     return results['result']['order_id'];
   }
 
+  Future<String> updateOrderFindRider(
+      {required String orderId, required String riderId}) async {
+    var uri = Api.updateOrderFindRider;
+    var response = await http.post(Uri.parse(uri), body: {
+      'order_id': orderId,
+      'rider_id': riderId,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    notifyListeners();
+    return results['msg'];
+  }
+
   Future<void> getOrderByStoreId() async {
     _orderByStoreId.clear();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -408,6 +497,21 @@ class Orders with ChangeNotifier {
     var result = results['result'];
     for (var item in result) {
       _orderByStoreId.add(Order.fromJson(item));
+    }
+    notifyListeners();
+  }
+
+  Future<void> getOrderByRiderId() async {
+    _orderByRiderIdAll.clear();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? riderId = await sharedPreferences.getString("rider_id");
+    String uri = Api.orders + "?rider_id=$riderId";
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    for (var item in result) {
+      _orderByRiderIdAll.add(Order.fromJson(item));
     }
     notifyListeners();
   }

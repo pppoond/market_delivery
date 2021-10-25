@@ -972,13 +972,17 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:market_delivery/model/order.dart';
+import 'package:market_delivery/model/order_detail.dart';
 import 'package:market_delivery/screens/order/rider_result_screen.dart';
 import 'package:market_delivery/screens/rider/rider_inorder_screen.dart';
 import 'package:market_delivery/utils/api.dart';
 import 'package:market_delivery/utils/calculate_distance.dart';
 import 'package:market_delivery/widgets/custom_switch_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'package:provider/provider.dart';
 
@@ -993,11 +997,74 @@ import '../model/rider.dart';
 class RiderScreen extends StatelessWidget {
   static const routeName = "/rider-screen";
 
-  Stream<http.Response> getRandomNumberFact({required String riderId}) async* {
-    yield* Stream.periodic(Duration(seconds: 1), (_) {
-      return http
+  Stream<http.Response> getRandomNumberFact(
+      {required String riderId, required BuildContext context}) async* {
+    final riderProvider = Provider.of<Riders>(context, listen: false);
+    final orderDetail = Provider.of<OrderDetails>(context, listen: false);
+    final orderProvider = Provider.of<Orders>(context, listen: false);
+    yield* Stream.periodic(Duration(seconds: 5), (_) async {
+      final orders = Provider.of<Orders>(context, listen: false);
+      if (orders.second <= 0) {
+        cancelOrder(context: context);
+      }
+      var response = await http
           .get(Uri.parse(Api.orders + "?rider_id=$riderId&order_status=0"));
+      return response;
     }).asyncMap((event) async => await event);
+  }
+
+  void cancelOrder({required BuildContext context}) async {
+    //คำนวนหาไรเดอร์ และ ระยะทาง
+    final riderProvider = Provider.of<Riders>(context, listen: false);
+    final orders = Provider.of<Orders>(context, listen: false);
+
+    List<Map<String, dynamic>> _listMapCal = [];
+    Map _mapCal = {};
+
+    await riderProvider.getRiders();
+
+    if (riderProvider.riders.length > 0) {
+      for (var item in riderProvider.riders) {
+        double distance = CalculateDistance.calDistanceLatLng(
+            lat1: orders.order!.storeId.lat,
+            lng1: orders.order!.storeId.lat,
+            lat2: item.lat,
+            lng2: item.lng);
+
+        _listMapCal.add({
+          'rider_id': item.riderId,
+          'distance': distance,
+        });
+
+        _mapCal[item.riderId] = distance;
+      }
+      debugPrint(_listMapCal.toList().toString());
+      debugPrint(_mapCal.toString());
+
+      var mapEntries = _mapCal.entries.toList()
+        ..sort((a, b) => a.value.compareTo(b.value));
+
+      _mapCal
+        ..clear()
+        ..addEntries(mapEntries);
+
+      debugPrint(_mapCal.toString());
+      debugPrint(_mapCal.keys.toList().first.toString());
+      debugPrint(_mapCal.values.toList().first.toString());
+      // debugPrint(customerProvider
+      //     .customerModel!.customerId
+      //     .toString());
+
+      await orders.updateOrderFindRider(
+        orderId: orders.order!.orderId,
+        riderId: _mapCal.keys.toList().first.toString(),
+      );
+      orders.stopTimer();
+      orders.second = 20;
+    } else {
+      orders.updateOrderStatus(
+          orderId: orders.order!.orderId, orderStatus: '5');
+    }
   }
 
   @override
@@ -1095,7 +1162,8 @@ class RiderScreen extends StatelessWidget {
                 Container(
                   child: StreamBuilder<http.Response>(
                     stream: getRandomNumberFact(
-                        riderId: riderProvider.riderModel!.riderId),
+                        riderId: riderProvider.riderModel!.riderId,
+                        context: context),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         var results = jsonDecode(snapshot.data!.body);
@@ -1106,6 +1174,15 @@ class RiderScreen extends StatelessWidget {
 
                           switch (orders.order!.status) {
                             case '0':
+                              if (riderProvider.riderModel!.riderStatus ==
+                                  'active') {
+                                riderProvider.riderModel!.riderStatus =
+                                    'offline';
+                                riderProvider.updateStatus();
+                              }
+
+                              orders.startTimer();
+
                               return Scaffold(
                                 appBar: AppBar(
                                   automaticallyImplyLeading: false,
@@ -1122,7 +1199,72 @@ class RiderScreen extends StatelessWidget {
                                   elevation: 0,
                                   actions: [
                                     IconButton(
-                                      onPressed: () {},
+                                      onPressed: () async {
+                                        List<Map<String, dynamic>> _listMapCal =
+                                            [];
+                                        Map _mapCal = {};
+
+                                        await riderProvider.getRiders();
+
+                                        if (riderProvider.riders.length > 0) {
+                                          for (var item
+                                              in riderProvider.riders) {
+                                            double distance = CalculateDistance
+                                                .calDistanceLatLng(
+                                                    lat1: orders
+                                                        .order!.storeId.lat,
+                                                    lng1: orders
+                                                        .order!.storeId.lat,
+                                                    lat2: item.lat,
+                                                    lng2: item.lng);
+
+                                            _listMapCal.add({
+                                              'rider_id': item.riderId,
+                                              'distance': distance,
+                                            });
+
+                                            _mapCal[item.riderId] = distance;
+                                          }
+                                          debugPrint(
+                                              _listMapCal.toList().toString());
+                                          debugPrint(_mapCal.toString());
+
+                                          var mapEntries = _mapCal.entries
+                                              .toList()
+                                                ..sort((a, b) =>
+                                                    a.value.compareTo(b.value));
+
+                                          _mapCal
+                                            ..clear()
+                                            ..addEntries(mapEntries);
+
+                                          debugPrint(_mapCal.toString());
+                                          debugPrint(_mapCal.keys
+                                              .toList()
+                                              .first
+                                              .toString());
+                                          debugPrint(_mapCal.values
+                                              .toList()
+                                              .first
+                                              .toString());
+                                          // debugPrint(customerProvider
+                                          //     .customerModel!.customerId
+                                          //     .toString());
+
+                                          await orders.updateOrderFindRider(
+                                            orderId: orders.order!.orderId,
+                                            riderId: _mapCal.keys
+                                                .toList()
+                                                .first
+                                                .toString(),
+                                          );
+                                          orders.stopTimer();
+                                        } else {
+                                          orders.updateOrderStatus(
+                                              orderId: orders.order!.orderId,
+                                              orderStatus: '5');
+                                        }
+                                      },
                                       icon: Icon(
                                         Icons.close,
                                         color: Colors.white,
@@ -1417,11 +1559,40 @@ class RiderScreen extends StatelessWidget {
                                                     BorderRadius.circular(10),
                                               ),
                                             ),
-                                            child: Text(
-                                              "รับคำสั่งซื้อ",
-                                              style: TextStyle(
-                                                fontSize: 18,
-                                              ),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: SizedBox(),
+                                                ),
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Text(
+                                                    "รับคำสั่งซื้อ",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 1,
+                                                  child: Consumer<Orders>(
+                                                    builder: (context,
+                                                            orderData, child) =>
+                                                        Container(
+                                                      child: Text(
+                                                        orderData.second
+                                                            .toString(),
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 17),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -1433,9 +1604,13 @@ class RiderScreen extends StatelessWidget {
                             // case '1':
                             //   return Center(child: Text("STATUS 1"));
                             default:
+                              riderProvider.getCurrentLocation();
+                              riderProvider.updateLatLng();
                               return Center(child: showMap());
                           }
                         } else {
+                          riderProvider.getCurrentLocation();
+                          riderProvider.updateLatLng();
                           return Center(child: showMap());
                         }
                       } else {

@@ -14,6 +14,7 @@ class PostList extends StatelessWidget {
   Widget build(BuildContext context) {
     final postPrivider = Provider.of<Posts>(context, listen: false);
     postPrivider.getPostByStoreId();
+    postPrivider.getPosts();
     if (storePost == true) {
       return Consumer<Posts>(
         builder: (context, postData, child) => ListView.builder(
@@ -78,7 +79,9 @@ class PostList extends StatelessWidget {
                                         child: const Text('แก้ไข'),
                                         onPressed: () async {
                                           await Navigator.of(context).pushNamed(
-                                              EditPostScreen.routeName);
+                                              EditPostScreen.routeName,
+                                              arguments: postData
+                                                  .listPostStore[index].postId);
                                           Navigator.pop(context);
                                         },
                                       ),
@@ -171,7 +174,7 @@ class PostList extends StatelessWidget {
         builder: (context, postData, child) => ListView.builder(
             shrinkWrap: true,
             physics: ScrollPhysics(),
-            itemCount: postData.listPostStore.length,
+            itemCount: postData.listPost.length,
             itemBuilder: (BuildContext context, int index) {
               return Container(
                 decoration: BoxDecoration(
@@ -197,8 +200,8 @@ class PostList extends StatelessWidget {
                                     ? NetworkImage(
                                         Api.imageUrl +
                                             'profiles/' +
-                                            postData.listPostStore[index]
-                                                .storeId.profileImage,
+                                            postData.listPost[index].storeId
+                                                .profileImage,
                                       )
                                     : AssetImage("assets/images/user.png")
                                         as ImageProvider

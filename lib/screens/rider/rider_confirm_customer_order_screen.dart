@@ -249,7 +249,9 @@ class RiderConfirmCustomerOrderScreen extends StatelessWidget {
                                             ),
                                             Spacer(),
                                             Text(
-                                              '15.0฿',
+                                              detailData.orderDetailList[0]
+                                                      .orderId.total +
+                                                  '฿',
                                               style: TextStyle(
                                                   fontSize: 17,
                                                   fontWeight: FontWeight.bold),

@@ -128,6 +128,8 @@ class Posts with ChangeNotifier {
   List<Post> _listPostStore = [];
   List<Post> _listPost = [];
 
+  Post? _postModel;
+
   List<io.File> _listFile = [];
 
   final ImagePicker _picker = ImagePicker();
@@ -159,6 +161,10 @@ class Posts with ChangeNotifier {
 
   set messageController(value) => this._messageController = value;
 
+  Post? get postModel => this._postModel;
+
+  set postModel(Post? value) => this._postModel = value;
+
   //----------------------method----------------------
 
   Future<void> getPostByStoreId() async {
@@ -173,6 +179,16 @@ class Posts with ChangeNotifier {
     for (var item in result) {
       _listPostStore.add(Post.fromJson(item));
     }
+    notifyListeners();
+  }
+
+  Future<void> findById({required String postId}) async {
+    String uri = Api.posts + "?findid=$postId";
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    _postModel = Post.fromJson(result[0]);
     notifyListeners();
   }
 

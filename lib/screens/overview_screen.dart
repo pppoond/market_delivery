@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/screens/customer/customer_order_screen.dart';
+import 'package:market_delivery/widgets/store/post_list.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:provider/provider.dart';
@@ -199,7 +200,16 @@ class OverViewScreen extends StatelessWidget {
                               // MenuList(),
                               // RestaurantList(),
                               ProductList(),
-                              StoreList()
+                              StoreList(),
+                              Text(
+                                'ข่าวสาร',
+                                style: TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 16),
+                                child: PostList(),
+                              ),
                             ],
                           ),
                         ),

@@ -1,7 +1,9 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:market_delivery/model/cart.dart';
 import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/screens/account_screen.dart';
+import 'package:market_delivery/screens/customer/customer_order_screen.dart';
 
 import 'package:provider/provider.dart';
 
@@ -142,12 +144,24 @@ class CustomerDrawer extends StatelessWidget {
               Navigator.of(context).pushNamed(CartScreen.routeName);
             }),
         Divider(),
-        drawerItem(
-            leadingIcon: Icon(Icons.receipt_rounded),
-            title: "คำสั่งซื้อของฉัน",
-            onTap: () {
-              Navigator.of(context).pushNamed(CartScreen.routeName);
-            }),
+        Consumer<Orders>(
+          builder: (context, orderData, child) => drawerItem(
+              leadingIcon: Icon(Icons.receipt_rounded),
+              title: "คำสั่งซื้อของฉัน",
+              onTap: () async {
+                if (customer.customerModel != null) {
+                  await orderData.getOrderByCustomerId();
+                  Navigator.of(context)
+                      .pushNamed(CustomerOrderScreen.routeName);
+                } else {
+                  CoolAlert.show(
+                      context: context,
+                      type: CoolAlertType.info,
+                      title: 'กรุณาเข้าสู่ระบบ',
+                      confirmBtnText: 'ตกลง');
+                }
+              }),
+        ),
         Divider(),
         Spacer(),
         Divider(),

@@ -2,6 +2,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:market_delivery/model/post.dart';
 import 'package:market_delivery/screens/store/store_setting_screen.dart';
 import '../../utils/api.dart';
 
@@ -49,6 +50,9 @@ class EditPostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeProvider = Provider.of<Stores>(context, listen: false);
+    final postProvider = Provider.of<Posts>(context, listen: false);
+    String postId = ModalRoute.of(context)!.settings.arguments as String;
+    postProvider.findById(postId: postId);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -91,94 +95,10 @@ class EditPostScreen extends StatelessWidget {
                 ],
               ),
               body: SafeArea(
-                child: Consumer<Stores>(
-                  builder: (context, storeData, child) => Center(
+                child: Consumer<Posts>(
+                  builder: (context, postData, child) => Center(
                     child: Column(
                       children: [
-                        SizedBox(
-                          height: 16,
-                        ),
-                        CircleAvatar(
-                          backgroundColor: Theme.of(context).accentColor,
-                          radius: 50,
-                          backgroundImage: (storeData.file != null)
-                              ? FileImage(storeData.file!)
-                              : (storeData.storeModel.profileImage != null)
-                                  ? (storeData.storeModel.profileImage != "")
-                                      ? NetworkImage(Api.imageUrl +
-                                          'profiles/' +
-                                          storeData.storeModel.profileImage)
-                                      : AssetImage("assets/images/store.png")
-                                          as ImageProvider
-                                  : AssetImage("assets/images/store.png"),
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  // color: Colors.black.withOpacity(0.5),
-                                  gradient: LinearGradient(
-                                      colors: [
-                                        Colors.black87.withOpacity(.5),
-                                        Colors.transparent
-                                      ],
-                                      begin: const FractionalOffset(0.0, 0.5),
-                                      end: const FractionalOffset(0.0, 0.0),
-                                      stops: [0.0, 0.0],
-                                      tileMode: TileMode.clamp),
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 15,
-                                left: 0,
-                                right: 0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    print("Select Image");
-                                    showCupertinoDialog(
-                                      barrierDismissible: true,
-                                      context: context,
-                                      builder: (context) =>
-                                          CupertinoAlertDialog(
-                                              // title: Text(title),
-                                              // content: Text(content),
-                                              actions: [
-                                            CupertinoDialogAction(
-                                                onPressed: () => storeData
-                                                    .chooseImage(context,
-                                                        ImageSource.camera)
-                                                    .then((value) =>
-                                                        Navigator.of(context)
-                                                            .pop()),
-                                                child: Text("กล้อง")),
-                                            CupertinoDialogAction(
-                                                onPressed: () => storeData
-                                                    .chooseImage(context,
-                                                        ImageSource.gallery)
-                                                    .then((value) =>
-                                                        Navigator.of(context)
-                                                            .pop()),
-                                                child: Text("รูปภาพ")),
-                                            CupertinoDialogAction(
-                                              onPressed: () =>
-                                                  Navigator.of(context).pop(),
-                                              child: Text("ยกเลิก"),
-                                              textStyle: TextStyle(
-                                                  color: Colors.redAccent),
-                                            ),
-                                          ]),
-                                    );
-                                  },
-                                  child: Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white38,
-                                    size: 27,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
                         SizedBox(
                           height: 16,
                         ),
@@ -202,114 +122,19 @@ class EditPostScreen extends StatelessWidget {
                                         SizedBox(
                                           height: 16,
                                         ),
-                                        Text(
-                                          "ข้อมูลพื้นฐาน",
-                                          style: TextStyle(
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        SizedBox(
-                                          height: 16,
-                                        ),
-                                        userInputField(
-                                          context: context,
-                                          hintText: 'ชื่อร้าน',
-                                          labelText: 'ชื่อร้าน',
-                                          obscureText: false,
+                                        TextField(
                                           controller:
-                                              storeData.storeNameTextController,
-                                        ),
-                                        userInputField(
-                                          context: context,
-                                          hintText: 'Username',
-                                          labelText: 'Username',
-                                          obscureText: false,
-                                          controller:
-                                              storeData.usernameTextController,
-                                        ),
-                                        userInputField(
-                                          context: context,
-                                          hintText: 'Phone',
-                                          labelText: 'Phone',
-                                          obscureText: false,
-                                          controller: storeData
-                                              .storePhoneTextController,
-                                        ),
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 12,
-                                              ),
-                                              Expanded(
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                    children: <TextSpan>[
-                                                      TextSpan(
-                                                          text: 'วอลเลต ',
-                                                          style: TextStyle(
-                                                              fontSize: 17,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                      TextSpan(
-                                                          text: storeData
-                                                              .storeModel.wallet
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .black45,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal)),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
+                                              postProvider.messageController,
+                                          keyboardType: TextInputType.multiline,
+                                          minLines: 4,
+                                          maxLines: null,
+                                          decoration: InputDecoration(
+                                            hintText: "รายละเอียด...",
+                                            labelText: 'รายละเอียด',
                                           ),
                                         ),
                                         SizedBox(
                                           height: 7,
-                                        ),
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 12,
-                                              ),
-                                              Expanded(
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                    children: <TextSpan>[
-                                                      TextSpan(
-                                                          text: 'วันลงทะเบียน ',
-                                                          style: TextStyle(
-                                                              fontSize: 17,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                      TextSpan(
-                                                          text: storeData
-                                                              .storeModel
-                                                              .timeReg
-                                                              .toString(),
-                                                          style: TextStyle(
-                                                              color: Colors
-                                                                  .black45,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal)),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
                                         ),
                                       ],
                                     ),

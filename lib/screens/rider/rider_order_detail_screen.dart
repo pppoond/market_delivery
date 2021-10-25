@@ -2,6 +2,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/model/order_detail.dart';
+import 'package:market_delivery/screens/rider/rider_inorder_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/store.dart';
@@ -47,6 +48,7 @@ class RiderOrderDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final orderDetailProvider =
         Provider.of<OrderDetails>(context, listen: false);
+    final orderProvider = Provider.of<Orders>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -102,6 +104,87 @@ class RiderOrderDetailScreen extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        SizedBox(
+                                          height: 16,
+                                        ),
+                                        Row(
+                                          children: [
+                                            detailData.orderDetailList[0]
+                                                        .orderId.status ==
+                                                    '0'
+                                                ? Text(
+                                                    'รอยืนยันคำสั่งซื้อ',
+                                                    style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  )
+                                                : detailData.orderDetailList[0]
+                                                            .orderId.status ==
+                                                        '1'
+                                                    ? Text(
+                                                        'ร้านกำลังเตรียมสินค้า',
+                                                        style: TextStyle(
+                                                            color: Colors
+                                                                .amber.shade900,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      )
+                                                    : detailData
+                                                                .orderDetailList[
+                                                                    0]
+                                                                .orderId
+                                                                .status ==
+                                                            '2'
+                                                        ? Text(
+                                                            'กำลังส่ง',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .amber
+                                                                    .shade900,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                          )
+                                                        : detailData
+                                                                    .orderDetailList[
+                                                                        0]
+                                                                    .orderId
+                                                                    .status ==
+                                                                '3'
+                                                            ? Text(
+                                                                'ถึงแล้ว',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .blue
+                                                                        .shade900,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold),
+                                                              )
+                                                            : detailData
+                                                                        .orderDetailList[
+                                                                            0]
+                                                                        .orderId
+                                                                        .status ==
+                                                                    '4'
+                                                                ? Text(
+                                                                    'รับสินค้าแล้ว',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .green,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  )
+                                                                : Text(
+                                                                    'ยกเลิก',
+                                                                    style: TextStyle(
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  ),
+                                          ],
+                                        ),
                                         SizedBox(
                                           height: 16,
                                         ),
@@ -235,6 +318,86 @@ class RiderOrderDetailScreen extends StatelessWidget {
                                             ),
                                           ],
                                         ),
+                                        SizedBox(
+                                          height: 16,
+                                        ),
+                                        detailData.orderDetailList[0].orderId
+                                                    .status !=
+                                                '4'
+                                            ? Text(
+                                                'ยังอยู่ในระหว่างจัดส่ง',
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.red),
+                                              )
+                                            : SizedBox(),
+                                        SizedBox(
+                                          height: 7,
+                                        ),
+                                        detailData.orderDetailList[0].orderId
+                                                    .status !=
+                                                '4'
+                                            ? Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: TextButton(
+                                                      onPressed: () async {
+                                                        debugPrint(detailData
+                                                            .orderDetailList[0]
+                                                            .orderId
+                                                            .orderId
+                                                            .toString());
+                                                        await orderProvider
+                                                            .updateOrderStatus(
+                                                                orderId: detailData
+                                                                    .orderDetailList[
+                                                                        0]
+                                                                    .orderId
+                                                                    .orderId,
+                                                                orderStatus:
+                                                                    detailData
+                                                                        .orderDetailList[
+                                                                            0]
+                                                                        .orderId
+                                                                        .status);
+                                                        Navigator.of(context).pushNamed(
+                                                            RiderInorderScreen
+                                                                .routeName,
+                                                            arguments: detailData
+                                                                .orderDetailList[
+                                                                    0]
+                                                                .orderId
+                                                                .orderId);
+                                                      },
+                                                      style:
+                                                          TextButton.styleFrom(
+                                                        primary: Colors.white,
+                                                        backgroundColor:
+                                                            Theme.of(context)
+                                                                .accentColor,
+                                                        minimumSize: Size(
+                                                          double.infinity,
+                                                          50,
+                                                        ),
+                                                        shape:
+                                                            RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(10),
+                                                        ),
+                                                      ),
+                                                      child: Text(
+                                                        "ดำเนินการต่อ",
+                                                        style: TextStyle(
+                                                          fontSize: 18,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              )
+                                            : SizedBox(),
                                       ],
                                     ),
                                   ),

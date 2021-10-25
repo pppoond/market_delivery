@@ -33,6 +33,30 @@ class CartScreen extends StatelessWidget {
     final riderProvider = Provider.of<Riders>(context, listen: false);
     final orderDetailProvider =
         Provider.of<OrderDetails>(context, listen: false);
+
+    double storeCusDistance = CalculateDistance.calDistanceLatLng(
+        lat1: storeProvider.allStores
+            .firstWhere((element) =>
+                element.storeId ==
+                cartItem.cart.values.toList()[0].product.storeId)
+            .lat,
+        lng1: storeProvider.allStores
+            .firstWhere((element) =>
+                element.storeId ==
+                cartItem.cart.values.toList()[0].product.storeId)
+            .lng,
+        lat2: customerProvider.listAddressModel
+            .firstWhere((element) => element.addrStatus == "1")
+            .lat,
+        lng2: customerProvider.listAddressModel
+            .firstWhere((element) => element.addrStatus == "1")
+            .lng);
+    double totalDeliver = 0.0;
+    if (storeCusDistance <= 3.0) {
+      totalDeliver = 15.0;
+    } else {
+      totalDeliver = storeCusDistance * 5;
+    }
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -160,6 +184,28 @@ class CartScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
+                                  "ค่าส่ง : ",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                                Text(
+                                  "฿${totalDeliver} บาท",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
                                   "ทั้งหมด : ",
                                   style: TextStyle(
                                     fontSize: 18,
@@ -168,7 +214,7 @@ class CartScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  "฿${cartItem.totalFood.toStringAsFixed(0)} บาท",
+                                  "฿${cartItem.totalFood + totalDeliver} บาท",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -470,6 +516,43 @@ class CartScreen extends StatelessWidget {
                                           .customerModel!.customerId
                                           .toString());
 
+                                      //-------------------ราคาส่ง ถ้าเกิน 3 กม * 5 ถ้าไม่ 15 บาท
+
+                                      double storeCusDistance =
+                                          await CalculateDistance.calDistanceLatLng(
+                                              lat1: storeProvider.allStores
+                                                  .firstWhere((element) =>
+                                                      element.storeId ==
+                                                      cartItem.cart.values
+                                                          .toList()[0]
+                                                          .product
+                                                          .storeId)
+                                                  .lat,
+                                              lng1: storeProvider.allStores
+                                                  .firstWhere((element) =>
+                                                      element.storeId ==
+                                                      cartItem.cart.values
+                                                          .toList()[0]
+                                                          .product
+                                                          .storeId)
+                                                  .lng,
+                                              lat2: customerProvider
+                                                  .listAddressModel
+                                                  .firstWhere((element) =>
+                                                      element.addrStatus == "1")
+                                                  .lat,
+                                              lng2: customerProvider
+                                                  .listAddressModel
+                                                  .firstWhere((element) =>
+                                                      element.addrStatus == "1")
+                                                  .lng);
+                                      double totalDeliver = 0.0;
+                                      if (storeCusDistance <= 3.0) {
+                                        totalDeliver = 15.0;
+                                      } else {
+                                        totalDeliver = storeCusDistance * 5;
+                                      }
+
                                       var now = new DateTime.now();
                                       var formatter =
                                           new DateFormat('yyyy-MM-dd');
@@ -478,12 +561,11 @@ class CartScreen extends StatelessWidget {
 
                                       String success = await orderProvider
                                           .addOrder(
-                                              storeId:
-                                                  cartItem
-                                                      .cart.values
-                                                      .toList()[0]
-                                                      .product
-                                                      .storeId,
+                                              storeId: cartItem
+                                                  .cart.values
+                                                  .toList()[0]
+                                                  .product
+                                                  .storeId,
                                               riderId:
                                                   _mapCal
                                                       .keys
@@ -502,8 +584,7 @@ class CartScreen extends StatelessWidget {
                                                   .toString(),
                                               orderDate: formattedDate,
                                               cashMethod: "1",
-                                              total: cartItem.cart.length
-                                                  .toString());
+                                              total: totalDeliver.toString());
                                       for (var item
                                           in cartItem.cart.values.toList()) {
                                         await orderDetailProvider
@@ -514,7 +595,7 @@ class CartScreen extends StatelessWidget {
                                         );
                                       }
 
-                                      if (success == '0') {
+                                      if (int.parse(success) >= 0) {
                                         Navigator.of(context).pop();
                                         await CoolAlert.show(
                                             context: context,

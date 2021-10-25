@@ -2,6 +2,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:market_delivery/model/post.dart';
 import 'package:market_delivery/screens/store/store_setting_screen.dart';
 import '../../utils/api.dart';
 
@@ -49,6 +50,7 @@ class EditStoreProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeProvider = Provider.of<Stores>(context, listen: false);
+    final postProvider = Provider.of<Posts>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -78,7 +80,7 @@ class EditStoreProfileScreen extends StatelessWidget {
                 elevation: 1,
                 centerTitle: true,
                 title: Text(
-                  'แก้ไขข้อมูลร้าน',
+                  'แก้ไขโพส',
                   style: TextStyle(color: Colors.white),
                 ),
                 actions: [

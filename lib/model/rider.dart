@@ -2,8 +2,11 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:location/location.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/api.dart';
 import 'dart:io' as io;
@@ -103,6 +106,7 @@ class Rider {
 class Riders with ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
   //------------------Variable---------------------
+
   List<Rider> _riders = [];
   Rider? _riderModel;
 
@@ -231,6 +235,7 @@ class Riders with ChangeNotifier {
     });
     var results = jsonDecode(response.body);
     debugPrint(results.toString());
+    notifyListeners();
   }
 
   Future<String> updateRider() async {
@@ -441,5 +446,35 @@ class Riders with ChangeNotifier {
       checkNull = false;
     }
     return checkNull;
+  }
+
+  void updateLatLng() async {
+    var uri = Api.updateRiderLatLng;
+    var response = await http.post(Uri.parse(uri), body: {
+      'rider_id': _riderModel!.riderId,
+      'lat': _riderModel!.lat.toString(),
+      'lng': _riderModel!.lng.toString(),
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    // notifyListeners();
+  }
+
+  Future<void> getCurrentLocation() async {
+    Location location = Location();
+    try {
+      var status = await Permission.location.status;
+      if (status.isDenied) {
+        await Permission.location.request();
+      }
+      LocationData getLocation = await location.getLocation();
+      _riderModel!.lat = getLocation.latitude!;
+      _riderModel!.lng = getLocation.longitude!;
+      // notifyListeners();
+    } on PlatformException catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        // Permission denied
+      }
+    }
   }
 }
