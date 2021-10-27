@@ -299,6 +299,8 @@ class Orders with ChangeNotifier {
 
   double _todayIncome = 0;
 
+  DateTime _dateTime = DateTime.now();
+
   Order? _order;
   List<Order> _orderByStoreId = [];
   List<Order> _orderByRiderId = [];
@@ -315,6 +317,10 @@ class Orders with ChangeNotifier {
   bool stopTimerStatus = false;
 
   //------------GetterSetter-------------------
+
+  get dateTime => this._dateTime;
+
+  set dateTime(value) => this._dateTime = value;
 
   List<Order> get orderByRiderIdAll => this._orderByRiderIdAll;
 
@@ -520,6 +526,24 @@ class Orders with ChangeNotifier {
     var now = new DateTime.now();
     var formatter = new DateFormat('yyyy-MM-dd');
     String formattedDate = formatter.format(now);
+    _orderByStoreDate.clear();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? storeId = await sharedPreferences.getString('store_id');
+    String uri = Api.orders + "?store_id=$storeId&order_date=$formattedDate";
+    var response = await http.get(Uri.parse(uri));
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    var result = results['result'];
+    for (var item in result) {
+      _orderByStoreDate.add(Order.fromJson(item));
+    }
+    notifyListeners();
+  }
+
+  Future<void> getOrderByStoreDate() async {
+    // var now = new DateTime.now();
+    var formatter = new DateFormat('yyyy-MM-dd');
+    String formattedDate = formatter.format(_dateTime);
     _orderByStoreDate.clear();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String? storeId = await sharedPreferences.getString('store_id');

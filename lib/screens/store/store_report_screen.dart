@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:market_delivery/model/customer.dart';
 import 'package:market_delivery/model/order.dart';
@@ -35,6 +36,7 @@ class StoreReportScreen extends StatelessWidget {
     final storeProvider = Provider.of<Stores>(context, listen: false);
     final customerProvider = Provider.of<Customers>(context, listen: false);
     final orderDetail = Provider.of<OrderDetails>(context, listen: false);
+    final orderProvider = Provider.of<Orders>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -145,47 +147,79 @@ class StoreReportScreen extends StatelessWidget {
                                               //   ),
                                               // ),
                                               Container(
-                                                  child: SfCartesianChart(
-                                                      primaryXAxis:
-                                                          CategoryAxis(),
-                                                      // Chart title
-                                                      title: ChartTitle(
-                                                          text:
-                                                              'ยอดขายประจำสัปดาห์'),
-                                                      // Enable legend
-                                                      legend: Legend(
-                                                          isVisible: true),
-                                                      // Enable tooltip
-                                                      tooltipBehavior:
-                                                          TooltipBehavior(),
-                                                      series: <
-                                                          LineSeries<SalesData,
-                                                              String>>[
-                                                    LineSeries<SalesData,
-                                                            String>(
-                                                        dataSource: <SalesData>[
-                                                          SalesData('Sun', 35),
-                                                          SalesData('Mon', 28),
-                                                          SalesData('Tue', 34),
-                                                          SalesData('Wed', 32),
-                                                          SalesData('Thur', 40),
-                                                          SalesData('Fri', 40),
-                                                          SalesData('Sat', 40)
-                                                        ],
-                                                        xValueMapper:
-                                                            (SalesData sales,
-                                                                    _) =>
-                                                                sales.days,
-                                                        yValueMapper:
-                                                            (SalesData sales,
-                                                                    _) =>
-                                                                sales.sales,
-                                                        // Enable data label
-                                                        dataLabelSettings:
-                                                            DataLabelSettings(
-                                                                isVisible:
-                                                                    true))
-                                                  ]))
+                                                child: Consumer<Orders>(
+                                                  builder:
+                                                      (context, data, child) =>
+                                                          SfCartesianChart(
+                                                    title: ChartTitle(
+                                                        text:
+                                                            'รายงานยอดขายประจำวัน'),
+                                                    legend:
+                                                        Legend(isVisible: true),
+                                                    tooltipBehavior:
+                                                        TooltipBehavior(
+                                                            enable: true),
+                                                    series: <ChartSeries>[
+                                                      BarSeries<GDPData,
+                                                              String>(
+                                                          name: 'ออเดอร์',
+                                                          dataSource:
+                                                              getChartData(),
+                                                          xValueMapper:
+                                                              (GDPData gdp,
+                                                                      _) =>
+                                                                  gdp.continent,
+                                                          yValueMapper:
+                                                              (GDPData gdp,
+                                                                      _) =>
+                                                                  gdp.gdp,
+                                                          dataLabelSettings:
+                                                              DataLabelSettings(
+                                                                  isVisible:
+                                                                      true),
+                                                          enableTooltip: true)
+                                                    ],
+                                                    primaryXAxis:
+                                                        CategoryAxis(),
+                                                    primaryYAxis: NumericAxis(
+                                                        edgeLabelPlacement:
+                                                            EdgeLabelPlacement
+                                                                .shift,
+                                                        // numberFormat: NumberFormat
+                                                        //     .simpleCurrency(
+                                                        //         decimalDigits:
+                                                        //             0),
+                                                        title: AxisTitle(
+                                                            text: 'ออเดอร์')),
+                                                  ),
+                                                ),
+                                              ),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    DatePicker.showDatePicker(
+                                                        context,
+                                                        showTitleActions: true,
+                                                        minTime: DateTime(
+                                                            2020, 3, 5),
+                                                        maxTime: DateTime.now(),
+                                                        onChanged: (date) {
+                                                      print('change $date');
+                                                    }, onConfirm: (date) {
+                                                      print('confirm $date');
+                                                      orderProvider.dateTime =
+                                                          date;
+                                                      orderProvider
+                                                          .getOrderByStoreDate();
+                                                    },
+                                                        currentTime:
+                                                            DateTime.now(),
+                                                        locale: LocaleType.th);
+                                                  },
+                                                  child: Text(
+                                                    'เลือกวันที่',
+                                                    style: TextStyle(
+                                                        color: Colors.blue),
+                                                  ))
                                             ],
                                           ),
                                         )),
@@ -208,10 +242,20 @@ class StoreReportScreen extends StatelessWidget {
       ),
     );
   }
+
+  List<GDPData> getChartData() {
+    final List<GDPData> chartData = [
+      GDPData('ยอดขายวันนี้', 28),
+      GDPData('สำเร็จ', 26),
+      GDPData('ยกเลิก', 1),
+      GDPData('กำลังดำเนินการ', 1),
+    ];
+    return chartData;
+  }
 }
 
-class SalesData {
-  SalesData(this.days, this.sales);
-  final String days;
-  final double sales;
+class GDPData {
+  GDPData(this.continent, this.gdp);
+  final String continent;
+  final double gdp;
 }

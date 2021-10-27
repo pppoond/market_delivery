@@ -67,7 +67,7 @@ class ProductListItem extends StatelessWidget {
                     // style: TextStyle(fontSize: 20),
                   ),
                   Text(
-                    "฿30",
+                    "${product.price}฿ / ${product.unit}",
                     // style: TextStyle(fontSize: 20),
                   ),
                 ],

@@ -170,6 +170,18 @@ class WithdrawStores with ChangeNotifier {
     return results['msg'];
   }
 
+  Future<String> updateWithdrawStatus(
+      {required String wdRiderId, required String payStatus}) async {
+    var uri = Api.updateWithdrawStoreStatus;
+    var response = await http.post(Uri.parse(uri), body: {
+      'wd_store_id': wdRiderId,
+      'pay_status': payStatus,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    return results['msg'];
+  }
+
   Future<void> findWithdrawByStoreId({required String storeId}) async {
     _withdrawStores.clear();
     var uri = Api.withdrawStore + '?find_store_id=$storeId';

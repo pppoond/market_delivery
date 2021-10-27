@@ -57,414 +57,487 @@ class CartScreen extends StatelessWidget {
     } else {
       totalDeliver = storeCusDistance * 5;
     }
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        toolbarHeight: 45,
-        elevation: 1,
-        title: Text("ตะกร้าสินค้า"),
-      ),
-      body: customerProvider.customerModel == null
-          ? Center(
-              child: Text("กรุณาเข้าสู่ระบบ"),
-            )
-          : (cartItem.cart.length < 1)
-              ? Center(
-                  child: Text(
-                    "No Selected Foods",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+    return Consumer<Cart>(
+      builder: (context, data, child) => Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          toolbarHeight: 45,
+          elevation: 1,
+          title: Text("ตะกร้าสินค้า"),
+        ),
+        body: customerProvider.customerModel == null
+            ? Center(
+                child: Text("กรุณาเข้าสู่ระบบ"),
+              )
+            : (cartItem.cart.length == 0)
+                ? Center(
+                    child: Text(
+                      "No Selected Foods",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 7,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: RichText(
-                          text: TextSpan(
-                              style: TextStyle(color: Colors.black),
-                              children: [
-                                TextSpan(
-                                  text: "ร้าน ",
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: storeProvider.allStores
-                                      .firstWhere((element) =>
-                                          element.storeId ==
-                                          cartItem.cart.values
-                                              .toList()[0]
-                                              .product
-                                              .storeId)
-                                      .storeName,
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ]),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 7,
                         ),
-                      ),
-                      SizedBox(
-                        height: 7,
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(16),
-                        width: double.infinity,
-                        color: Colors.white,
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            physics: ScrollPhysics(),
-                            itemCount: cartItem.cart.length,
-                            itemBuilder: (context, i) {
-                              return CartList(
-                                id: cartItem.cart.keys.toList()[i],
-                                cartId: cartItem.cart.values
-                                    .toList()[i]
-                                    .product
-                                    .productId,
-                                cartTitle: cartItem.cart.values
-                                    .toList()[i]
-                                    .product
-                                    .productName,
-                                cartPrice: double.parse(cartItem.cart.values
-                                    .toList()[i]
-                                    .product
-                                    .price),
-                                cartQuantity:
-                                    cartItem.cart.values.toList()[i].quantity,
-                              );
-                            }),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(
-                            left: 16, right: 16, bottom: 16, top: 10),
-                        width: double.infinity,
-                        color: Colors.white,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text(
-                              "Summary",
-                              style: TextStyle(
-                                color: Theme.of(context).accentColor,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "สินค้า",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                Text(
-                                  "฿${cartItem.totalFood.toStringAsFixed(0)}",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "ค่าส่ง : ",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: RichText(
+                            text: TextSpan(
+                                style: TextStyle(color: Colors.black),
+                                children: [
+                                  TextSpan(
+                                    text: "ร้าน ",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                                Text(
-                                  "฿${totalDeliver} บาท",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.normal,
+                                  TextSpan(
+                                    text: storeProvider.allStores
+                                        .firstWhere((element) =>
+                                            element.storeId ==
+                                            cartItem.cart.values
+                                                .toList()[0]
+                                                .product
+                                                .storeId)
+                                        .storeName,
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "ทั้งหมด : ",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).accentColor,
-                                  ),
-                                ),
-                                Text(
-                                  "฿${cartItem.totalFood + totalDeliver} บาท",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Theme.of(context).accentColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      Consumer<Customers>(
-                        builder: (context, customerData, child) => Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
+                                ]),
                           ),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
+                        ),
+                        SizedBox(
+                          height: 7,
+                        ),
+                        Container(
+                          padding: EdgeInsets.all(16),
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: ScrollPhysics(),
+                              itemCount: cartItem.cart.length,
+                              itemBuilder: (context, i) {
+                                return CartList(
+                                  id: cartItem.cart.keys.toList()[i],
+                                  cartId: cartItem.cart.values
+                                      .toList()[i]
+                                      .product
+                                      .productId,
+                                  cartTitle: cartItem.cart.values
+                                      .toList()[i]
+                                      .product
+                                      .productName,
+                                  cartPrice: double.parse(cartItem.cart.values
+                                      .toList()[i]
+                                      .product
+                                      .price),
+                                  cartQuantity:
+                                      cartItem.cart.values.toList()[i].quantity,
+                                );
+                              }),
+                        ),
+                        Container(
+                          padding: EdgeInsets.only(
+                              left: 16, right: 16, bottom: 16, top: 10),
+                          width: double.infinity,
+                          color: Colors.white,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                "ส่งที่",
+                                "Summary",
                                 style: TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 7,
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    color: Colors.blue.shade100,
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.location_pin,
-                                      color: Theme.of(context).accentColor,
-                                    ),
-                                    SizedBox(
-                                      width: 12,
-                                    ),
-                                    Expanded(
-                                        child: Text(
-                                      customerData.listAddressModel
-                                          .firstWhere((element) =>
-                                              element.addrStatus == "1")
-                                          .address,
-                                      style: TextStyle(color: Colors.black54),
-                                    )),
-                                  ],
+                                  color: Theme.of(context).accentColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               SizedBox(
-                                height: 7,
+                                height: 16,
                               ),
-                              Container(
-                                height: MediaQuery.of(context).size.width * 0.5,
-                                child: showMap(context: context),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "สินค้า",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  Text(
+                                    "฿${cartItem.totalFood.toStringAsFixed(0)}",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ],
                               ),
-                              Divider(),
-                              Container(
-                                child: Row(
-                                  children: [
-                                    RichText(
-                                        text: TextSpan(
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                            children: [
-                                          TextSpan(
-                                              text: "ระยะห่าง " +
-                                                  CalculateDistance
-                                                      .calDistanceLatLng(
-                                                    lat1: customerData
-                                                        .listAddressModel
-                                                        .firstWhere((element) =>
-                                                            element
-                                                                .addrStatus ==
-                                                            "1")
-                                                        .lat,
-                                                    lng1: customerData
-                                                        .listAddressModel
-                                                        .firstWhere((element) =>
-                                                            element
-                                                                .addrStatus ==
-                                                            "1")
-                                                        .lng,
-                                                    lat2: storeProvider
-                                                        .allStores
-                                                        .firstWhere((element) =>
-                                                            element.storeId ==
-                                                            cartItem.cart.values
-                                                                .toList()[0]
-                                                                .product
-                                                                .storeId)
-                                                        .lat,
-                                                    lng2: storeProvider
-                                                        .allStores
-                                                        .firstWhere((element) =>
-                                                            element.storeId ==
-                                                            cartItem.cart.values
-                                                                .toList()[0]
-                                                                .product
-                                                                .storeId)
-                                                        .lng,
-                                                  ).toString() +
-                                                  " Km",
-                                              style: TextStyle(
-                                                  color: Colors.black54))
-                                        ])),
-                                    Spacer(),
-                                    GestureDetector(
-                                      onTap: () {
-                                        showModalAddress(context: context);
-                                      },
-                                      child: RichText(
+                              SizedBox(
+                                height: 5,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "ค่าส่ง : ",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                  Text(
+                                    "฿${totalDeliver} บาท",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "ทั้งหมด : ",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    "฿${cartItem.totalFood + totalDeliver} บาท",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 12,
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Consumer<Customers>(
+                          builder: (context, customerData, child) => Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "ส่งที่",
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 7,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      color: Colors.blue.shade100,
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.location_pin,
+                                        color: Theme.of(context).accentColor,
+                                      ),
+                                      SizedBox(
+                                        width: 12,
+                                      ),
+                                      Expanded(
+                                          child: Text(
+                                        customerData.listAddressModel
+                                            .firstWhere((element) =>
+                                                element.addrStatus == "1")
+                                            .address,
+                                        style: TextStyle(color: Colors.black54),
+                                      )),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 7,
+                                ),
+                                Container(
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.5,
+                                  child: showMap(context: context),
+                                ),
+                                Divider(),
+                                Container(
+                                  child: Row(
+                                    children: [
+                                      RichText(
                                           text: TextSpan(
                                               style: TextStyle(
                                                   color: Colors.black),
                                               children: [
                                             TextSpan(
-                                                text: 'เลือกที่อยู่',
+                                                text: "ระยะห่าง " +
+                                                    CalculateDistance
+                                                        .calDistanceLatLng(
+                                                      lat1: customerData
+                                                          .listAddressModel
+                                                          .firstWhere((element) =>
+                                                              element
+                                                                  .addrStatus ==
+                                                              "1")
+                                                          .lat,
+                                                      lng1: customerData
+                                                          .listAddressModel
+                                                          .firstWhere((element) =>
+                                                              element
+                                                                  .addrStatus ==
+                                                              "1")
+                                                          .lng,
+                                                      lat2: storeProvider
+                                                          .allStores
+                                                          .firstWhere(
+                                                              (element) =>
+                                                                  element
+                                                                      .storeId ==
+                                                                  cartItem.cart
+                                                                      .values
+                                                                      .toList()[
+                                                                          0]
+                                                                      .product
+                                                                      .storeId)
+                                                          .lat,
+                                                      lng2: storeProvider
+                                                          .allStores
+                                                          .firstWhere(
+                                                              (element) =>
+                                                                  element
+                                                                      .storeId ==
+                                                                  cartItem.cart
+                                                                      .values
+                                                                      .toList()[
+                                                                          0]
+                                                                      .product
+                                                                      .storeId)
+                                                          .lng,
+                                                    ).toString() +
+                                                    " Km",
                                                 style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .accentColor,
-                                                    fontWeight:
-                                                        FontWeight.bold))
+                                                    color: Colors.black54))
                                           ])),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
+                                      Spacer(),
+                                      GestureDetector(
+                                        onTap: () {
+                                          showModalAddress(context: context);
+                                        },
+                                        child: RichText(
+                                            text: TextSpan(
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                                children: [
+                                              TextSpan(
+                                                  text: 'เลือกที่อยู่',
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .accentColor,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                            ])),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          showModalCashMethod(context: context);
-                        },
-                        child: Container(
+                        SizedBox(
+                          height: 12,
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            showModalCashMethod(context: context);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "วิธีการชำระเงิน",
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 7,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .accentColor
+                                          .withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(12)),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.check,
+                                        color: Theme.of(context).accentColor,
+                                      ),
+                                      SizedBox(
+                                        width: 12,
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "ชำระเงิน",
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .accentColor,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Text(
+                                              "ชำระเงินปลายทาง",
+                                              style: TextStyle(
+                                                color: Colors.black45,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        size: 17,
+                                        color: Colors.black26,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 12,
+                        ),
+                        Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: 16, vertical: 12),
                           decoration: BoxDecoration(
                             color: Colors.white,
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "วิธีการชำระเงิน",
-                                style: TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold),
-                              ),
-                              SizedBox(
-                                height: 7,
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .accentColor
-                                        .withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(12)),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.check,
-                                      color: Theme.of(context).accentColor,
-                                    ),
-                                    SizedBox(
-                                      width: 12,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "ชำระเงิน",
-                                            style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .accentColor,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            "ชำระเงินปลายทาง",
-                                            style: TextStyle(
-                                              color: Colors.black45,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 17,
-                                      color: Colors.black26,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 12,
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                        ),
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.all(0),
-                              child: TextButton(
-                                onPressed: () async {
-                                  CoolAlert.show(
-                                    context: context,
-                                    type: CoolAlertType.confirm,
-                                    confirmBtnText: 'ยืนยัน',
-                                    cancelBtnText: 'ยกเลิก',
-                                    title: 'ยืนยันคำสั่งซื้อ',
-                                    onConfirmBtnTap: () async {
-                                      List<Map<String, dynamic>> _listMapCal =
-                                          [];
-                                      Map _mapCal = {};
+                              Padding(
+                                padding: EdgeInsets.all(0),
+                                child: TextButton(
+                                  onPressed: () async {
+                                    CoolAlert.show(
+                                      context: context,
+                                      type: CoolAlertType.confirm,
+                                      confirmBtnText: 'ยืนยัน',
+                                      cancelBtnText: 'ยกเลิก',
+                                      title: 'ยืนยันคำสั่งซื้อ',
+                                      onConfirmBtnTap: () async {
+                                        List<Map<String, dynamic>> _listMapCal =
+                                            [];
+                                        Map _mapCal = {};
 
-                                      await riderProvider.getRiders();
-                                      riderProvider.riders;
-                                      for (var item in riderProvider.riders) {
-                                        double distance =
-                                            CalculateDistance.calDistanceLatLng(
+                                        await riderProvider.getRiders();
+                                        riderProvider.riders;
+                                        for (var item in riderProvider.riders) {
+                                          double distance = CalculateDistance
+                                              .calDistanceLatLng(
+                                                  lat1: storeProvider.allStores
+                                                      .firstWhere((element) =>
+                                                          element.storeId ==
+                                                          cartItem.cart.values
+                                                              .toList()[0]
+                                                              .product
+                                                              .storeId)
+                                                      .lat,
+                                                  lng1: storeProvider.allStores
+                                                      .firstWhere((element) =>
+                                                          element.storeId ==
+                                                          cartItem.cart.values
+                                                              .toList()[0]
+                                                              .product
+                                                              .storeId)
+                                                      .lng,
+                                                  lat2: item.lat,
+                                                  lng2: item.lng);
+
+                                          _listMapCal.add({
+                                            'rider_id': item.riderId,
+                                            'distance': distance,
+                                          });
+
+                                          _mapCal[item.riderId] = distance;
+                                        }
+                                        debugPrint(
+                                            _listMapCal.toList().toString());
+                                        debugPrint(_mapCal.toString());
+
+                                        var mapEntries = _mapCal.entries
+                                            .toList()
+                                              ..sort((a, b) =>
+                                                  a.value.compareTo(b.value));
+
+                                        _mapCal
+                                          ..clear()
+                                          ..addEntries(mapEntries);
+
+                                        debugPrint(_mapCal.toString());
+                                        debugPrint(_mapCal.keys
+                                            .toList()
+                                            .first
+                                            .toString());
+                                        debugPrint(_mapCal.values
+                                            .toList()
+                                            .first
+                                            .toString());
+                                        debugPrint(customerProvider
+                                            .customerModel!.customerId
+                                            .toString());
+
+                                        //-------------------ราคาส่ง ถ้าเกิน 3 กม * 5 ถ้าไม่ 15 บาท
+
+                                        double storeCusDistance =
+                                            await CalculateDistance.calDistanceLatLng(
                                                 lat1: storeProvider.allStores
                                                     .firstWhere((element) =>
                                                         element.storeId ==
@@ -481,168 +554,112 @@ class CartScreen extends StatelessWidget {
                                                             .product
                                                             .storeId)
                                                     .lng,
-                                                lat2: item.lat,
-                                                lng2: item.lng);
+                                                lat2: customerProvider
+                                                    .listAddressModel
+                                                    .firstWhere((element) =>
+                                                        element.addrStatus ==
+                                                        "1")
+                                                    .lat,
+                                                lng2: customerProvider
+                                                    .listAddressModel
+                                                    .firstWhere((element) =>
+                                                        element.addrStatus == "1")
+                                                    .lng);
+                                        double totalDeliver = 0.0;
+                                        if (storeCusDistance <= 3.0) {
+                                          totalDeliver = 15.0;
+                                        } else {
+                                          totalDeliver = storeCusDistance * 5;
+                                        }
 
-                                        _listMapCal.add({
-                                          'rider_id': item.riderId,
-                                          'distance': distance,
-                                        });
+                                        var now = new DateTime.now();
+                                        var formatter =
+                                            new DateFormat('yyyy-MM-dd');
+                                        String formattedDate =
+                                            formatter.format(now);
 
-                                        _mapCal[item.riderId] = distance;
-                                      }
-                                      debugPrint(
-                                          _listMapCal.toList().toString());
-                                      debugPrint(_mapCal.toString());
+                                        String success =
+                                            await orderProvider.addOrder(
+                                                storeId: cartItem.cart.values
+                                                    .toList()[0]
+                                                    .product
+                                                    .storeId,
+                                                riderId: _mapCal.keys
+                                                    .toList()
+                                                    .first
+                                                    .toString(),
+                                                customerId: customerProvider
+                                                    .customerModel!.customerId
+                                                    .toString(),
+                                                addressId: customerProvider
+                                                    .listAddressModel
+                                                    .firstWhere((element) =>
+                                                        element.addrStatus ==
+                                                        "1")
+                                                    .addressId
+                                                    .toString(),
+                                                orderDate: formattedDate,
+                                                cashMethod: "1",
+                                                total: totalDeliver.toString());
+                                        for (var item
+                                            in cartItem.cart.values.toList()) {
+                                          await orderDetailProvider
+                                              .addOrderDetail(
+                                            orderId: success,
+                                            productId: item.product.productId,
+                                            quantity: item.quantity.toString(),
+                                          );
+                                        }
 
-                                      var mapEntries = _mapCal.entries.toList()
-                                        ..sort((a, b) =>
-                                            a.value.compareTo(b.value));
-
-                                      _mapCal
-                                        ..clear()
-                                        ..addEntries(mapEntries);
-
-                                      debugPrint(_mapCal.toString());
-                                      debugPrint(_mapCal.keys
-                                          .toList()
-                                          .first
-                                          .toString());
-                                      debugPrint(_mapCal.values
-                                          .toList()
-                                          .first
-                                          .toString());
-                                      debugPrint(customerProvider
-                                          .customerModel!.customerId
-                                          .toString());
-
-                                      //-------------------ราคาส่ง ถ้าเกิน 3 กม * 5 ถ้าไม่ 15 บาท
-
-                                      double storeCusDistance =
-                                          await CalculateDistance.calDistanceLatLng(
-                                              lat1: storeProvider.allStores
-                                                  .firstWhere((element) =>
-                                                      element.storeId ==
-                                                      cartItem.cart.values
-                                                          .toList()[0]
-                                                          .product
-                                                          .storeId)
-                                                  .lat,
-                                              lng1: storeProvider.allStores
-                                                  .firstWhere((element) =>
-                                                      element.storeId ==
-                                                      cartItem.cart.values
-                                                          .toList()[0]
-                                                          .product
-                                                          .storeId)
-                                                  .lng,
-                                              lat2: customerProvider
-                                                  .listAddressModel
-                                                  .firstWhere((element) =>
-                                                      element.addrStatus == "1")
-                                                  .lat,
-                                              lng2: customerProvider
-                                                  .listAddressModel
-                                                  .firstWhere((element) =>
-                                                      element.addrStatus == "1")
-                                                  .lng);
-                                      double totalDeliver = 0.0;
-                                      if (storeCusDistance <= 3.0) {
-                                        totalDeliver = 15.0;
-                                      } else {
-                                        totalDeliver = storeCusDistance * 5;
-                                      }
-
-                                      var now = new DateTime.now();
-                                      var formatter =
-                                          new DateFormat('yyyy-MM-dd');
-                                      String formattedDate =
-                                          formatter.format(now);
-
-                                      String success = await orderProvider
-                                          .addOrder(
-                                              storeId: cartItem
-                                                  .cart.values
-                                                  .toList()[0]
-                                                  .product
-                                                  .storeId,
-                                              riderId:
-                                                  _mapCal
-                                                      .keys
-                                                      .toList()
-                                                      .first
-                                                      .toString(),
-                                              customerId:
-                                                  customerProvider
-                                                      .customerModel!.customerId
-                                                      .toString(),
-                                              addressId: customerProvider
-                                                  .listAddressModel
-                                                  .firstWhere((element) =>
-                                                      element.addrStatus == "1")
-                                                  .addressId
-                                                  .toString(),
-                                              orderDate: formattedDate,
-                                              cashMethod: "1",
-                                              total: totalDeliver.toString());
-                                      for (var item
-                                          in cartItem.cart.values.toList()) {
-                                        await orderDetailProvider
-                                            .addOrderDetail(
-                                          orderId: success,
-                                          productId: item.product.productId,
-                                          quantity: item.quantity.toString(),
-                                        );
-                                      }
-
-                                      if (int.parse(success) >= 0) {
-                                        Navigator.of(context).pop();
-                                        await CoolAlert.show(
-                                            context: context,
-                                            type: CoolAlertType.success,
-                                            confirmBtnText: 'ตกลง');
-                                        cartItem.cart = {};
-                                        cartItem.notifyListeners();
-                                        Navigator.of(context).pop();
-                                      } else {
-                                        Navigator.of(context).pop();
-                                        await CoolAlert.show(
-                                            context: context,
-                                            type: CoolAlertType.error,
-                                            confirmBtnText: 'ตกลง');
-                                        cartItem.cart = {};
-                                        cartItem.notifyListeners();
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                  );
-                                },
-                                style: TextButton.styleFrom(
-                                  primary: Colors.white,
-                                  backgroundColor:
-                                      Theme.of(context).accentColor,
-                                  minimumSize: Size(
-                                    double.infinity,
-                                    50,
+                                        if (int.parse(success) >= 0) {
+                                          Navigator.of(context).pop();
+                                          await CoolAlert.show(
+                                              context: context,
+                                              type: CoolAlertType.success,
+                                              confirmBtnText: 'ตกลง');
+                                          cartItem.cart = {};
+                                          cartItem.notifyListeners();
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          Navigator.of(context).pop();
+                                          await CoolAlert.show(
+                                              context: context,
+                                              type: CoolAlertType.error,
+                                              confirmBtnText: 'ตกลง');
+                                          cartItem.cart = {};
+                                          cartItem.notifyListeners();
+                                          Navigator.of(context).pop();
+                                        }
+                                      },
+                                    );
+                                  },
+                                  style: TextButton.styleFrom(
+                                    primary: Colors.white,
+                                    backgroundColor:
+                                        Theme.of(context).accentColor,
+                                    minimumSize: Size(
+                                      double.infinity,
+                                      50,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                child: Text(
-                                  "สั่งออเดอร์",
-                                  style: TextStyle(
-                                    fontSize: 18,
+                                  child: Text(
+                                    "สั่งออเดอร์",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
+      ),
     );
   }
 

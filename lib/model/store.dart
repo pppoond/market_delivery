@@ -275,6 +275,23 @@ class Stores with ChangeNotifier {
     return results['msg'];
   }
 
+  Future<String> updateWallet(
+      {required String amount, required String storeId}) async {
+    // _storeModel.wallet =
+    //     (double.parse(_storeModel.wallet) + double.parse(amount)).toString();
+
+    var uri = Api.updateStoreWallet;
+    var response = await http.post(Uri.parse(uri), body: {
+      'store_id': storeId,
+      'wallet': amount,
+    });
+    var results = jsonDecode(response.body);
+    debugPrint(results.toString());
+    await findStoreById();
+    notifyListeners();
+    return results['msg'];
+  }
+
   Future<String> updateLatLng() async {
     print("Lattttt");
     print(_latTextController.text);

@@ -1,5 +1,6 @@
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/rider.dart';
 import 'package:market_delivery/model/withdraw_store.dart';
 import 'package:market_delivery/screens/wallet/store_withdraw_history_screen.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +67,7 @@ class StoreMoneyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storeProvider = Provider.of<Stores>(context, listen: false);
+    final riderProvider = Provider.of<Riders>(context, listen: false);
     final withdrawStoreProvider =
         Provider.of<WithdrawStores>(context, listen: false);
     return Scaffold(
@@ -151,13 +153,14 @@ class StoreMoneyScreen extends StatelessWidget {
   showModal({
     required BuildContext context,
   }) {
-    final storeProvider = Provider.of<Stores>(context, listen: false);
     return showModalBottomSheet(
         barrierColor: Colors.black.withOpacity(0.55),
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
         context: context,
         builder: (context) {
+          final storeProvider = Provider.of<Stores>(context, listen: false);
+          final riderProvider = Provider.of<Riders>(context, listen: false);
           return Container(
             padding: EdgeInsets.all(16),
             height: MediaQuery.of(context).size.height * 0.8,
@@ -175,7 +178,7 @@ class StoreMoneyScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "ถอนเครดิตเข้ากระเป๋าเงิน",
+                      "ถอนเงินเข้าบัญชี",
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
@@ -277,6 +280,18 @@ class StoreMoneyScreen extends StatelessWidget {
                                           storeId:
                                               storeProvider.storeModel.storeId);
                                   if (success == 'success') {
+                                    storeProvider.storeModel.wallet =
+                                        (double.parse(
+                                                    storeProvider
+                                                        .storeModel.wallet) -
+                                                double.parse(withdrawStoreData
+                                                    .amountMoneyController
+                                                    .text))
+                                            .toString();
+                                    await storeProvider.updateWallet(
+                                      storeId: storeProvider.storeModel.storeId,
+                                      amount: storeProvider.storeModel.wallet,
+                                    );
                                     Navigator.of(context).pop();
                                     CoolAlert.show(
                                         context: context,
@@ -318,7 +333,7 @@ class StoreMoneyScreen extends StatelessWidget {
                         ),
                       ),
                       child: Text(
-                        "ถอนเครดิต",
+                        "ถอนเงิน",
                         style: TextStyle(
                           fontSize: 18,
                         ),

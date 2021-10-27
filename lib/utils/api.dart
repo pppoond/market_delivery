@@ -14,6 +14,7 @@ class Api {
       "$host/api/update_credit_wallet_rider.php"; //post wallet and credit
   static String uploadRiderImage = "$host/api/upload_rider_image.php";
   static String updateRiderWallet = "$host/api/update_rider_wallet.php";
+  static String updateRiderCredit = "$host/api/update_rider_credit.php";
 
   static String loginStore = "$host/api/login_store.php";
   static String stores = "$host/api/stores.php";
@@ -22,8 +23,11 @@ class Api {
   static String updateStorePassword = "$host/api/update_store_password.php";
   static String updateStoreLatLng = "$host/api/update_store_latlng.php";
   static String updateStoreStatus = "$host/api/update_store_status.php";
+  static String updateStoreWallet = "$host/api/update_store_wallet.php";
 
   static String withdrawStore = "$host/api/withdraw_stores.php";
+  static String updateWithdrawStoreStatus =
+      "$host/api/update_withdraw_store_status.php";
 
   static String withdrawRiders = "$host/api/withdraw_riders.php";
   static String updateWithdrawRiderStatus =

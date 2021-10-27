@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:market_delivery/model/store.dart';
+import 'package:provider/provider.dart';
 
 class StoreWallet extends StatelessWidget {
   Widget drawerItem({required String title, var leadingIcon, required onTap}) {
@@ -23,10 +25,12 @@ class StoreWallet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        drawerItem(
-            leadingIcon: Icon(Icons.account_balance_wallet),
-            title: "กระเป๋าเงิน \n350 บาท",
-            onTap: () {}),
+        Consumer<Stores>(
+          builder: (context, data, child) => drawerItem(
+              leadingIcon: Icon(Icons.account_balance_wallet),
+              title: "กระเป๋าเงิน \n${data.storeModel.wallet} บาท",
+              onTap: () {}),
+        ),
       ],
     );
   }

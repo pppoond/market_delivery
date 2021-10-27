@@ -80,7 +80,7 @@ class EditStoreProfileScreen extends StatelessWidget {
                 elevation: 1,
                 centerTitle: true,
                 title: Text(
-                  'แก้ไขโพส',
+                  'แก้ไขข้อมูลร้าน',
                   style: TextStyle(color: Colors.white),
                 ),
                 actions: [

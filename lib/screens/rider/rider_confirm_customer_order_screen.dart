@@ -2,6 +2,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/material.dart';
 import 'package:market_delivery/model/order.dart';
 import 'package:market_delivery/model/order_detail.dart';
+import 'package:market_delivery/model/rider.dart';
 import 'package:market_delivery/screens/rider_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -50,6 +51,9 @@ class RiderConfirmCustomerOrderScreen extends StatelessWidget {
     final orderDetailProvider =
         Provider.of<OrderDetails>(context, listen: false);
     final orders = Provider.of<Orders>(context, listen: false);
+    final storeProvider = Provider.of<Stores>(context, listen: false);
+    final riderProvider = Provider.of<Riders>(context, listen: false);
+    Provider.of<OrderDetails>(context, listen: false);
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -310,6 +314,26 @@ class RiderConfirmCustomerOrderScreen extends StatelessWidget {
                           onConfirmBtnTap: () async {
                             await orders.updateOrderStatus(
                                 orderId: orderId, orderStatus: '4');
+
+                            String storeWallet = (double.parse(
+                                        orderDetailProvider.orderDetailList[0]
+                                            .orderId.storeId.wallet) +
+                                    orderDetailProvider.totalMoney)
+                                .toString();
+                            await storeProvider.updateWallet(
+                                storeId: orderDetailProvider
+                                    .orderDetailList[0].orderId.storeId.storeId,
+                                amount: storeWallet);
+
+                            await riderProvider.updateCredit(
+                                amount:
+                                    orderDetailProvider.totalMoney.toString());
+
+                            await riderProvider.updateWalletRider(
+                                wallet: orderDetailProvider
+                                    .orderDetailList[0].orderId.total
+                                    .toString());
+
                             Navigator.of(context).pop();
                             await CoolAlert.show(
                                 context: context,
