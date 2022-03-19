@@ -1003,13 +1003,14 @@ class RiderScreen extends StatelessWidget {
     final orderDetail = Provider.of<OrderDetails>(context, listen: false);
     final orderProvider = Provider.of<Orders>(context, listen: false);
     yield* Stream.periodic(Duration(seconds: 5), (_) async {
-      final orders = Provider.of<Orders>(context, listen: false);
-      if (orders.second <= 0) {
-        cancelOrder(context: context);
-      }
-      var response = await http
+      // final orders = Provider.of<Orders>(context, listen: false);
+      // if (orders.second <= 0) {
+      //   cancelOrder(context: context);
+      // }
+      // var response = await http
+      //     .get(Uri.parse(Api.orders + "?rider_id=$riderId&order_status=0"));
+      return http
           .get(Uri.parse(Api.orders + "?rider_id=$riderId&order_status=0"));
-      return response;
     }).asyncMap((event) async => await event);
   }
 

@@ -196,7 +196,9 @@ class MyApp extends StatelessWidget {
               RiderWithdrawHistoryScreen(),
           CustomerOrderScreen.routeName: (ctx) => CustomerOrderScreen(),
           OrderDetailScreen.routeName: (ctx) => OrderDetailScreen(),
-          RiderInorderScreen.routeName: (ctx) => RiderInorderScreen(),
+          RiderInorderScreen.routeName: (ctx) => RiderInorderScreen(
+                orderId: '',
+              ),
           RiderOrderDetailScreen.routeName: (ctx) => RiderOrderDetailScreen(),
           RiderConfirmStatusScreen.routeName: (ctx) =>
               RiderConfirmStatusScreen(),

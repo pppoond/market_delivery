@@ -26,8 +26,8 @@ class RiderIncome extends StatelessWidget {
     String formattedDate = formatter.format(now);
     orderProvider.todayIncome = 0.0;
     yield* Stream.periodic(Duration(seconds: 5), (_) async {
-      var response = await http.get(
-          Uri.parse(Api.orders + "?rider_id=$rider_id&order_date=2021-10-07"));
+      var response = await http.get(Uri.parse(
+          Api.orders + "?rider_id=$rider_id&order_date=$formattedDate"));
       var results = jsonDecode(response.body);
       for (var item in results['result']) {
         orderProvider.todayIncome += double.parse(item['total']);

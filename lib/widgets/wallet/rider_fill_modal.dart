@@ -140,9 +140,9 @@ class RiderFillModal {
                                 type: CoolAlertType.error,
                                 title: 'กรุณาใส่จำนวนเงิน',
                                 confirmBtnText: 'ตกลง');
-                          } else if (int.parse(
+                          } else if (double.parse(
                                   riderData.amountMoneyController.text) >
-                              int.parse(riderData.riderModel!.wallet)) {
+                              double.parse(riderData.riderModel!.wallet)) {
                             CoolAlert.show(
                                 context: context,
                                 type: CoolAlertType.error,

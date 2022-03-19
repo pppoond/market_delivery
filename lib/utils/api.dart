@@ -1,5 +1,5 @@
 class Api {
-  static String host = "http://192.168.0.102/restapi";
+  static String host = "http://202.28.34.205:8080/61011211041";
 
   static String admins = "$host/api/admins.php";
 

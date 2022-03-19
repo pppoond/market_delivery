@@ -15,6 +15,8 @@ import 'package:market_delivery/utils/api.dart';
 import 'package:provider/provider.dart';
 
 class RiderInorderScreen extends StatelessWidget {
+  String orderId;
+  RiderInorderScreen({required this.orderId});
   static const routeName = "/rider-inorder-screen";
 
   Stream<http.Response> getRandomNumberFact({required String orderId}) async* {
@@ -25,7 +27,7 @@ class RiderInorderScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String orderId = ModalRoute.of(context)!.settings.arguments as String;
+    // String orderId = ModalRoute.of(context)!.settings.arguments as String;
     final orders = Provider.of<Orders>(context, listen: false);
     final orderDetailProvider =
         Provider.of<OrderDetails>(context, listen: false);

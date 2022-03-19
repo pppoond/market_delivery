@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:d_chart/d_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:market_delivery/model/customer.dart';
 import 'package:market_delivery/model/order.dart';
@@ -196,24 +195,24 @@ class StoreReportScreen extends StatelessWidget {
                                               ),
                                               TextButton(
                                                   onPressed: () {
-                                                    DatePicker.showDatePicker(
-                                                        context,
-                                                        showTitleActions: true,
-                                                        minTime: DateTime(
-                                                            2020, 3, 5),
-                                                        maxTime: DateTime.now(),
-                                                        onChanged: (date) {
-                                                      print('change $date');
-                                                    }, onConfirm: (date) {
-                                                      print('confirm $date');
-                                                      orderProvider.dateTime =
-                                                          date;
-                                                      orderProvider
-                                                          .getOrderByStoreDate();
-                                                    },
-                                                        currentTime:
-                                                            DateTime.now(),
-                                                        locale: LocaleType.th);
+                                                    // DatePicker.showDatePicker(
+                                                    //     context,
+                                                    //     showTitleActions: true,
+                                                    //     minTime: DateTime(
+                                                    //         2020, 3, 5),
+                                                    //     maxTime: DateTime.now(),
+                                                    //     onChanged: (date) {
+                                                    //   print('change $date');
+                                                    // }, onConfirm: (date) {
+                                                    //   print('confirm $date');
+                                                    //   orderProvider.dateTime =
+                                                    //       date;
+                                                    //   orderProvider
+                                                    //       .getOrderByStoreDate();
+                                                    // },
+                                                    //     currentTime:
+                                                    //         DateTime.now(),
+                                                    //     locale: LocaleType.th);
                                                   },
                                                   child: Text(
                                                     'เลือกวันที่',

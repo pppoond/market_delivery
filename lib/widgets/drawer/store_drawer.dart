@@ -151,14 +151,14 @@ class StoreDrawer extends StatelessWidget {
               Navigator.of(context).pushNamed(StoreWalletScreen.routeName);
             }),
         Divider(),
-        drawerItem(
-            leadingIcon: Icon(Icons.data_saver_off),
-            title: "รายงาน",
-            onTap: () async {
-              // await store.findStoreById();
-              Navigator.of(context).pushNamed(StoreReportScreen.routeName);
-            }),
-        Divider(),
+        // drawerItem(
+        //     leadingIcon: Icon(Icons.data_saver_off),
+        //     title: "รายงาน",
+        //     onTap: () async {
+        //       // await store.findStoreById();
+        //       Navigator.of(context).pushNamed(StoreReportScreen.routeName);
+        //     }),
+        // Divider(),
         Spacer(),
         Divider(),
         drawerItem(
