@@ -10,7 +10,9 @@
 <image width="150px" src="https://raw.githubusercontent.com/pppoond/market_delivery/master/images/cart_screen.png?raw=true">
 <h3>Rider Order</h3>
 <image width="150px" src="https://raw.githubusercontent.com/pppoond/market_delivery/master/images/rider_order_screen.png?raw=true">
-<image width="150px" src="https://raw.githubusercontent.com/pppoond/market_delivery/master/images/rider_order_detail_screen2.png?raw=true">
+
+<h3>Rider Order detail</h3>
+<image width="150px" src="https://raw.githubusercontent.com/pppoond/market_delivery/master/images/rider_order_detail_screen.png?raw=true">
 <image width="150px" src="https://raw.githubusercontent.com/pppoond/market_delivery/master/images/rider_order_detail_screen3.png?raw=true">
 </div>
 
